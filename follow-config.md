@@ -57,7 +57,7 @@ Physical AI
 
 ## 9. 공유 · 자동화 (Publish / Routine)
 - GitHub Pages로 공개 → 폰·여러 PC에서 링크로 접근 (https://sjeon-user.github.io/paper-follow/)
-- 매일 오전 9시 루틴으로 위 결과물 갱신 후 GitHub에 push
+- 매일 오전 8시 루틴으로 위 결과물 갱신 후 GitHub에 push
 
 ## 10. 보관 (Archive) — 최근 7일 누적
 - 매일 최신본을 `brief-<날짜>.html`(예: brief-2026-07-21.html)로 스냅샷 저장 (루트에 두어 images/ 경로 유지)
