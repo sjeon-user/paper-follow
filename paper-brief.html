@@ -10,11 +10,13 @@
     --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
     --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
     --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
   }
   @media (prefers-color-scheme: light){
     :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
       --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
-      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45; }
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);
@@ -44,6 +46,16 @@
   .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
   .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
   .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
   .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
   footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
   .empty{color:var(--muted);text-align:center;padding:60px 0}
@@ -53,7 +65,7 @@
 <div class="wrap">
   <header>
     <h1>Physical AI 논문 팔로우업</h1>
-    <div class="sub">최근 arXiv 신규 논문 · 대표 그림 + 한국어 요약(배경/해결) · 생성일 <span id="brief-date"></span></div>
+    <div class="sub">최근 arXiv 신규 논문 · 대표 그림 + 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
   </header>
   <main id="papers"></main>
   <footer>follow-config.md 설정을 기반으로 자동 생성 · arXiv 데이터</footer>
@@ -75,7 +87,9 @@ const BRIEF_DATE = "2026-07-21";
      image:    "images/2507xxxxx.png",  // 대표 그림 (없으면 "")
      figcap:   "Figure 1. ...",         // 그림 설명 (선택)
      background: "배경·기존 문제 2~3문장 (설명/소개 문투)",
-     solution:   "해결·방법과 결과 2~3문장 (설명/소개 문투)"
+     solution:   "해결·방법과 결과 2~3문장 (설명/소개 문투)",
+     rating:     4.5,                  // 논문 전체 논리 + 근거 견고함 (0~5, 0.5 단위)
+     rating_reason: "그 점수를 준 근거 한 줄"
    }
 */
 const PAPERS = [
@@ -89,6 +103,8 @@ const PAPERS = [
     topics: ["VLA"],
     image: "images/2607.15330.png",
     figcap: "Figure 1. 10만 시간 데이터 사전학습과 데이터·모델 스케일링 개요",
+    rating: 4.5,
+    rating_reason: "데이터·모델 스케일링 주장을 다중 벤치마크와 실로봇 실험으로 폭넓게 뒷받침. 다만 일부 결과는 기업 기술리포트 성격이라 독립 재현 여지는 남습니다.",
     background: "로봇이 처음 보는 환경에서도 언어 지시를 따라 물건을 다루게 하려면 엄청난 양의 학습 데이터가 필요합니다. 그런데 기존 VLA(Vision-Language-Action) 모델들은 데이터와 모델을 키웠을 때 성능이 실제로 얼마나 좋아지는지, 또 새 작업에 적은 데이터만으로 적응할 수 있는지가 충분히 검증되지 않았습니다.",
     solution: "그래서 저자들(샤오미 로보틱스 팀)은 UMI 장치로 모은 10만 시간 이상의 실제 조작 궤적으로 대규모 사전학습을 하고, 각 궤적에 장면 변화를 설명하는 문장을 자동으로 붙여 학습 신호를 풍부하게 만들었습니다. 이어 후처리 학습으로 로봇 몸체와 사람이 실제로 쓰는 명령형 지시에 맞췄고, 그 결과 데이터·모델을 키울수록 성능이 꾸준히 오르는 스케일링 특성을 보이며 RoboCasa365 57.6%(기존 최고 46.6%), RoboDojo 20.07점(기존 13.07)으로 최고 성능을 달성했습니다."
   },
@@ -102,6 +118,8 @@ const PAPERS = [
     topics: ["egocentric"],
     image: "images/2607.17790.png",
     figcap: "Figure 1. 1인칭 RGB 영상에서 착용자·장면을 함께 4D 복원",
+    rating: 4.0,
+    rating_reason: "결합 확률분포라는 논리가 일관되고 5개 벤치마크에서 정확도·효율을 함께 입증. 여러 신호를 동시에 다루는 만큼 개별 요소의 기여 분석은 더 볼 여지가 있습니다.",
     background: "스마트글래스 같은 1인칭 카메라 영상으로 착용자의 움직임과 주변 장면을 함께 복원하고 싶은 수요가 큽니다. 하지만 기존 방법들은 미리 계산한 카메라 궤적 같은 보조 입력이 따로 필요했고, 장면 인식과 착용자 움직임 추정을 서로 떼어 풀었으며, 처리 속도도 느리다는 한계가 있었습니다.",
     solution: "저자들은 RGB 영상·카메라 궤적·시선·전신/손 동작·깊이를 하나의 결합 확률분포로 함께 학습하는 통합 모델 ReViV를 제안했습니다. Masked Generative Egocentric Transformer를 이용해 단일 순전파만으로 빠르고 시간적으로 일관된 4D 복원을 해내며, HoloAssist·HOT3D·ARCTIC 등 여러 벤치마크에서 전신·손·시선 복원과 카메라 추적 모두 최고 수준의 정확도와 효율을 보였고 코드와 모델도 공개했습니다."
   },
@@ -115,6 +133,8 @@ const PAPERS = [
     topics: ["motion capture", "egocentric"],
     image: "images/2607.15868.png",
     figcap: "Figure 1. 스마트글래스 착용자(ego)와 주변 사람(exo)의 동작 통합 캡처",
+    rating: 3.5,
+    rating_reason: "ego·exo 통합이라는 착안은 설득력 있고 가림 상황 강건성도 보였으나, 검증이 두 개 데이터셋에 한정되고 성능 지표가 다소 정성적입니다.",
     background: "머리 착용 기기로 사람 동작을 캡처하는 연구는 지금까지 착용자 자신의 움직임(ego)을 잡는 것과, 주변 사람의 움직임(exo)을 잡는 것을 서로 따로 다뤄 왔습니다. 게다가 정밀하게 캡처하려면 여러 대의 카메라나 몸에 걸치는 모션캡처 슈트 같은 번거로운 장비가 필요했습니다.",
     solution: "저자들은 여러 사람이 각자 스마트글래스만 착용하면 되는 분산형 프레임워크 EgoExoMoCap을 제안해 ego와 exo 신호를 함께 활용합니다. 머리(및 손목) 추적으로 3D 공간에서의 전역 동작을 추정하고, DINOv3 기반의 문맥 인식 영상 특징을 결합해 잡음과 가림에도 강건하게 만들었습니다. 실제 환경의 두 데이터셋 실험에서, 사람이 시야를 벗어나거나 가려진 어려운 상황에서도 동작을 안정적으로 복원해 냈습니다."
   },
@@ -128,6 +148,8 @@ const PAPERS = [
     topics: ["retargeting", "robot arm"],
     image: "images/2607.08341.png",
     figcap: "Figure 1. 자기지도 손끝 대응 학습 + 소수 시연 기반 리타게팅 (학습/추론)",
+    rating: 3.5,
+    rating_reason: "보정 없이 여러 손에 적용한다는 문제의식과 접근은 명확하나, 리타게팅 품질 평가가 실측 지표보다 정성·시연 위주라 근거 강도는 중간 수준입니다.",
     background: "원격조작으로 로봇의 다지(多指) 손을 움직이려면, 사람 손동작을 로봇 손 동작으로 옮기는 '리타게팅'이 성능을 좌우합니다. 그런데 기존 방식은 수작업으로 목적함수를 짜거나 정밀한 보정, 사람-로봇 손 모양의 전역 정합에 의존해서, 손 종류마다 일일이 조정해야 하고 다른 손에는 잘 맞지 않는다는 문제가 있었습니다.",
     solution: "그래서 저자들은 별도 보정이 필요 없는 AnyDexRT를 제안했습니다. 자기지도 방식으로 사람과 로봇의 손끝 대응을 학습하고, 소수의 사람 시연으로 작업에 중요한 영역에 매핑을 고정하며, 접촉 분류기로 집기(pinch) 동작을 다듬습니다. 덕분에 여러 종류의 다지 손과 실제 원격조작 작업에서 리타게팅 품질이 좋아지고, 수작업 튜닝이 줄며, 더 직관적이고 효율적인 제어가 가능했습니다."
   },
@@ -141,6 +163,8 @@ const PAPERS = [
     topics: ["robot arm"],
     image: "images/2607.17651.png",
     figcap: "Figure 1. 병렬 플로우 후보를 접촉-진행 점수로 선택하는 실행-시점 선택기",
+    rating: 4.0,
+    rating_reason: "문제 정의가 뚜렷하고 시뮬레이션 10개+실로봇 4개 작업에서 구체적 수치(+9.5%p, -17.4%)로 이득을 정량화. 기존 SAC-Flow와의 비교 축이 분명합니다.",
     background: "플로우 정책(flow policy)은 로봇 매니퓰레이션에서 여러 갈래의 행동을 동시에 표현할 수 있지만, 실제로는 매 제어 순간에 후보 중 하나만 골라 실행해야 합니다. 이때 무엇을 고를지 정하는 기존의 가치(크리틱) 기반 순위화는 학습 데이터가 부족한 행동에 대해서는 판단이 불안정하다는 문제가 있었습니다.",
     solution: "저자들은 학습 구조(SAC-Flow의 액터·크리틱 목표)는 그대로 두고, 실행 시점에 객체 중심의 '접촉-진행' 기준으로 후보를 고르는 해석적 선택기 HCPG를 얹었습니다. 접촉 이전에는 말단부가 물체에 다가가는 정도를, 접촉 이후에는 작업이 목표에 가까워지는 정도를 점수로 매겨 표준화한 뒤 행동을 실행합니다. 그 결과 시뮬레이션 10개 작업에서 평균 성공률이 오르고(ManiSkill +9.5%p), 실제 로봇 4개 작업에서도 완료까지의 스텝을 17.4% 줄였습니다."
   },
@@ -154,6 +178,8 @@ const PAPERS = [
     topics: ["self-driving lab"],
     image: "images/2607.15620.png",
     figcap: "Figure 1. 프로토콜 검증 → 로봇 실행 → 실패 감지로 이어지는 개요",
+    rating: 4.5,
+    rating_reason: "누수 없는 평가 설계, 실기기 시연, 비용 분석까지 근거가 촘촘하고, 투명한 물·소형 피펫 한계를 스스로 밝히는 정직함이 신뢰를 더합니다.",
     background: "자율실험실에서 많이 쓰이는 저가형 액체취급 로봇(Opentrons OT-2)은 흡입을 감지하는 압력 센서가 없어 개방 루프로 동작합니다. 그래서 문법은 맞지만 실험 규칙을 어기는 프로토콜(예: PCR 시료와 무주형 대조군에 팁을 재사용)이나, 부분 분주·기포·팁 누락 같은 물리적 실행 실패를 잡아내지 못하고 그냥 지나치기 쉬웠습니다.",
     solution: "저자들은 이 두 실패를 두 겹으로 막는 AEGIS를 제안했습니다. 1단계는 기계가독형 실험 규칙 DB와 코드를 읽는 LLM을 결합해 프로토콜을 미리 검증하고(F1 0.97, 무료 공개모델이 최상위 상용 모델과 대등), 2단계는 피펫 궤적 영상에 PCA 세계모델을 학습해 실행 중 실패를 실시간으로 감시합니다(평균정밀도 0.89). 실제 OT-2 시연에서 팁 누락을 확실히 잡아내면서 플레이트당 감시 비용을 약 1.63달러로 낮춘, 사전검증과 실시간 시각 감시를 하나로 묶은 최초의 오픈소스 시스템입니다."
   }
@@ -188,6 +214,13 @@ const PAPERS = [
         <span class="slabel sol">해결 · 방법과 결과</span>
         <p class="stext">${p.solution || ""}</p>
       </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
     </article>`).join("");
 })();
 </script>
