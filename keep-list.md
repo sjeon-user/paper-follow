@@ -16,3 +16,7 @@
 2607.15275 · RoboTTT — 맥락 스케일링이 인상적
 2607.18236
 -->
+
+Physical Self-Supervised Learning: IMU Sensing without Manual Labels
+Yuyang Leng 외 6명 · 2026-07-20 · cs.LG, cs.AI · arXiv:2607.18361
+- IMU 부착위치 비정확성 지적.
