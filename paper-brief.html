@@ -66,6 +66,10 @@
   .archive .none{color:var(--muted);font-size:.85rem}
   footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
   .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
 </style>
 </head>
 <body>
@@ -73,6 +77,7 @@
   <header>
     <h1>Physical AI 논문 팔로우업</h1>
     <div class="sub">최근 arXiv 신규 논문 · 대표 그림 + 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="keep.html">⭐ 보관함</a></div>
   </header>
   <main id="papers"></main>
   <nav id="archive" class="archive"></nav>

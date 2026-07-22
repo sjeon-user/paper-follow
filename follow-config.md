@@ -65,3 +65,19 @@ Physical AI
 - 어떤 `brief-*.html`에서도 참조되지 않는 `images/*.png`는 함께 삭제(정리)
 - `paper-brief.html`(=최신)/`index.html`은 항상 오늘치를 표시, 하단 "지난 브리핑" 목록에 최근 7일 링크
 - 지난 날짜 전체 기록은 GitHub 커밋 히스토리에 남음
+
+## 11. 보관함 (Keep) — 영구 보관, 7일 정리와 무관
+사용자가 마음에 든 논문을 오래 남기고 싶을 때 쓰는 영구 보관함입니다.
+- **입력**: `keep-list.md` — 사용자가 보관할 arXiv id를 한 줄에 하나씩 직접 적음
+  (`#`/빈 줄 무시, `id · 메모` 형식으로 메모 첨부 가능)
+- **출력**: `keep.html` — 보관함 페이지. 각 논문의 제목·저자·요약(배경/해결)·별점·대표 그림까지
+  담아 렌더 (브리핑 PAPERS와 동일 형식의 `KEPT` 배열 + `note`/`kept_date` 선택 필드)
+- **그림**: 보관 논문 그림은 `keep-img/<id>.png` 로 별도 저장 (images/ 정리와 분리)
+- **동기화 규칙** (매 생성 시):
+  - `keep-list.md`에 있으나 `keep.html`의 KEPT에 없는 id → 추가.
+    데이터는 (a) 그날/현재 `brief-*.html`이나 이번 회차 요약에서 복사, 없으면 (b) arXiv에서 다시 수집해 요약/별점 재생성.
+    그림은 `keep-img/<id>.png`로 저장(없으면 image "").
+    `kept_date`는 처음 보관된 날짜로 기록(이후 유지).
+  - `keep-list.md`에서 빠진 id → KEPT에서 제거하고 그 `keep-img/*.png`도 삭제.
+- **정리 제외**: `keep.html`·`keep-list.md`·`keep-img/`는 10번의 7일 정리 대상이 **아님**(절대 삭제하지 않음).
+- 최신 브리핑 페이지 상단의 "⭐ 보관함" 링크로 이동. 공개 주소: https://sjeon-user.github.io/paper-follow/keep.html
