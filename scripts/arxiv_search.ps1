@@ -1,7 +1,7 @@
 # arXiv search for Physical AI paper follow-up (ASCII only; no non-ASCII literals).
 # Usage: powershell -ExecutionPolicy Bypass -File arxiv_search.ps1 -Days 30 -OutFile "$env:TEMP\pf_results.json"
 param(
-  [int]$Days = 30,
+  [int]$Days = 60,
   [string]$OutFile = "$env:TEMP\pf_results.json",
   [int]$PerQuery = 25
 )

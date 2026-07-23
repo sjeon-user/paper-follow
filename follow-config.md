@@ -24,7 +24,7 @@ Physical AI
 - arXiv (주 대상 카테고리: cs.RO, cs.CV, cs.LG, cs.AI)
 
 ## 4. 최근 기준 (Recency)
-- 최근 **30일** 이내에 arXiv에 처음 제출(submitted)된 논문
+- 최근 **60일** 이내에 arXiv에 처음 제출(submitted)된 논문
 
 ## 5. 선별 (Selection)
 - 관련도 높은 순으로 정렬
