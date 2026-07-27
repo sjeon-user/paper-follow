@@ -20,3 +20,8 @@
 Physical Self-Supervised Learning: IMU Sensing without Manual Labels
 Yuyang Leng 외 6명 · 2026-07-20 · cs.LG, cs.AI · arXiv:2607.18361
 - IMU 부착위치 비정확성 지적.
+
+License: arXiv.org perpetual non-exclusive license
+arXiv:2402.10329v3 [cs.RO] 06 Mar 2024
+Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots
+-핸드핼드 그립퍼를 이용한 데이터 colldection
