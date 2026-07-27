@@ -24,4 +24,4 @@ Yuyang Leng 외 6명 · 2026-07-20 · cs.LG, cs.AI · arXiv:2607.18361
 License: arXiv.org perpetual non-exclusive license
 arXiv:2402.10329v3 [cs.RO] 06 Mar 2024
 Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots
--핸드핼드 그립퍼를 이용한 데이터 colldection
+-핸드핼드 그립퍼를 이용한 데이터 collection
