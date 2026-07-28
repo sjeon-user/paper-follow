@@ -25,3 +25,9 @@ License: arXiv.org perpetual non-exclusive license
 arXiv:2402.10329v3 [cs.RO] 06 Mar 2024
 Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots
 -핸드핼드 그립퍼를 이용한 데이터 collection
+
+License: arXiv.org perpetual non-exclusive license
+arXiv:2607.15448v1 [cs.RO] 16 Jul 2026
+VTAP Gripper: Synergizing Fingertip Sensing and a Visuo-Tactile Active Palm for Dexterous In-Hand Manipulation
+Yuhao Zhou1, Sheeraz Athar1,†, Zhixian Hu1,†,
+-메타퀘스트 이용하여 리타게팅
