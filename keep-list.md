@@ -31,3 +31,8 @@ arXiv:2607.15448v1 [cs.RO] 16 Jul 2026
 VTAP Gripper: Synergizing Fingertip Sensing and a Visuo-Tactile Active Palm for Dexterous In-Hand Manipulation
 Yuhao Zhou1, Sheeraz Athar1,†, Zhixian Hu1,†,
 -메타퀘스트 이용하여 리타게팅
+
+License: CC BY-NC-SA 4.0
+arXiv:2607.21071v1 [cs.CV] 23 Jul 2026
+TransBiolab: A Real-World Multi-View Dataset of Cluttered Transparent Biomedical Objects
+-투명 labware를 대상으로 데이터를 모음. 이의 선행 연구사례 소개 및 비교
