@@ -36,3 +36,9 @@ License: CC BY-NC-SA 4.0
 arXiv:2607.21071v1 [cs.CV] 23 Jul 2026
 TransBiolab: A Real-World Multi-View Dataset of Cluttered Transparent Biomedical Objects
 -투명 labware를 대상으로 데이터를 모음. 이의 선행 연구사례 소개 및 비교
+
+arXiv:2303.04137 (cs)
+[Submitted on 7 Mar 2023 (v1), last revised 14 Mar 2024 (this version, v5)]
+Diffusion Policy: Visuomotor Policy Learning via Action Diffusion
+Cheng Chi, Zhenjia Xu, Siyuan Feng, Eric Cousineau, Yilun Du, Benjamin Burchfiel, Russ Tedrake, Shuran Song
+-diffusion policy 핸드핼드 논문의 action구현 모델
