@@ -42,3 +42,6 @@ arXiv:2303.04137 (cs)
 Diffusion Policy: Visuomotor Policy Learning via Action Diffusion
 Cheng Chi, Zhenjia Xu, Siyuan Feng, Eric Cousineau, Yilun Du, Benjamin Burchfiel, Russ Tedrake, Shuran Song
 -diffusion policy 핸드핼드 논문의 action구현 모델
+
+Ho J, Jain A and Abbeel P (2020) Denoising diffusion probabilistic models.arXiv preprint arXiv:2006.11239 .
+-diffusion의 근원
