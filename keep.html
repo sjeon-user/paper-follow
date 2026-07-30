@@ -59,6 +59,10 @@
     white-space:nowrap;color:var(--star)}
   .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
   .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .cite{display:inline-block;font-size:.74rem;color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:1px 8px;margin-left:2px;
+    vertical-align:1px;white-space:nowrap}
+  .cite b{font-weight:650;color:var(--text)}
   .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
   .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
   .topnav{margin-top:12px}
@@ -77,7 +81,8 @@
     <div class="topnav"><a href="paper-brief.html">← 최신 브리핑으로</a></div>
   </header>
   <main id="papers"></main>
-  <footer>keep-list.md에 arXiv id를 적으면 다음 생성 때 이 페이지에 반영됩니다 · arXiv 데이터</footer>
+  <footer>keep-list.md에 arXiv id를 적으면 다음 생성 때 이 페이지에 반영됩니다 · arXiv 데이터 ·
+    인용 수는 Semantic Scholar 기준 <span id="cite-date"></span> 조회값입니다</footer>
 </div>
 
 <script>
@@ -89,14 +94,18 @@
      topics:[...], image:"keep-img/<id>.png"(없으면 ""), figcap,
      background, solution, rating, rating_reason,
      kept_date:"2026-07-22",   // 보관한 날짜(선택)
-     note:"보관 메모"          // keep-list.md에 적은 메모(선택)
+     note:"보관 메모",         // keep-list.md에 적은 메모(선택)
+     citations: 123            // Semantic Scholar 인용 수(선택, 생성 시점 스냅샷)
    }
 */
+/* 인용 수를 조회한 날짜 (Semantic Scholar API 기준). 매 생성 때 갱신됩니다. */
+const CITE_DATE = "2026-07-30";
 const KEPT = [
   {
     title: "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion",
     authors: "Cheng Chi 외 7명",
     arxiv_id: "2303.04137",
+    citations: 3790,
     url: "https://arxiv.org/abs/2303.04137",
     date: "2023-03-07",
     categories: "cs.RO",
@@ -114,6 +123,7 @@ const KEPT = [
     title: "VTAP Gripper: Synergizing Fingertip Sensing and a Visuo-Tactile Active Palm for Dexterous In-Hand Manipulation",
     authors: "Yuhao Zhou 외 6명",
     arxiv_id: "2607.15448",
+    citations: 0,
     url: "https://arxiv.org/abs/2607.15448",
     date: "2026-07-17",
     categories: "cs.RO",
@@ -131,6 +141,7 @@ const KEPT = [
     title: "TransBiolab: A Real-World Multi-View Dataset of Cluttered Transparent Biomedical Objects",
     authors: "Ke Ma 외 3명",
     arxiv_id: "2607.21071",
+    citations: 0,
     url: "https://arxiv.org/abs/2607.21071",
     date: "2026-07-23",
     categories: "cs.CV, cs.MM, cs.RO",
@@ -148,6 +159,7 @@ const KEPT = [
     title: "Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots",
     authors: "Cheng Chi 외 7명",
     arxiv_id: "2402.10329",
+    citations: 622,
     url: "https://arxiv.org/abs/2402.10329",
     date: "2024-02-15",
     categories: "cs.RO",
@@ -165,6 +177,7 @@ const KEPT = [
     title: "Physical Self-Supervised Learning: IMU Sensing without Manual Labels",
     authors: "Yuyang Leng 외 6명",
     arxiv_id: "2607.18361",
+    citations: 0,
     url: "https://arxiv.org/abs/2607.18361",
     date: "2026-07-20",
     categories: "cs.LG, cs.AI",
@@ -184,6 +197,8 @@ const KEPT = [
 (function render(){
   const cnt = document.getElementById("keep-count");
   if(cnt) cnt.textContent = KEPT.length ? `총 ${KEPT.length}편` : "";
+  const cd = document.getElementById("cite-date");
+  if(cd) cd.textContent = (typeof CITE_DATE !== "undefined" ? CITE_DATE : "-");
   const root = document.getElementById("papers");
   if(!KEPT.length){
     root.innerHTML = '<div class="empty">아직 보관한 논문이 없습니다.<br><br>' +
@@ -194,7 +209,8 @@ const KEPT = [
   root.innerHTML = KEPT.map(p => `
     <article class="card">
       <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a>${p.kept_date?`<span class="kept">★ ${p.kept_date} 보관</span>`:``}</h2>
-      <div class="meta">${p.authors} · ${p.date} · ${p.categories} · arXiv:${p.arxiv_id}</div>
+      <div class="meta">${p.authors} · ${p.date} · ${p.categories} · arXiv:${p.arxiv_id}
+        ${p.citations != null ? `<span class="cite" title="Semantic Scholar 기준 인용 수 · ${CITE_DATE} 조회">인용 <b>${Number(p.citations).toLocaleString("ko-KR")}</b>회</span>` : ``}</div>
       <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
       ${p.note?`<div class="note">📝 ${p.note}</div>`:``}
       <div class="figwrap">
