@@ -19,6 +19,7 @@ Physical AI
 - robot arm (로봇 팔 / 매니퓰레이션)
 - self-driving lab (자율실험실 — 로봇 + 생물학/화학)
 - VLA (Vision-Language-Action 모델)
+- diffusion policy (확산 정책 — 확산모델 기반 로봇 행동 생성)
 
 ## 3. 검색 소스 (Source)
 - arXiv (주 대상 카테고리: cs.RO, cs.CV, cs.LG, cs.AI)

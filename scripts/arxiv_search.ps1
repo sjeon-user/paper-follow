@@ -14,7 +14,8 @@ $topics = @(
   @{ tag="retargeting";      q='all:retargeting AND (cat:cs.RO OR cat:cs.GR OR cat:cs.CV)' },
   @{ tag="robot arm";        q='abs:"robotic manipulation" AND cat:cs.RO' },
   @{ tag="self-driving lab"; q='abs:"autonomous laboratory" OR abs:"self-driving laboratory"' },
-  @{ tag="VLA";              q='abs:"vision-language-action"' }
+  @{ tag="VLA";              q='abs:"vision-language-action"' },
+  @{ tag="diffusion policy"; q='abs:"diffusion policy" AND (cat:cs.RO OR cat:cs.LG)' }
 )
 
 $all = @{}
