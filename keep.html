@@ -94,6 +94,23 @@
 */
 const KEPT = [
   {
+    title: "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion",
+    authors: "Cheng Chi 외 7명",
+    arxiv_id: "2303.04137",
+    url: "https://arxiv.org/abs/2303.04137",
+    date: "2023-03-07",
+    categories: "cs.RO",
+    topics: ["diffusion policy", "robot arm"],
+    image: "keep-img/2303.04137.png",
+    figcap: "Figure 2. 명시적 정책·암시적 정책과 대비되는 확산 정책 — 행동 분포의 스코어(그래디언트)를 학습해 반복적 디노이징으로 행동을 생성",
+    kept_date: "2026-07-29",
+    note: "diffusion policy — 핸드헬드(UMI) 논문의 action 구현 모델.",
+    rating: 4.5,
+    rating_reason: "행동 생성을 조건부 디노이징 확산으로 정식화한 착안이 명확하고, 다중 모드 행동 분포·고차원 행동 공간·학습 안정성이라는 세 가지 이점을 리시딩 호라이즌 제어·시각 조건화·시계열 확산 트랜스포머로 구체화했습니다. 4개 벤치마크 12개 과제에서 평균 46.9% 향상이라는 폭넓은 정량 근거로 뒷받침돼 근거가 매우 견고합니다. 확산 정책 계열의 사실상 표준 기준선이 된 대표 논문입니다.",
+    background: "로봇의 시각운동(visuomotor) 정책 학습에서, 행동을 직접 회귀로 예측하는 명시적 정책은 여러 갈래로 갈라지는 다중 모드 행동 분포를 다루기 어렵고, 에너지 기반의 암시적 정책은 학습이 불안정한 문제가 있었습니다. 고차원 행동 시퀀스를 안정적으로, 그리고 다중 모드성을 유지하며 생성하는 방법이 필요했습니다.",
+    solution: "저자들은 로봇 행동을 조건부 노이즈 제거 확산 과정으로 생성하는 확산 정책(Diffusion Policy)을 제안했습니다. 행동 분포의 스코어(그래디언트) 함수를 학습하고, 추론 시 랑주뱅 동역학 형태의 반복적 디노이징으로 행동을 만들어 냅니다. 이 방식은 다중 모드 행동 분포를 자연스럽게 표현하고, 고차원 행동 공간에 적합하며, 학습이 안정적이라는 장점을 가집니다. 기술적으로는 리시딩 호라이즌 제어, 시각 조건화, 시계열 확산 트랜스포머를 핵심 요소로 도입했습니다. 4개 로봇 조작 벤치마크의 12개 과제에서 기존 방법을 일관되게 앞섰고, 평균 46.9%의 성능 향상을 보였습니다."
+  },
+  {
     title: "VTAP Gripper: Synergizing Fingertip Sensing and a Visuo-Tactile Active Palm for Dexterous In-Hand Manipulation",
     authors: "Yuhao Zhou 외 6명",
     arxiv_id: "2607.15448",
