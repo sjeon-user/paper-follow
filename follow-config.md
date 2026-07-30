@@ -20,6 +20,14 @@ Physical AI
 - self-driving lab (자율실험실 — 로봇 + 생물학/화학)
 - VLA (Vision-Language-Action 모델)
 - diffusion policy (확산 정책 — 확산모델 기반 로봇 행동 생성)
+- imitation learning (모방학습 — 시연 기반 정책 학습)
+- liquid manipulation (액체 조작 — 붓기·따르기·젓기·뜨기, 출렁임 억제 등)
+  - 액체 조작은 학계에서 굳어진 대표어가 없어, 과제 어휘를 묶어 검색합니다:
+    `pouring` / `liquid` / `sloshing` / `stirring` / `scooping` (+ cat:cs.RO)
+  - **일부러 뺀 단어**: `fluid`(항공·유체역학 논문이 대량으로 딸려옴),
+    `granular`·`viscous`(모래 위 보행 등 *이동* 논문이 섞임 — 조작이 아님)
+  - 실험실 자동화의 `liquid handling`(피펫팅 등)은 self-driving lab 주제와 겹칩니다.
+    두 주제에 함께 태깅될 수 있습니다.
 
 ## 3. 검색 소스 (Source)
 - arXiv (주 대상 카테고리: cs.RO, cs.CV, cs.LG, cs.AI)

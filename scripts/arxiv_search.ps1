@@ -15,7 +15,16 @@ $topics = @(
   @{ tag="robot arm";        q='abs:"robotic manipulation" AND cat:cs.RO' },
   @{ tag="self-driving lab"; q='abs:"autonomous laboratory" OR abs:"self-driving laboratory"' },
   @{ tag="VLA";              q='abs:"vision-language-action"' },
-  @{ tag="diffusion policy"; q='abs:"diffusion policy" AND (cat:cs.RO OR cat:cs.LG)' }
+  @{ tag="diffusion policy"; q='abs:"diffusion policy" AND (cat:cs.RO OR cat:cs.LG)' },
+  @{ tag="imitation learning"; q='abs:"imitation learning" AND cat:cs.RO' },
+  # Liquid manipulation has no single settled term, so OR the task vocabulary.
+  # Deliberately excluded: "fluid" (matches aerial/aerodynamics work) and
+  # "granular"/"viscous" (matches locomotion on sand / in viscous media, not manipulation).
+  # The OR query alone is noisy - roughly half the hits only mention "pouring" once as a
+  # demo task - so require the vocabulary to appear at least twice (filter/minHits below).
+  @{ tag="liquid manipulation";
+     q='cat:cs.RO AND (abs:"pouring" OR abs:"liquid" OR abs:"sloshing" OR abs:"stirring" OR abs:"scooping")';
+     filter='(?i)\b(liquid|pour|slosh|stir|scoop)\w*'; minHits=2 }
 )
 
 $all = @{}
@@ -37,6 +46,14 @@ foreach($t in $topics){
     $m = [regex]::Match($e.id, '(\d{4}\.\d{4,5})(v\d+)?')
     $aid = $m.Groups[1].Value
     if(-not $aid){ continue }
+    # Optional precision filter: require the topic vocabulary to appear >= minHits times
+    # in title+abstract. Used by broad OR queries that would otherwise match papers
+    # mentioning the keyword only once, in passing.
+    if($t.filter){
+      $blob = ($e.title -replace '\s+',' ') + ' ' + ($e.summary -replace '\s+',' ')
+      $need = 2; if($t.minHits){ $need = [int]$t.minHits }
+      if(([regex]::Matches($blob, $t.filter)).Count -lt $need){ continue }
+    }
     $cats = @(); if($e.category){ $cats = @($e.category | ForEach-Object { $_.term }) }
     $authors = @(); if($e.author){ $authors = @($e.author | ForEach-Object { $_.name }) }
     if($all.ContainsKey($aid)){
