@@ -24,7 +24,16 @@ $topics = @(
   # demo task - so require the vocabulary to appear at least twice (filter/minHits below).
   @{ tag="liquid manipulation";
      q='cat:cs.RO AND (abs:"pouring" OR abs:"liquid" OR abs:"sloshing" OR abs:"stirring" OR abs:"scooping")';
-     filter='(?i)\b(liquid|pour|slosh|stir|scoop)\w*'; minHits=2 }
+     filter='(?i)\b(liquid|pour|slosh|stir|scoop)\w*'; minHits=2 },
+  # Transparent-object manipulation. Bare abs:"transparent" is unusable here: in cs.RO it
+  # mostly matches the OTHER sense of the word (explainability - "transparent decision
+  # making", "transparent and trustworthy autonomy"). So anchor on optical noun phrases.
+  # The second clause keeps this manipulation-facing: either the paper is robotics
+  # (cat:cs.RO, which also catches cross-listed perception work) or it talks about
+  # grasping/manipulation. Without it, pure rendering/Gaussian-splatting papers flood in.
+  @{ tag="transparent object";
+     q='(abs:"transparent object" OR abs:"glass object" OR abs:"glass segmentation" OR abs:"non-Lambertian" OR abs:"glassware") AND (cat:cs.RO OR abs:"grasping" OR abs:"manipulation")';
+     filter='(?i)(\btransparen\w*|\btranslucen\w*|\bspecular\w*|\bglassware\b|\brefract\w*|non-Lambertian|\bglass\b)'; minHits=2 }
 )
 
 $all = @{}

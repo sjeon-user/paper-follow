@@ -28,6 +28,15 @@ Physical AI
     `granular`·`viscous`(모래 위 보행 등 *이동* 논문이 섞임 — 조작이 아님)
   - 실험실 자동화의 `liquid handling`(피펫팅 등)은 self-driving lab 주제와 겹칩니다.
     두 주제에 함께 태깅될 수 있습니다.
+- transparent object (투명 물체 조작 — 유리·투명 labware의 인식·깊이 추정·파지)
+  - 검색어: `transparent object` / `glass object` / `glass segmentation` /
+    `non-Lambertian` / `glassware` (+ 로봇 맥락: cat:cs.RO 이거나 grasping·manipulation 언급)
+  - **주의**: `transparent`만 단독으로 쓰면 안 됩니다. 로보틱스에서 이 단어는
+    광학적 투명이 아니라 **설명가능성**(투명한 의사결정, transparent autonomy)을
+    뜻하는 경우가 훨씬 많아 오탐이 대량 발생합니다.
+  - 로봇 맥락 조건을 빼면 순수 렌더링·Gaussian splatting 논문이 밀려듭니다.
+  - 투명 물체는 깊이 센서가 실패하는 것이 핵심 난점이라, 인식(depth completion,
+    glass segmentation) 논문도 cs.CV에서 함께 잡히도록 했습니다.
 
 ## 3. 검색 소스 (Source)
 - arXiv (주 대상 카테고리: cs.RO, cs.CV, cs.LG, cs.AI)
