@@ -50,3 +50,9 @@ arXiv:2412.03293 (cs)
 [Submitted on 4 Dec 2024 (v1), last revised 4 Jun 2025 (this version, v3)]
 Diffusion-VLA: Generalizable and Interpretable Robot Foundation Model via Self-Generated Reasoning
 -유명한 diffusion VLA
+
+arXiv:2506.09494 (cs)
+[Submitted on 11 Jun 2025]
+Advances on Affordable Hardware Platforms for Human Demonstration Acquisition in Agricultural Applications
+-핸드핼드에 조명을 장착한 사례
+-핸드핼드에 조명을 장착한 사례
