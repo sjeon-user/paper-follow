@@ -56,3 +56,10 @@ arXiv:2506.09494 (cs)
 Advances on Affordable Hardware Platforms for Human Demonstration Acquisition in Agricultural Applications
 -핸드핼드에 조명을 장착한 사례
 -핸드핼드에 조명을 장착한 사례
+
+LabVLA: Grounding Vision-Language-Action Models in Scientific Laboratories
+	arXiv:2606.13578 [cs.CL]
+ 	(or arXiv:2606.13578v2 [cs.CL] for this version)
+https://doi.org/10.48550/arXiv.2606.13578
+Focus to learn more
+-실험에 VLA 적용한 사례
