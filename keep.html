@@ -99,8 +99,26 @@
    }
 */
 /* 인용 수를 조회한 날짜 (Semantic Scholar API 기준). 매 생성 때 갱신됩니다. */
-const CITE_DATE = "2026-07-31";
+const CITE_DATE = "2026-08-03";
 const KEPT = [
+  {
+    title: "Advances on Affordable Hardware Platforms for Human Demonstration Acquisition in Agricultural Applications",
+    authors: "Alberto San-Miguel-Tello 외 5명",
+    arxiv_id: "2506.09494",
+    citations: 0,
+    url: "https://arxiv.org/abs/2506.09494",
+    date: "2025-06-11",
+    categories: "cs.RO",
+    topics: ["imitation learning", "robot arm"],
+    image: "keep-img/2506.09494.png",
+    figcap: "Figure 1. (a) 원래 UMI 그리퍼와 (b) 개선판 — 어안 렌즈 GoPro와 IMU, 시야 확장용 거울에 더해 조도가 낮은 환경을 위한 전방 조명과 검출 신뢰도를 높이는 추가 마커를 달았고 최대 폭을 넓혔습니다. (c) 그리퍼 폭·보관 위치 조건, (d) 과수벽 환경의 외부 상·하단 카메라",
+    kept_date: "2026-08-03",
+    note: "핸드핼드에 조명을 장착한 사례.",
+    rating: 3.0,
+    rating_reason: "'실제 농업 현장은 조도가 낮고 시연이 길게 이어져 UMI 기본 파이프라인으로는 쓸 만한 샘플을 뽑기 어렵다'는 문제 인식과, 조명·마커 같은 하드웨어 보강과 이벤트 기반 자동 분절, EKF 융합이라는 대응이 서로 잘 맞습니다. 궤적 정확도는 EKF가 위치 MAE 3.2~3.9cm로 ORB-SLAM3의 22~30cm보다 뚜렷하게 낫다는 정량 비교로 뒷받침됩니다. 다만 검증이 과일 수확 과제 하나와 세 개 시연 샘플에 그치고, 이렇게 모은 데이터로 학습한 정책의 실제 성능까지는 보이지 않아 근거의 폭이 좁습니다.",
+    background: "UMI는 로봇 없이 손에 드는 저가 그리퍼로 시연 데이터를 모으는 방식이지만, 농업 현장처럼 정돈되지 않은 실제 환경에 그대로 가져가면 어려움이 생깁니다. 시연자가 한 번에 길게 작업하는 동안 쓸 만한 구간을 골라내느라 대기 시간과 인지 부담이 커지고, 잎과 가지에 가려 조도가 낮은 조건에서는 궤적 추정도 흔들립니다.",
+    solution: "저자들은 추가 장비를 최소화하면서 적합한 샘플을 얻는 데 초점을 맞춰 UMI를 개선했습니다. 먼저 연속된 하나의 시연에서 과제 이벤트를 기준으로 개별 샘플을 자동으로 잘라내, 대기 시간과 사용자의 인지 부담을 줄였습니다. 다음으로 그리퍼에 실린 관성 측정값과 외부 시각 마커 위치를 확장 칼만 필터(EKF)로 결합해 과제 샘플 궤적 생성의 신뢰도를 높였습니다. 하드웨어 쪽으로는 어두운 조건에 대응하는 전방 조명, 검출을 안정화하는 추가 마커, 파지를 쉽게 하는 넓어진 최대 폭이 더해졌습니다. 과일 수확 과제로 시험한 결과 기존 기본 파이프라인보다 나은 성능을 보였고, EKF 방식의 위치 평균절대오차는 3.2~3.9센티미터로 ORB-SLAM3의 22~30센티미터보다 크게 낮았습니다."
+  },
   {
     title: "Diffusion-VLA: Generalizable and Interpretable Robot Foundation Model via Self-Generated Reasoning",
     authors: "Junjie Wen 외 10명",
@@ -123,7 +141,7 @@ const KEPT = [
     title: "Denoising Diffusion Probabilistic Models",
     authors: "Jonathan Ho, Ajay Jain, Pieter Abbeel",
     arxiv_id: "2006.11239",
-    citations: 33526,
+    citations: 33588,
     url: "https://arxiv.org/abs/2006.11239",
     date: "2020-06-19",
     categories: "cs.LG, stat.ML",
@@ -141,7 +159,7 @@ const KEPT = [
     title: "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion",
     authors: "Cheng Chi 외 7명",
     arxiv_id: "2303.04137",
-    citations: 3795,
+    citations: 3808,
     url: "https://arxiv.org/abs/2303.04137",
     date: "2023-03-07",
     categories: "cs.RO",
@@ -195,7 +213,7 @@ const KEPT = [
     title: "Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots",
     authors: "Cheng Chi 외 7명",
     arxiv_id: "2402.10329",
-    citations: 622,
+    citations: 623,
     url: "https://arxiv.org/abs/2402.10329",
     date: "2024-02-15",
     categories: "cs.RO",
