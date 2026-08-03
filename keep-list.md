@@ -63,3 +63,6 @@ LabVLA: Grounding Vision-Language-Action Models in Scientific Laboratories
 https://doi.org/10.48550/arXiv.2606.13578
 Focus to learn more
 -실험에 VLA 적용한 사례
+
+Wang, P., Bai, S., Tan, S., Wang, S., Fan, Z., Bai, J., Chen, K., Liu, X., Wang, J., Ge, W., et al.Qwen2-vl: Enhancing vision-language model’s perception of the world at any resolution.arXiv preprint arXiv:2409.12191, 2024
+-Qwen2-VL 
