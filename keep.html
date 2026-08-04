@@ -99,8 +99,44 @@
    }
 */
 /* 인용 수를 조회한 날짜 (Semantic Scholar API 기준). 매 생성 때 갱신됩니다. */
-const CITE_DATE = "2026-08-03";
+const CITE_DATE = "2026-08-04";
 const KEPT = [
+  {
+    title: "LabVLA: Grounding Vision-Language-Action Models in Scientific Laboratories",
+    authors: "Baochang Ren 외 17명",
+    arxiv_id: "2606.13578",
+    citations: 0,
+    url: "https://arxiv.org/abs/2606.13578",
+    date: "2026-06-11",
+    categories: "cs.CL, cs.AI, cs.LG, cs.MM, cs.RO",
+    topics: ["VLA", "self-driving lab", "robot arm"],
+    image: "keep-img/2606.13578.png",
+    figcap: "Figure 1. 위쪽은 실험실 임베디드 데이터(LabEmbodied-Data), 가운데는 사전학습 VLM에 행동 전문가(DiT)를 지식 절연 방식으로 붙인 LabVLA 구조와 시뮬레이션 데이터 엔진 RoboGenesis, 아래는 기본·복합·양팔·이동 네 갈래의 과제 구성",
+    kept_date: "2026-08-04",
+    note: "실험에 VLA 적용한 사례.",
+    rating: 4.0,
+    rating_reason: "'기존 VLA는 가정·탁상 시연으로 학습돼 실험 기구나 투명 액체, 정해진 프로토콜 흐름을 거의 만나 본 적이 없다'는 진단에서 출발해, 병목을 모델 설계가 아니라 데이터와 임베디먼트로 지목하고 각각에 RoboGenesis(데이터 엔진)와 2단계 학습 레시피로 대응한 구성이 일관됩니다. LabUtopia 벤치마크에서 분포 내·분포 밖 모두 평가 대상 기준선 중 최고 평균 성공률을 얻었다는 결과로 뒷받침됩니다. 다만 검증이 시뮬레이션 벤치마크 중심이라 실제 실험실 하드웨어에서의 성능은 별도로 확인할 부분입니다.",
+    background: "과학 실험실은 실험을 추론하는 데 AI를 점점 더 활용하고 있지만, '실제로 손을 움직여 실험하는' 부분은 여전히 사람의 몫으로 남아 있습니다. 문헌을 읽고 가설을 세우고 프로토콜을 계획하는 일은 AI가 도울 수 있어도, 벤치에서 그 프로토콜을 수행하려면 사람 조작자가 필요합니다. VLA 모델이 문서로 쓰인 프로토콜과 로봇 실행을 잇는 인터페이스가 될 수 있지만, 기존 정책들은 대부분 가정과 탁상 위 시연으로 학습돼 실험 기구나 투명한 액체, 정해진 순서로 진행되는 프로토콜 흐름을 접해 본 적이 거의 없습니다.",
+    solution: "저자들은 이 간극의 원인을 모델 설계뿐 아니라 데이터와 임베디먼트에서 찾고, 두 축을 함께 다뤘습니다. 데이터 쪽에서는 원자 단위 기술을 조합해 실험실 워크플로를 구성하고, 롤아웃을 검증·필터링한 뒤 지원되는 여러 로봇 프로필에 맞춰 구조화된 시연으로 내보내는 시뮬레이션 기반 데이터 엔진 RoboGenesis를 만들었습니다. 정책 쪽에서는 2단계 레시피로 학습한 LabVLA를 제시했는데, 먼저 FAST 행동 토큰 사전학습으로 Qwen3-VL-4B-Instruct 백본이 연속 제어를 배우기 전에 '행동을 인식'하게 만들고, 그다음 지식 절연 아래에서 흐름 정합 후학습으로 DiT 행동 전문가를 붙입니다. LabUtopia 벤치마크에서 분포 내 설정과 분포 밖 설정 모두에서 평가한 기준선들 가운데 가장 높은 평균 성공률을 기록했습니다."
+  },
+  {
+    title: "Qwen2-VL: Enhancing Vision-Language Model's Perception of the World at Any Resolution",
+    authors: "Peng Wang 외 18명",
+    arxiv_id: "2409.12191",
+    citations: 4655,
+    url: "https://arxiv.org/abs/2409.12191",
+    date: "2024-09-18",
+    categories: "cs.CV, cs.AI, cs.CL",
+    topics: ["VLA"],
+    image: "keep-img/2409.12191.png",
+    figcap: "Figure. 원본 해상도 입력을 그대로 받아 이미지마다 다른 수의 시각 토큰(예: 11,427 / 8 / 1,125 토큰, 영상 2,208 토큰)으로 바꾸는 비전 인코더와 QwenLM 디코더로 이뤄진 Qwen2-VL 구조",
+    kept_date: "2026-08-04",
+    note: "Qwen2-VL.",
+    rating: 4.5,
+    rating_reason: "'해상도를 미리 정해 두는 관행이 사람의 지각 방식과 어긋난다'는 문제 인식에서 출발해 원본 해상도 동적 처리(Naive Dynamic Resolution)와 텍스트·이미지·영상을 아우르는 M-RoPE로 대응하고, 이미지와 영상을 하나의 방식으로 처리해 일관성을 지킨 설계가 정연합니다. 2B·8B·72B의 모델 규모와 학습 데이터량을 함께 키운 스케일링 법칙 조사, 그리고 72B 모델이 여러 멀티모달 벤치마크에서 GPT-4o·Claude 3.5 Sonnet에 준하는 결과를 냈다는 폭넓은 비교로 근거가 두텁습니다. 코드가 공개돼 있어 재현 가능성도 높습니다. 다만 다수 벤치마크 종합 성적 중심이라 개별 설계 요소의 기여를 가르는 소거는 상대적으로 덜 부각됩니다.",
+    background: "기존 비전-언어 모델은 입력 이미지를 미리 정한 해상도로 맞춘 뒤 고정된 수의 시각 토큰으로 바꿔 처리했습니다. 이 방식은 구현이 간편하지만, 작은 아이콘부터 긴 문서 스크린샷까지 크기와 비율이 크게 다른 입력을 똑같이 다루기 때문에 정보가 낭비되거나 잘려 나갑니다. 또 텍스트·이미지·영상에 걸친 위치 정보를 일관되게 다루는 방법도 마땅치 않았습니다.",
+    solution: "저자들은 해상도를 미리 정하지 않는 Qwen2-VL 계열을 제시했습니다. 핵심인 원본 해상도 동적 처리(Naive Dynamic Resolution)는 해상도가 다른 이미지를 각기 다른 수의 시각 토큰으로 변환해, 사람의 지각 방식에 더 가깝고 효율적인 시각 표현을 얻게 합니다. 여기에 멀티모달 회전 위치 인코딩(M-RoPE)을 도입해 텍스트·이미지·영상에 걸친 위치 정보를 효과적으로 융합하고, 이미지와 영상을 하나의 통일된 방식으로 처리해 시각 인식 능력을 끌어올렸습니다. 또한 대형 비전-언어 모델의 스케일링 법칙을 살피기 위해 모델 크기를 2B·8B·72B로, 학습 데이터량도 함께 키우며 성능 변화를 관찰했습니다. 그 결과 Qwen2-VL-72B는 여러 멀티모달 벤치마크에서 GPT-4o와 Claude 3.5 Sonnet 같은 선도 모델에 준하는 결과를 냈고, 다른 범용 모델들을 앞섰습니다. 코드는 공개돼 있습니다."
+  },
   {
     title: "Advances on Affordable Hardware Platforms for Human Demonstration Acquisition in Agricultural Applications",
     authors: "Alberto San-Miguel-Tello 외 5명",
@@ -141,7 +177,7 @@ const KEPT = [
     title: "Denoising Diffusion Probabilistic Models",
     authors: "Jonathan Ho, Ajay Jain, Pieter Abbeel",
     arxiv_id: "2006.11239",
-    citations: 33588,
+    citations: 33604,
     url: "https://arxiv.org/abs/2006.11239",
     date: "2020-06-19",
     categories: "cs.LG, stat.ML",
@@ -159,7 +195,7 @@ const KEPT = [
     title: "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion",
     authors: "Cheng Chi 외 7명",
     arxiv_id: "2303.04137",
-    citations: 3808,
+    citations: 3813,
     url: "https://arxiv.org/abs/2303.04137",
     date: "2023-03-07",
     categories: "cs.RO",
@@ -213,7 +249,7 @@ const KEPT = [
     title: "Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots",
     authors: "Cheng Chi 외 7명",
     arxiv_id: "2402.10329",
-    citations: 623,
+    citations: 624,
     url: "https://arxiv.org/abs/2402.10329",
     date: "2024-02-15",
     categories: "cs.RO",
