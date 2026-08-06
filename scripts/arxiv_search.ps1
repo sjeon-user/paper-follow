@@ -8,15 +8,28 @@ param(
 $ErrorActionPreference = "Stop"
 $cutoff = (Get-Date).AddDays(-$Days)
 
+# Focused keyword set (2026-08-06). Only these five themes are followed:
+#   diffusion VLA / diffusion policy / Universal Manipulation Interface /
+#   handheld gripper + retargeting / robotic manipulation of transparent objects or liquids.
+# Previously followed but deliberately dropped: egocentric, motion capture,
+# generic "robotic manipulation", self-driving lab, generic VLA, imitation learning.
 $topics = @(
-  @{ tag="egocentric";       q='all:egocentric AND (cat:cs.RO OR cat:cs.CV)' },
-  @{ tag="motion capture";   q='abs:"motion capture"' },
-  @{ tag="retargeting";      q='all:retargeting AND (cat:cs.RO OR cat:cs.GR OR cat:cs.CV)' },
-  @{ tag="robot arm";        q='abs:"robotic manipulation" AND cat:cs.RO' },
-  @{ tag="self-driving lab"; q='abs:"autonomous laboratory" OR abs:"self-driving laboratory"' },
-  @{ tag="VLA";              q='abs:"vision-language-action"' },
+  # Diffusion-based VLA. Bare "vision-language-action" pulled in far too much, so both
+  # halves must be present. "flow matching" is NOT included - the theme is diffusion.
+  @{ tag="diffusion VLA";
+     q='(abs:"vision-language-action" OR abs:"vision language action") AND abs:"diffusion"' },
   @{ tag="diffusion policy"; q='abs:"diffusion policy" AND (cat:cs.RO OR cat:cs.LG)' },
-  @{ tag="imitation learning"; q='abs:"imitation learning" AND cat:cs.RO' },
+  # UMI. The spelled-out phrase is safe on its own; the bare acronym is not
+  # (it collides with unrelated fields), so it is fenced behind cat:cs.RO.
+  @{ tag="UMI";
+     q='abs:"universal manipulation interface" OR (abs:"UMI" AND cat:cs.RO)' },
+  # Handheld demonstration hardware + motion/hand retargeting. Both are about getting
+  # human demonstrations onto a robot, so they share one tag.
+  # NOTE: bare "retargeting" in cs.CV also means *image* retargeting (content-aware
+  # resizing), which has nothing to do with robots - hence the robot-context filter2.
+  @{ tag="handheld gripper / retargeting";
+     q='(cat:cs.RO OR cat:cs.CV) AND (abs:"handheld gripper" OR abs:"hand-held gripper" OR abs:"portable gripper" OR abs:"handheld demonstration" OR abs:"handheld data collection" OR abs:"retargeting")';
+     filter2='(?i)(\brobot\w*|humanoid|manipulat\w*|teleoperat\w*|embodiment|dexterous|gripper|\bend-effector)' },
   # Liquid manipulation has no single settled term, so OR the task vocabulary.
   # Deliberately excluded: "fluid" (matches aerial/aerodynamics work) and
   # "granular"/"viscous" (matches locomotion on sand / in viscous media, not manipulation).
@@ -33,6 +46,9 @@ $topics = @(
   # grasping/manipulation. Without it, pure rendering/Gaussian-splatting papers flood in.
   @{ tag="transparent object";
      q='(abs:"transparent object" OR abs:"glass object" OR abs:"glass segmentation" OR abs:"non-Lambertian" OR abs:"glassware") AND (cat:cs.RO OR abs:"grasping" OR abs:"manipulation")';
+     # tightened 2026-08-06: the theme is *manipulation of* transparent objects, so a
+     # paper must actually talk about grasping/manipulating, not just perceive glass.
+     filter2='(?i)\b(grasp\w*|manipulat\w*|pick\w*|placing|robot\w*)';
      filter='(?i)(\btransparen\w*|\btranslucen\w*|\bspecular\w*|\bglassware\b|\brefract\w*|non-Lambertian|\bglass\b)'; minHits=2 }
 )
 
@@ -58,11 +74,13 @@ foreach($t in $topics){
     # Optional precision filter: require the topic vocabulary to appear >= minHits times
     # in title+abstract. Used by broad OR queries that would otherwise match papers
     # mentioning the keyword only once, in passing.
+    $blob = ($e.title -replace '\s+',' ') + ' ' + ($e.summary -replace '\s+',' ')
     if($t.filter){
-      $blob = ($e.title -replace '\s+',' ') + ' ' + ($e.summary -replace '\s+',' ')
       $need = 2; if($t.minHits){ $need = [int]$t.minHits }
       if(([regex]::Matches($blob, $t.filter)).Count -lt $need){ continue }
     }
+    # Secondary filter: must be present at least once (used to require a manipulation context).
+    if($t.filter2 -and -not [regex]::IsMatch($blob, $t.filter2)){ continue }
     $cats = @(); if($e.category){ $cats = @($e.category | ForEach-Object { $_.term }) }
     $authors = @(); if($e.author){ $authors = @($e.author | ForEach-Object { $_.name }) }
     if($all.ContainsKey($aid)){

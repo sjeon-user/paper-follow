@@ -9,34 +9,42 @@
 ## 1. 큰 방향 (Direction)
 Physical AI
 
-## 2. 세부 주제 (Topics)
-관련도 판단의 기준이 되는 세부 주제입니다. 이 중 하나 이상에 해당하고
-관련도가 높은 논문을 우선합니다.
+## 2. 세부 주제 (Topics) — 2026-08-06 개정
+**아래 5가지 주제만** 팔로우합니다. 여기에 해당하지 않는 논문은 아무리 좋아도 선별하지 않습니다.
+(이전에 보던 egocentric · motion capture · 일반 robot arm · self-driving lab · 일반 VLA ·
+imitation learning은 **의도적으로 제외**했습니다.)
 
-- egocentric (1인칭 시점 인식/비디오)
-- motion capture (모션 캡처)
-- retargeting (모션 리타게팅)
-- robot arm (로봇 팔 / 매니퓰레이션)
-- self-driving lab (자율실험실 — 로봇 + 생물학/화학)
-- VLA (Vision-Language-Action 모델)
-- diffusion policy (확산 정책 — 확산모델 기반 로봇 행동 생성)
-- imitation learning (모방학습 — 시연 기반 정책 학습)
-- liquid manipulation (액체 조작 — 붓기·따르기·젓기·뜨기, 출렁임 억제 등)
-  - 액체 조작은 학계에서 굳어진 대표어가 없어, 과제 어휘를 묶어 검색합니다:
-    `pouring` / `liquid` / `sloshing` / `stirring` / `scooping` (+ cat:cs.RO)
-  - **일부러 뺀 단어**: `fluid`(항공·유체역학 논문이 대량으로 딸려옴),
-    `granular`·`viscous`(모래 위 보행 등 *이동* 논문이 섞임 — 조작이 아님)
-  - 실험실 자동화의 `liquid handling`(피펫팅 등)은 self-driving lab 주제와 겹칩니다.
-    두 주제에 함께 태깅될 수 있습니다.
-- transparent object (투명 물체 조작 — 유리·투명 labware의 인식·깊이 추정·파지)
-  - 검색어: `transparent object` / `glass object` / `glass segmentation` /
-    `non-Lambertian` / `glassware` (+ 로봇 맥락: cat:cs.RO 이거나 grasping·manipulation 언급)
-  - **주의**: `transparent`만 단독으로 쓰면 안 됩니다. 로보틱스에서 이 단어는
-    광학적 투명이 아니라 **설명가능성**(투명한 의사결정, transparent autonomy)을
-    뜻하는 경우가 훨씬 많아 오탐이 대량 발생합니다.
-  - 로봇 맥락 조건을 빼면 순수 렌더링·Gaussian splatting 논문이 밀려듭니다.
-  - 투명 물체는 깊이 센서가 실패하는 것이 핵심 난점이라, 인식(depth completion,
-    glass segmentation) 논문도 cs.CV에서 함께 잡히도록 했습니다.
+1. **diffusion VLA** (확산 기반 Vision-Language-Action 모델)
+   - 검색어: `("vision-language-action" 또는 "vision language action") AND "diffusion"`
+   - 두 조건을 **동시에** 걸어야 합니다. `vision-language-action`만 쓰면 일반 VLA가 대량으로 딸려옵니다.
+   - **일부러 뺀 단어**: `flow matching` — 사촌 격이지만 주제어가 '확산'이므로 제외했습니다.
+     필요해지면 이 줄의 조건에 `OR abs:"flow matching"`을 추가하면 됩니다.
+2. **diffusion policy** (확산 정책 — 확산모델 기반 로봇 행동 생성)
+   - 검색어: `"diffusion policy"` (+ cat:cs.RO 또는 cs.LG)
+3. **Universal Manipulation Interface (UMI)**
+   - 검색어: `"universal manipulation interface"` 또는 (`"UMI"` + cat:cs.RO)
+   - **주의**: 약어 `UMI`는 다른 분야에서도 쓰이므로 반드시 cs.RO 조건과 함께 씁니다.
+4. **handheld gripper / retargeting** (핸드헬드 시연 수집 장치 + 모션·손 리타게팅)
+   - 검색어: `"handheld gripper"` / `"hand-held gripper"` / `"portable gripper"` /
+     `"handheld demonstration"` / `"handheld data collection"` / `"retargeting"`
+     (+ cat:cs.RO 또는 cs.CV)
+   - 둘 다 "사람 시연을 로봇으로 옮기는" 같은 목적이라 하나의 주제로 묶었습니다.
+5. **robotic manipulation of transparent object / liquid** (투명 물체·액체의 로봇 조작)
+   - 태그는 `transparent object`와 `liquid manipulation` 둘로 나뉘어 표시됩니다.
+   - liquid: 액체 조작은 학계에서 굳어진 대표어가 없어, 과제 어휘를 묶어 검색합니다 —
+     `pouring` / `liquid` / `sloshing` / `stirring` / `scooping` (+ cat:cs.RO).
+     **일부러 뺀 단어**: `fluid`(항공·유체역학 논문이 대량으로 딸려옴),
+     `granular`·`viscous`(모래 위 보행 등 *이동* 논문이 섞임 — 조작이 아님)
+   - transparent: `transparent object` / `glass object` / `glass segmentation` /
+     `non-Lambertian` / `glassware` (+ 로봇 맥락: cat:cs.RO 이거나 grasping·manipulation 언급)
+   - **주의**: `transparent`만 단독으로 쓰면 안 됩니다. 로보틱스에서 이 단어는
+     광학적 투명이 아니라 **설명가능성**(투명한 의사결정, transparent autonomy)을
+     뜻하는 경우가 훨씬 많아 오탐이 대량 발생합니다.
+     로봇 맥락 조건을 빼면 순수 렌더링·Gaussian splatting 논문이 밀려듭니다.
+   - 주제 5는 "**조작**"이 핵심이므로, 초록에 grasp/manipulate/pick/robot 계열 표현이
+     한 번도 없는 순수 인식 논문은 걸러 냅니다(스크립트의 `filter2`).
+     단, 투명 물체는 깊이 센서 실패가 핵심 난점이라 깊이 복원·유리 분할처럼
+     조작을 목표로 한 인식 논문은 그대로 포함됩니다.
 
 ## 3. 검색 소스 (Source)
 - arXiv (주 대상 카테고리: cs.RO, cs.CV, cs.LG, cs.AI)
@@ -48,6 +56,8 @@ Physical AI
 - 관련도 높은 순으로 정렬
 - 최대 **6편** (조건에 맞는 논문이 그보다 적으면 있는 만큼만)
 - 세부 주제가 한쪽으로 쏠리지 않도록 가능하면 다양하게
+- 2026-08-06 주제 축소 이후로는 하루 신규가 6편에 못 미치는 날이 정상입니다.
+  **주제를 넓혀서 편수를 채우지 마세요.** 있는 만큼만 싣고, 0편이면 갱신 없이 종료합니다.
 
 ## 6. 대표 그림 (Figure)
 - 각 논문에서 **대표 그림 1장** (보통 메인 개요/파이프라인 그림, Figure 1 우선)
