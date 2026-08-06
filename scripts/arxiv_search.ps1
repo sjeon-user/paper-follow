@@ -8,11 +8,12 @@ param(
 $ErrorActionPreference = "Stop"
 $cutoff = (Get-Date).AddDays(-$Days)
 
-# Focused keyword set (2026-08-06). Only these five themes are followed:
+# Focused keyword set (2026-08-06, imitation learning re-added 2026-08-07). Six themes:
 #   diffusion VLA / diffusion policy / Universal Manipulation Interface /
-#   handheld gripper + retargeting / robotic manipulation of transparent objects or liquids.
+#   handheld gripper + retargeting / robotic manipulation of transparent objects or liquids /
+#   imitation learning.
 # Previously followed but deliberately dropped: egocentric, motion capture,
-# generic "robotic manipulation", self-driving lab, generic VLA, imitation learning.
+# generic "robotic manipulation", self-driving lab, generic VLA.
 $topics = @(
   # Diffusion-based VLA. Bare "vision-language-action" pulled in far too much, so both
   # halves must be present. "flow matching" is NOT included - the theme is diffusion.
@@ -49,7 +50,18 @@ $topics = @(
      # tightened 2026-08-06: the theme is *manipulation of* transparent objects, so a
      # paper must actually talk about grasping/manipulating, not just perceive glass.
      filter2='(?i)\b(grasp\w*|manipulat\w*|pick\w*|placing|robot\w*)';
-     filter='(?i)(\btransparen\w*|\btranslucen\w*|\bspecular\w*|\bglassware\b|\brefract\w*|non-Lambertian|\bglass\b)'; minHits=2 }
+     filter='(?i)(\btransparen\w*|\btranslucen\w*|\bspecular\w*|\bglassware\b|\brefract\w*|non-Lambertian|\bglass\b)'; minHits=2 },
+  # Imitation learning (re-added 2026-08-07). The phrase itself is unambiguous, so no
+  # vocabulary filter is needed - but it IS broad, so it is fenced behind cat:cs.RO.
+  # Without that fence, cs.LG floods this with RL/inverse-RL theory that never touches a robot.
+  # Only the exact phrase is queried: "behavior cloning" and "learning from demonstration"
+  # denote the same idea but are NOT included, to keep this from re-broadening into the
+  # generic-manipulation firehose that the 2026-08-06 revision cut. To widen, add
+  # `OR abs:"behavior cloning" OR abs:"learning from demonstration"` to the query below.
+  # Known noise (accepted): within cs.RO this also catches autonomous-driving and
+  # visual-navigation policies. If those become a nuisance, add a manipulation-context
+  # filter2 like the transparent-object entry uses.
+  @{ tag="imitation learning"; q='abs:"imitation learning" AND cat:cs.RO' }
 )
 
 $all = @{}

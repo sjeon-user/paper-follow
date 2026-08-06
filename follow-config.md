@@ -9,10 +9,10 @@
 ## 1. 큰 방향 (Direction)
 Physical AI
 
-## 2. 세부 주제 (Topics) — 2026-08-06 개정
-**아래 5가지 주제만** 팔로우합니다. 여기에 해당하지 않는 논문은 아무리 좋아도 선별하지 않습니다.
-(이전에 보던 egocentric · motion capture · 일반 robot arm · self-driving lab · 일반 VLA ·
-imitation learning은 **의도적으로 제외**했습니다.)
+## 2. 세부 주제 (Topics) — 2026-08-06 개정, 2026-08-07 imitation learning 추가
+**아래 6가지 주제만** 팔로우합니다. 여기에 해당하지 않는 논문은 아무리 좋아도 선별하지 않습니다.
+(이전에 보던 egocentric · motion capture · 일반 robot arm · self-driving lab · 일반 VLA는
+**의도적으로 제외**했습니다.)
 
 1. **diffusion VLA** (확산 기반 Vision-Language-Action 모델)
    - 검색어: `("vision-language-action" 또는 "vision language action") AND "diffusion"`
@@ -45,6 +45,18 @@ imitation learning은 **의도적으로 제외**했습니다.)
      한 번도 없는 순수 인식 논문은 걸러 냅니다(스크립트의 `filter2`).
      단, 투명 물체는 깊이 센서 실패가 핵심 난점이라 깊이 복원·유리 분할처럼
      조작을 목표로 한 인식 논문은 그대로 포함됩니다.
+6. **imitation learning** (모방학습 — 시연 기반 정책 학습) — 2026-08-07 추가
+   - 검색어: `"imitation learning"` (+ cat:cs.RO)
+   - 용어 자체가 명확해서 어휘 필터는 걸지 않았지만 범위가 넓은 주제라,
+     반드시 cs.RO 조건과 함께 씁니다. 이 조건을 빼면 cs.LG의 강화학습·역강화학습
+     이론 논문이 대량으로 딸려옵니다.
+   - **일부러 뺀 단어**: `behavior cloning` / `learning from demonstration` —
+     사실상 같은 뜻이지만, 2026-08-06에 줄여 놓은 범위가 다시 '일반 조작'으로
+     넓어지는 것을 막기 위해 정확히 이 표현만 검색합니다.
+     넓히고 싶으면 검색어에 `OR abs:"behavior cloning" OR abs:"learning from demonstration"`을
+     추가하면 됩니다.
+   - **감수하는 오탐**: cs.RO 안에도 자율주행·시각 내비게이션 정책 논문이 섞여 들어옵니다.
+     거슬리면 주제 5처럼 조작 맥락 `filter2`를 걸면 됩니다.
 
 ## 3. 검색 소스 (Source)
 - arXiv (주 대상 카테고리: cs.RO, cs.CV, cs.LG, cs.AI)
@@ -56,7 +68,7 @@ imitation learning은 **의도적으로 제외**했습니다.)
 - 관련도 높은 순으로 정렬
 - 최대 **6편** (조건에 맞는 논문이 그보다 적으면 있는 만큼만)
 - 세부 주제가 한쪽으로 쏠리지 않도록 가능하면 다양하게
-- 2026-08-06 주제 축소 이후로는 하루 신규가 6편에 못 미치는 날이 정상입니다.
+- 2026-08-06 주제 축소(+08-07 imitation learning 복구) 이후로는 하루 신규가 6편에 못 미치는 날이 정상입니다.
   **주제를 넓혀서 편수를 채우지 마세요.** 있는 만큼만 싣고, 0편이면 갱신 없이 종료합니다.
 
 ## 6. 대표 그림 (Figure)
