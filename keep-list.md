@@ -66,3 +66,14 @@ Focus to learn more
 
 Wang, P., Bai, S., Tan, S., Wang, S., Fan, Z., Bai, J., Chen, K., Liu, X., Wang, J., Ge, W., et al.Qwen2-vl: Enhancing vision-language model’s perception of the world at any resolution.arXiv preprint arXiv:2409.12191, 2024
 -Qwen2-VL 
+
+TransCut: Transparent Object Segmentation from a Light-Field Image
+Published in: 2015 IEEE International Conference on Computer Vision (ICCV)
+Date of Conference: 07-13 December 2015
+Date Added to IEEE Xplore: 18 February 2016
+ISBN Information:
+Electronic ISSN: 2380-7504
+DOI: 10.1109/ICCV.2015.393
+Publisher: IEEE
+Conference Location: Santiago, Chile
+-투명산 object segmentation 한 사례
