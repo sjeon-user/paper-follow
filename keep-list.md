@@ -77,3 +77,48 @@ DOI: 10.1109/ICCV.2015.393
 Publisher: IEEE
 Conference Location: Santiago, Chile
 -투명산 object segmentation 한 사례
+
+투명 물체 × Diffusion
+
+D3RoMa — arXiv:2409.14365 (CoRL 2024)
+depth가 아니라 stereo disparity를 diffusion으로 생성하고, 좌우 일관성 제약을 classifier guidance로 걸어 생성 모델의 환각을 기하로 억제합니다.
+
+DKT (Diffusion Knows Transparency) — arXiv:2512.23705 (ICRA 2026)
+사전학습된 비디오 diffusion을 그대로 재활용해, 프레임 간 흔들리지 않는 투명체 depth/normal을 뽑습니다. 정책 입력으로 쓸 거라면 이 temporal consistency가 결정적입니다.
+
+TransDiff — arXiv:2503.12779
+단일 뷰 RGB-D 한 장에서, segmentation·edge·normal map을 조건으로 걸고 DDPM이 노이즈로부터 depth를 그려냅니다. 멀티뷰 없이 가려는 방향.
+
+Diffusion-Based Depth Inpainting for Transparent and Reflective Objects — arXiv:2410.08567
+깨진 depth를 "구멍 난 이미지"로 보고 diffusion inpainting으로 메우는, 가장 직관적인 접근.
+
+TranSplat — arXiv:2502.07840
+latent diffusion으로 투명체의 표면 임베딩(SurfEmb)을 생성해 3D Gaussian Splatting과 결합 — depth 대신 명시적 표면 표현을 만듭니다.
+
+ClearDepth — arXiv:2409.08926
+스테레오 시뮬레이션의 sim2real을 강화해 투명체 depth를 얻는 라인.
+
+투명 물체 depth completion (diffusion 아님, 비교군으로 필요)
+
+Seeing Glass / TranspareNet — arXiv:2110.00087
+point cloud completion과 depth completion을 함께 돌려, 액체가 든 용기까지 포함한 어수선한 장면을 다룹니다. TODD 데이터셋 배출.
+
+TDCNet — arXiv:2412.14961
+CNN-Transformer 이중 분기로, 기존 방법들이 버리다시피 한 "망가진 원본 depth" 안의 잔여 정보를 최대한 살려 씁니다.
+
+정책 쪽 — depth 의존을 낮추거나 없애는 방향
+
+Diffusion Policy — arXiv:2303.04137
+행동 생성을 조건부 denoising 과정으로 두는 원조 논문. RGB 조건화 + receding horizon control이 핵심 기여이고, 애초에 depth를 필수로 요구하지 않습니다.
+
+DP3 (3D Diffusion Policy) — arXiv:2403.03954
+희소 point cloud를 조건으로 쓰는 3D 확장판. 다만 투명체에서는 입력 point cloud 품질이 무너지면서 성능이 급락하는 것이 실험적으로 확인된 쪽입니다.
+
+VO-DP — arXiv:2510.15530
+depth 센서 없이, VGGT의 기하 특징과 DINOv2의 의미 특징을 cross-attention으로 융합해 단일 뷰 RGB만으로 diffusion policy를 돌립니다.
+
+VolumeDP — arXiv:2603.17720
+RGB-only인데 2D 특징을 volumetric 표현으로 lift한 뒤 spatial token으로 압축 — depth 센서 없이 공간 추론을 회복하려는 시도.
+
+SCDP (Spatially Conditioned Diffusion Policy) — arXiv:2606.14535
+end-effector 궤적 자체를 시각적 attention anchor로 삼아, 단일 RGB 카메라만으로 정밀 조작을 달성합니다.
