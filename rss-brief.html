@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RSS 학회 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .meta a{color:var(--accent);text-decoration:none}
+  .meta a:hover{text-decoration:underline}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>RSS 학회 논문 팔로우업</h1>
+    <div class="sub">Robotics: Science and Systems 최신 프로시딩에서 매회 무작위 5편(중복 없음) · 대표 그림 + 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="paper-brief.html">← arXiv 브리핑</a> <a href="keep.html">⭐ 보관함</a></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>rss-config.md 설정을 기반으로 자동 생성 · roboticsproceedings.org 데이터</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-09-16";
+/* 보관된 RSS 브리핑 날짜 목록(최신순, 최대 7회). 각 항목은 rss-brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = ["2026-09-16"];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     rss_id:   "rss22/p001",            // 프로시딩 볼륨/번호 (rss-seen.json 중복 방지 키)
+     url:      "https://www.roboticsproceedings.org/rss22/p001.html",
+     pdf:      "https://www.roboticsproceedings.org/rss22/p001.pdf",
+     doi:      "10.15607/RSS.2026.XXII.001",
+     date:     "2026-07-13",            // 프로시딩 게재일
+     venue:    "RSS XXII (2026, Sydney) · p001",
+     topics:   ["manipulation"],        // 자유 태그(내용 기반)
+     image:    "rss-img/rss22-p001.png", // PDF Figure 1에서 추출한 대표 그림 (없으면 "")
+     figcap:   "Figure 1. ...",
+     background: "배경·기존 문제 2~3문장",
+     solution:   "해결·방법과 결과 2~3문장",
+     rating:     4.0,                   // 논리 + 근거 견고함 (0~5, 0.5 단위)
+     rating_reason: "근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "mimic-video: Video-Action Models for Generalizable Robot Control Beyond VLAs",
+    authors: "Jonas Pai 외 7명",
+    rss_id: "rss22/p077",
+    url: "https://www.roboticsproceedings.org/rss22/p077.html",
+    pdf: "https://www.roboticsproceedings.org/rss22/p077.pdf",
+    doi: "10.15607/RSS.2026.XXII.077",
+    date: "2026-07-13",
+    venue: "RSS XXII (2026, Sydney) · p077",
+    topics: ["video-action model", "flow matching", "manipulation"],
+    image: "rss-img/rss22-p077.png",
+    figcap: "Fig. 1. 정적 웹 데이터로 사전학습한 VLA(위)는 물리 동역학을 로봇 궤적에서 처음부터 배워야 하지만, mimic-video(아래)는 사전학습 비디오 모델의 잠재 표현 위에 flow matching 행동 디코더를 얹어 저수준 제어만 학습합니다",
+    rating: 4.0,
+    rating_reason: "'시각-언어 사전학습은 의미는 잡지만 물리 인과에는 눈이 멀었다'는 진단에서 비디오 모델을 정책의 바탕으로 삼는 설계까지 논리가 곧게 이어지고, 시뮬레이션·실기기 조작 과제에서 VLA 대비 표본 효율 10배·수렴 2배라는 정량 근거를 제시했습니다. 다만 비교 대상 VLA의 범위와 실기기 과제 수는 초록만으로는 확인되지 않아 감안할 부분입니다.",
+    background: "요즈음 로봇 조작용 시각-언어-행동(VLA) 모델은 대규모지만 서로 연결되지 않은 정적 웹 데이터로 사전학습한 시각-언어 백본 위에 세워집니다. 그래서 의미적 일반화는 좋아졌지만, 복잡한 물리 동역학과 시간적 의존성은 오직 로봇 궤적에서 암묵적으로 추론해야 했습니다. 이 때문에 타고난 물리 이해의 부족을 메우기 위해 대규모 전문가 데이터를 계속 모아야 하는, 지속 불가능한 데이터 부담이 생겼습니다.",
+    solution: "저자들은 시각-언어 사전학습이 의미 사전지식은 잘 담아도 물리적 인과에는 눈이 멀어 있다고 보고, 비디오로 의미와 시각 동역학을 함께 사전학습해 남는 과제를 저수준 제어로만 좁히는 패러다임을 제안했습니다. 이를 구현한 것이 비디오-행동 모델(VAM) mimic-video로, 인터넷 규모로 사전학습된 비디오 모델과 그 잠재 표현을 조건으로 받는 flow matching 기반 행동 디코더를 짝지었습니다. 디코더는 역동역학 모델(IDM)로서 비디오 공간의 행동 계획 표현에서 저수준 로봇 행동을 생성합니다. 시뮬레이션과 실제 로봇 조작 과제에서 최신 성능을 보였고, 기존 VLA 구조 대비 표본 효율은 10배, 수렴 속도는 2배 개선됐습니다."
+  },
+  {
+    title: "Grounding Discrete-Time Joint-Level Acceleration Bounds in Voltage-Constrained Actuation",
+    authors: "Lingwei Zhang 외 7명",
+    rss_id: "rss22/p101",
+    url: "https://www.roboticsproceedings.org/rss22/p101.html",
+    pdf: "https://www.roboticsproceedings.org/rss22/p101.pdf",
+    doi: "10.15607/RSS.2026.XXII.101",
+    date: "2026-07-13",
+    venue: "RSS XXII (2026, Sydney) · p101",
+    topics: ["actuator physics", "whole-body control", "wheel-legged quadruped"],
+    image: "rss-img/rss22-p101.png",
+    figcap: "Fig. 1. 연구의 동기와 범위 — 시스템 수준에서는 실현 가능한 운동 명령이, 전압 제약이 있는 전기 구동기에서는 물리적으로 실현 불가능해질 수 있음을 보여 주는 개요",
+    rating: 3.5,
+    rating_reason: "운동학적으로는 허용되지만 구동기 전압 제약 때문에 물리적으로는 실현될 수 없는 가속도가 존재한다는 문제 제기가 명확하고, 이를 '실행 수준의 실현 가능성 계약'으로 정식화해 단일 전기 구동기와 휠-레그 사족 로봇에서 실기기로 검증했습니다. 다만 초록에 정량 지표가 없고 대상 플랫폼이 한 종류라 근거의 폭은 좁게 보입니다.",
+    background: "이산시간 관절 가속도 제한은 관절의 위치·속도 한계를 지키기 위해 널리 쓰이는 도구입니다. 그런데 전압 제약이 있는 전기 구동기에서는 운동학적으로 허용되는 가속도가 물리적으로는 실현되지 않을 수 있습니다. 계획·제어가 내린 명령과 구동기가 실제로 낼 수 있는 힘 사이에, '실행 수준'의 추상화가 빠져 있었던 셈입니다.",
+    solution: "저자들은 구동기 인식 관절 가속도 제어(AJAC)를 제안했습니다. 이는 관절 수준의 '실현 가능성 계약'으로, 운동학적 가속도 한계를 전압 제약 구동기의 물리에 근거해 다시 정의하고 그 범위 안에서 가속도를 운용합니다. 전기 구동기 단품과 휠-레그 사족 로봇에서의 하드웨어 실험 결과, AJAC는 실현 불가능한 가속도 명령을 제거하고, 한계 경계 근처에서의 실행을 일관되게 회복시키며, 경계에서 유발되는 진동을 줄였습니다."
+  },
+  {
+    title: "Seeing Danger Before Moving: Learning Environment-Centric Risk for Safe Robot Navigation",
+    authors: "Palash Yuvraj Ingle, Young-Gab Kim",
+    rss_id: "rss22/p133",
+    url: "https://www.roboticsproceedings.org/rss22/p133.html",
+    pdf: "https://www.roboticsproceedings.org/rss22/p133.pdf",
+    doi: "10.15607/RSS.2026.XXII.133",
+    date: "2026-07-13",
+    venue: "RSS XXII (2026, Sydney) · p133",
+    topics: ["safe navigation", "risk estimation", "multimodal sensing"],
+    image: "rss-img/rss22-p133.png",
+    figcap: "Fig. 1. 환경 중심 위험 인식 내비게이션 프레임워크 개요 — 환경에 설치된 카메라·센서의 데이터를 융합해 위험 확률을 추정하고, 베이지안 필터로 안정화한 위험 신념을 플래너의 비용 항으로 넘깁니다",
+    rating: 3.5,
+    rating_reason: "로봇 자신의 반응형 지각이 아니라 환경에 설치된 센서로 위험을 '먼저 보는' 문제 설정이 명확하고, 위험을 잠재 상태로 두는 베이지안 필터링과 플래너 비용 통합까지 설계가 일관됩니다. 연기·열·물·진동·구조물 장애를 갖춘 실제 다중 위험 테스트베드에서 위험 노출 감소를 보였지만, 초록 수준에서는 정량 결과와 기준선의 강도가 드러나지 않아 감안할 부분입니다.",
+    background: "위험한 환경은 불확실하고 빠르게 변하는 조건이 특징이며, 자율 로봇은 여기서 안전이 걸린 내비게이션 결정을 내려야 합니다. 로봇이 자기 센서로만 반응형 지각을 하면, 효과적으로 대응할 시간을 갖기 전에 이미 위험 상황에 들어설 수 있습니다. 한편 연기·열·침수·구조적 불안정 같은 위험은 환경 자체에 설치된 카메라와 센서로 직접 관측되므로, 로봇이 위험 구역에 들어가기 전에 위험을 예측할 기회가 있었습니다.",
+    solution: "저자들은 환경 중심 지각으로 능동적·위험 인식 내비게이션을 가능하게 하는 데 초점을 두었습니다. 환경의 시각 데이터와 센서 데이터를 초기 단계에서 융합해 순간 위험 확률을 추정하는 통합 멀티모달 시공간 모델을 제시하고, 짧은 교란이나 센서 잡음에 과민 반응하지 않도록 이 추정치를 위험을 잠재 상태로 취급하는 베이지안 필터링에 넣어 변화하는 위험에 대한 안정적인 신념을 유지합니다. 그 위험 신념을 로봇 내비게이션 스택의 비용 항으로 통합해, 플래너가 더 안전한 경로를 택하고 위험 구역에 도달하기 전에 피하도록 했습니다. 연기·열·물·진동·구조물 장애를 포함한 실제 다중 위험 테스트베드 평가에서, 위험을 고려하지 않는 기준선보다 위험 노출이 줄고 더 안전한 주행 행동을 보였습니다."
+  },
+  {
+    title: "A Dual-Mode Electrical Capacitance Tomography Sensor for Robotic Proximity Servoing and Grasping",
+    authors: "Duanpeng Shi 외 4명",
+    rss_id: "rss22/p197",
+    url: "https://www.roboticsproceedings.org/rss22/p197.html",
+    pdf: "https://www.roboticsproceedings.org/rss22/p197.pdf",
+    doi: "10.15607/RSS.2026.XXII.197",
+    date: "2026-07-13",
+    venue: "RSS XXII (2026, Sydney) · p197",
+    topics: ["proximity sensing", "capacitance tomography", "pre-touch grasping"],
+    image: "rss-img/rss22-p197.png",
+    figcap: "Fig. 1. 평면 배열 전기 커패시턴스 토모그래피(ECT) 센싱 시스템 개요",
+    rating: 4.0,
+    rating_reason: "원거리 시각과 근거리 접촉 사이의 '지각 공백'을 ECT 원리의 근접 센싱으로 메운다는 문제 설정이 명확하고, 값비싼 토모그래피 복원 대신 커패시턴스 섭동에서 거리·방향·재질을 바로 회귀하는 물리 정보 기반 네트워크로 실용성을 확보했습니다. 대면적 배열과 그리퍼 내장형 두 구성을 만들어 7자유도 매니퓰레이터에서 비접촉 추적·자세 정렬·재질 분류·파지 보정까지 검증했습니다. 정량 수치는 초록에 없어 감안할 부분입니다.",
+    background: "촉각과 근접 센싱은 자율 로봇 조작과 안전한 인간-로봇 상호작용의 기본입니다. 그런데 기존의 이중 모드 센서는 환경 간섭에 취약하고, 원거리 시각과 근거리 접촉 사이에 지각의 공백이 생기는 문제가 있었습니다. 특히 가림이 있거나 시야가 나쁜 환경에서는 접촉 직전 단계의 정보를 얻기 어려웠습니다.",
+    solution: "저자들은 전기 커패시턴스 토모그래피(ECT) 원리에 기반한 다목적 센싱 시스템을 제시해, 비접촉 근접 지각·접촉 전 방향 추정·재질 인식을 하나의 틀로 다뤘습니다. 고동적 안전 피드백용 대면적 배열(10×10 cm)과 로봇 그리퍼에 통합한 소형 모듈(2×9 cm)의 두 구성을 구현했습니다. 계산 비용이 큰 토모그래피 복원 대신, 상호 커패시턴스 섭동에서 공간 유전 특징을 직접 추출하는 물리 정보 기반 딥러닝 구조 CapacitiveServo-Net을 제안해, 고차원 커패시턴스 과도 신호를 거리·방향 같은 기하 기본량과 재질 속성으로 매핑하는 통합 접촉 전 서보 프레임워크를 만들었습니다. 7자유도 매니퓰레이터 실험에서 고정밀 비접촉 근접 추적과 실시간 자세 정렬을 달성했고, 접근 단계에서 재질 분류와 접촉 전 적응형 파지 보정을 동시에 수행함을 보였습니다."
+  },
+  {
+    title: "A Super-Resolution and Multi-Axis Tactile Sensor with Soft Artificial Skin",
+    authors: "Hongxu Wei 외 7명",
+    rss_id: "rss22/p199",
+    url: "https://www.roboticsproceedings.org/rss22/p199.html",
+    pdf: "https://www.roboticsproceedings.org/rss22/p199.pdf",
+    doi: "10.15607/RSS.2026.XXII.199",
+    date: "2026-07-13",
+    venue: "RSS XXII (2026, Sydney) · p199",
+    topics: ["tactile sensor", "soft artificial skin", "3-axis force"],
+    image: "rss-img/rss22-p199.png",
+    figcap: "Fig. 1. 제안 촉각 센서의 설계 개념과 검증 — 3차원 힘을 분리하는 초소형 일체형 3-캔틸레버 단위 구조와 부드러운 실리콘 피부층",
+    rating: 4.0,
+    rating_reason: "대부분의 배열형 촉각 센서가 수직력만 재는 한계를 3-캔틸레버 단위 구조로 정면 돌파하고, 모델 기반과 학습 기반을 결합한 복원 알고리즘, 소프트 피부층의 견인 결합 효과를 활용한 초해상까지 설계가 일관됩니다. 3차원 힘 MAE 0.19 N·접촉 위치 0.49 mm·공간 해상도 26배 향상이라는 구체적 수치와 시험관 이송·외란 하 안정 파지 시연으로 근거가 잘 뒷받침됩니다. 시연 과제 수가 많지 않은 점은 감안할 부분입니다.",
+    background: "사람 피부처럼 초해상 촉각 지각을 얻기 위해 센싱 배열 위에 부드러운 층을 덧대는 방법이 주목받고 있습니다. 그런데 센싱 단위 원리의 한계로, 기존 촉각 센서 대부분은 수직력만 감지할 수 있었습니다. 로봇 조작에는 접선력을 포함한 다차원 힘 정보가 중요하기 때문에 이 점이 걸림돌이었습니다.",
+    solution: "저자들은 초소형 일체형 3-캔틸레버 구조에 기반해 3차원 힘을 분리해 내는 촉각 센싱 단위를 제안했습니다. 모델 기반과 학습 기반 접근을 결합한 복원 알고리즘으로 단위에 가해진 3차원 힘을 검출하고, 이 단위들을 배열로 배치한 뒤 견인 결합(traction-coupling) 효과를 일으키는 부드러운 실리콘 층으로 덮었습니다. 딥러닝을 활용해 외부 3차원 힘의 크기와 위치를 초해상으로 추정하며, 실험에서 3차원 힘 추정 평균절대오차 0.19 N, 접촉 위치 0.49 mm를 달성했습니다. 이는 공간 해상도 기준 26배 향상으로 기존 최고 수준을 넘어선 결과입니다. 시험관을 랙에 옮기는 원격조작과 외란 속 안정적 로봇 파지 등 여러 과제로 실용성도 검증했습니다."
+  }
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.venue} · ${p.date}${p.doi ? ' · DOI:' + p.doi : ''}${p.pdf ? ' · <a href="' + p.pdf + '" target="_blank" rel="noopener">PDF</a>' : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      <div class="figwrap">
+        <div class="fig">
+          ${p.image
+            ? `<img src="${p.image}" alt="${p.title}">`
+            : `<div class="noimg">대표 그림 없음</div>`}
+        </div>
+        ${p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``}
+      </div>
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+  el.innerHTML = '<h3>지난 RSS 브리핑 (최근 7회)</h3>' +
+    (list.length
+      ? list.map((d,i)=>`<a class="${i===0?'cur':''}" href="rss-brief-${d}.html">${d}</a>`).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>
