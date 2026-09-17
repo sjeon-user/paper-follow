@@ -1,11 +1,11 @@
 """Extract a representative figure (Figure 1 preferred) from RSS proceedings PDFs.
 Usage: python scripts/rss_figure.py --ids rss22/p001,rss22/p045 [--outdir rss-img] [--pages 3]
 Writes <outdir>/<volume>-<num>.png and prints the strategy used per paper.
-Strategies, in order: (1) render the region between the nearest text above (same column) and the 'Fig. 1' caption -
-faithful for raster, vector and mixed figures; (2) raster panel(s) sitting just above the caption, clipped to the
-caption's column (used when no text block above the figure could anchor the region, e.g. figure at the page top);
-(3) largest sufficiently big raster image on the searched pages. If none applies, no file is written and the paper is
-reported as NO FIGURE (leave image "").
+Strategies, in order: (1) render the region between the header/body text above and the 'Fig. 1' caption, within the
+caption's column - the top edge is anchored to the figure's own graphics (images + vector drawings) so author lines or
+footnotes right above the figure are excluded while labels inside the figure are kept; (2) raster panel(s) sitting just
+above the caption, clipped to the caption's column; (3) largest sufficiently big raster image on the searched pages.
+If none applies, no file is written and the paper is reported as NO FIGURE (leave image "").
 """
 import argparse, os, sys, urllib.request
 import fitz  # PyMuPDF
@@ -41,6 +41,22 @@ def raster_candidates(page):
 def overlaps_x(a, b):
     return a.x0 < b.x1 and a.x1 > b.x0
 
+def graphics_top(page, col, cap):
+    """Topmost y of images/drawings that belong to the figure above the caption (within its column)."""
+    ys = []
+    for _, r in raster_candidates(page):
+        if r.y1 <= cap.y0 + 8 and overlaps_x(r, cap) and r.y0 >= page.rect.y0 + 20:
+            ys.append(r.y0)
+    for d in page.get_drawings():
+        r = d.get("rect")
+        if r is None or r.is_empty:
+            continue
+        if r.width * r.height < 100 or r.height < 2:      # skip hairlines / rules
+            continue
+        if r.y1 <= cap.y0 + 8 and r.y0 >= page.rect.y0 + 20 and overlaps_x(r, cap):
+            ys.append(r.y0)
+    return min(ys) if ys else None
+
 def extract(doc, out_path, pages):
     for pno in range(min(pages, doc.page_count)):
         page = doc[pno]
@@ -48,11 +64,16 @@ def extract(doc, out_path, pages):
         if cap is None:
             continue
         col = fitz.Rect(cap.x0 - 6, page.rect.y0, cap.x1 + 6, page.rect.y1)  # the caption's column span
-        # (1) region between the nearest text block above (same column) and the caption
+        # (1) region between text above the figure and the caption
+        gtop = graphics_top(page, col, cap)
         top, found = None, False
         for b in page.get_text("blocks"):
             bb = fitz.Rect(b[:4]); txt = b[4].strip()
-            if bb.y1 <= cap.y0 - 10 and overlaps_x(bb, cap) and len(txt) > 80 and not txt.lower().startswith(("fig", "figure")):
+            if not (bb.y1 <= cap.y0 - 10 and overlaps_x(bb, cap)) or txt.lower().startswith(("fig", "figure")):
+                continue
+            is_header = gtop is not None and bb.y1 <= gtop + 3      # text entirely above the figure graphics
+            is_body = len(txt) > 80 and (gtop is None or bb.y0 >= cap.y0 - 1 or bb.y1 <= gtop + 3)
+            if is_header or is_body:
                 top, found = (bb.y1 if top is None else max(top, bb.y1)), True
         if found:
             region = fitz.Rect(col.x0, top + 4, col.x1, cap.y0 - 2) & page.rect
