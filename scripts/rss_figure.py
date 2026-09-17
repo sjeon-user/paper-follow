@@ -42,10 +42,17 @@ def overlaps_x(a, b):
     return a.x0 < b.x1 and a.x1 > b.x0
 
 def graphics_top(page, col, cap):
-    """Topmost y of images/drawings that belong to the figure above the caption (within its column)."""
+    """Topmost y of the figure's graphics above the caption, within its column.
+    Uses the page's bbox log (clipped, as-drawn boxes) for images so that images placed with clip paths do not
+    report placement rects that extend above the visible figure; vector drawings are taken from get_drawings()."""
     ys = []
-    for _, r in raster_candidates(page):
-        if r.y1 <= cap.y0 + 8 and overlaps_x(r, cap) and r.y0 >= page.rect.y0 + 20:
+    for kind, r in page.get_bboxlog():
+        r = fitz.Rect(r)
+        if "image" not in kind or r.width < 40 or r.height < 30:
+            continue
+        if r.x0 < page.rect.x0 - 2 or r.x1 > page.rect.x1 + 2:   # placement rect spills off-page => clipped image, unreliable
+            continue
+        if r.y1 <= cap.y0 + 8 and r.y0 >= page.rect.y0 + 20 and overlaps_x(r, cap):
             ys.append(r.y0)
     for d in page.get_drawings():
         r = d.get("rect")
@@ -67,13 +74,28 @@ def extract(doc, out_path, pages):
         # (1) region between text above the figure and the caption
         gtop = graphics_top(page, col, cap)
         top, found = None, False
-        for b in page.get_text("blocks"):
-            bb = fitz.Rect(b[:4]); txt = b[4].strip()
+        blocks = sorted([(fitz.Rect(b[:4]), b[4].strip()) for b in page.get_text("blocks")], key=lambda t: (t[0].y0, t[0].x0))
+        # title block = largest font among text blocks in the top 150 pt; the author/affiliation/footnote chain hangs
+        # below it with small line gaps (< 17 pt), whereas the first figure label is usually further away.
+        title_bottom, best_size = None, 0
+        for blk in (page.get_text("dict")["blocks"] if pno == 0 else []):   # title chain exists only on page 1
+            if blk.get("type") != 0 or blk["bbox"][1] > 150 or blk["bbox"][3] > cap.y0 - 10:
+                continue
+            sizes = [sp["size"] for ln in blk["lines"] for sp in ln["spans"] if sp["text"].strip()]
+            if sizes and max(sizes) > best_size:
+                best_size, title_bottom = max(sizes), blk["bbox"][3]
+        chain_bottom = title_bottom   # bottom of the contiguous title/author/affiliation/footnote chain
+        for bb, txt in blocks:
             if not (bb.y1 <= cap.y0 - 10 and overlaps_x(bb, cap)) or txt.lower().startswith(("fig", "figure")):
                 continue
-            is_header = gtop is not None and bb.y1 <= gtop + 3      # text entirely above the figure graphics
+            in_chain = (bb.y0 < page.rect.y0 + 45
+                        or (title_bottom is not None and bb.y1 <= title_bottom + 1)
+                        or (chain_bottom is not None and bb.y0 - chain_bottom < 17 and (gtop is None or bb.y0 < gtop + 3)))
+            if in_chain:
+                chain_bottom = bb.y1 if chain_bottom is None else max(chain_bottom, bb.y1)
+            is_header = gtop is not None and bb.y0 < gtop and bb.y1 <= gtop + 10   # text sitting above the figure graphics
             is_body = len(txt) > 80 and (gtop is None or bb.y0 >= cap.y0 - 1 or bb.y1 <= gtop + 3)
-            if is_header or is_body:
+            if in_chain or is_header or is_body:
                 top, found = (bb.y1 if top is None else max(top, bb.y1)), True
         if found:
             region = fitz.Rect(col.x0, top + 4, col.x1, cap.y0 - 2) & page.rect
