@@ -92,6 +92,7 @@ Physical AI
 
 ## 8. 출력 (Output)
 - `paper-brief.html`의 `PAPERS` 배열과 `BRIEF_DATE` 갱신
+- **주제·검색 키워드 표기**: 회차마다 `themes.json`의 `arxiv` 항목에 `{label, title, keywords, note}`를 먼저 등록 → 상단 "🔎 이번 회차 주제" 박스(`BRIEF_THEME`)와 하단 "지난 브리핑" 목록의 `날짜 (label)` 괄호 표기가 `scripts/add_theme.py`로 자동 채워짐 (splice 스크립트가 호출). 일일 루틴은 label을 `일일 · follow-config 주제`, keywords를 그날 검색에 쓴 세부 주제로 기록
 - `voice-script.md` — 논문을 한 편씩 소개하는 음성(TTS) 낭독용 대본 (숫자·기호는 말로 읽기 좋게 풀어서)
 - 파일은 이 폴더에 저장
 

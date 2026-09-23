@@ -57,6 +57,11 @@
   .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
   .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
   .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
   .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
   .archive h3{font-size:.9rem;margin:0 0 12px}
   .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
@@ -78,6 +83,7 @@
     <h1>Physical AI 논문 팔로우업</h1>
     <div class="sub">최근 arXiv 신규 논문 · 대표 그림 + 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
     <div class="topnav"><a href="keep.html">⭐ 보관함</a></div>
+    <div id="theme" class="theme" hidden></div>
   </header>
   <main id="papers"></main>
   <nav id="archive" class="archive"></nav>
@@ -87,8 +93,10 @@
 <script>
 /* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
 const BRIEF_DATE = "2026-08-04";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "일일 브리핑 (follow-config 세부 주제)", "keywords": ["egocentric", "motion capture", "retargeting", "robot arm", "self-driving lab", "VLA", "diffusion policy"], "note": ""};
 /* 보관된 브리핑 날짜 목록(최신순, 최대 7일). 각 항목은 brief-<날짜>.html 로 링크됨 */
-const ARCHIVE = ["2026-08-04", "2026-08-03", "2026-07-31", "2026-07-30", "2026-07-29", "2026-07-28", "2026-07-27"];
+const ARCHIVE = [{d:"2026-08-04", t:"일일 · follow-config 주제"}, {d:"2026-08-03", t:""}, {d:"2026-07-31", t:""}, {d:"2026-07-30", t:""}, {d:"2026-07-29", t:""}, {d:"2026-07-28", t:""}, {d:"2026-07-27", t:""}];
 /* ====== 코워크가 채웁니다 (PAPERS 배열) ======
    각 항목 형식:
    {
@@ -239,13 +247,23 @@ const PAPERS = [
     </article>`).join("");
 })();
 
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
 (function renderArchive(){
   const el = document.getElementById("archive");
   if(!el) return;
   const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
   el.innerHTML = '<h3>지난 브리핑 (최근 7일)</h3>' +
     (list.length
-      ? list.map((d,i)=>`<a class="${i===0?'cur':''}" href="brief-${d}.html">${d}</a>`).join("")
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
       : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
 })();
 </script>

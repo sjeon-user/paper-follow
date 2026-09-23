@@ -30,6 +30,7 @@
 ## 5. 출력 (Output)
 - `rss-brief.html` — `BRIEF_DATE`, `PAPERS`, `ARCHIVE`만 갱신 (HTML/CSS/렌더 스크립트는 그대로)
   - PAPERS 항목 필드: title, authors, rss_id, url, pdf, doi, date, venue, topics[], image, figcap, background, solution, rating, rating_reason
+- **주제·검색 키워드 표기**: 회차마다 `themes.json`의 `rss` 항목에 `{label, title, keywords, note}`를 먼저 등록 → 상단 "🔎 이번 회차 주제" 박스(`BRIEF_THEME`)와 "지난 RSS 브리핑" 목록의 `날짜 (label)` 표기가 `scripts/add_theme.py`로 자동 채워짐. 무작위 회차는 label `무작위 N편`, 키워드 회차는 사용자가 준 키워드를 그대로 기록하고 note에 제외 조건·해당 논문 없음 등을 적음
 - `rss-voice-script.md` — 한 편씩 소개하는 TTS 낭독 대본 (voice-script.md와 같은 구성·문체)
 - `rss-seen.json` — 소개한 id를 `featured`에 추가
 
