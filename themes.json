@@ -201,6 +201,19 @@
         "observation augmentation"
       ],
       "note": "렌즈·해상도 자체를 바꾼 논문은 RSS XXII에 없음"
+    },
+    "2026-09-28": {
+      "label": "비전만으로 접촉 조작",
+      "title": "촉각·힘 센서 없이 비전만으로 구현한 접촉 조작 — 환경 접촉 활용, 접촉 과제 정책 학습, 동적 접촉",
+      "keywords": [
+        "vision-only",
+        "contact-rich manipulation",
+        "extrinsic dexterity / non-prehensile",
+        "world model",
+        "sim-to-real",
+        "no tactile / no force-torque sensor"
+      ],
+      "note": "촉각·F/T 센서를 쓰는 논문 제외(CoRAL p054는 로봇 내장 F/T 사용으로 제외) · 5편 중 CauVA(p016)는 인접 주제"
     }
   }
 }
