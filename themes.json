@@ -164,6 +164,21 @@
         "self-driving lab"
       ],
       "note": "기소개 논문(Pipette 플랫폼, 키프레임 보상, AEGIS, RAINBOT, Phys-Liquid)은 제외 · RSS XXII에는 파이펫팅 논문 없음"
+    },
+    "2026-09-29": {
+      "label": "다중 신호 동기화 · 지연",
+      "title": "카메라·센서·로봇 다중 신호의 동기화와 지연(latency) 문제 — 센서 스트림 동기화, 추론 지연 하 비동기 실행, 이종 모달리티 지연 융합·원격조작 지연",
+      "keywords": [
+        "time synchronization",
+        "timestamp",
+        "temporal alignment",
+        "latency",
+        "asynchronous inference",
+        "real-time chunking",
+        "observation staleness",
+        "delay-robust"
+      ],
+      "note": "2024-06 이후 arXiv, 기소개 논문 제외 · RTC(2506.07339)는 비동기 실행의 기준 논문으로 포함 · DEFLECT(2605.19294)·RAVEL(2609.34170)·FlashVLA(2608.27384) 등 VLA 가속 계열은 인접 참고"
     }
   },
   "rss": {
@@ -287,6 +302,20 @@
         "real-to-sim reconstruction"
       ],
       "note": "CLAMP·StereoVLA·ViserDex·RISE 등 다시점 관련 기소개 논문 제외 · RSS XXII 미소개 논문 104편 PDF 본문 검색 결과, 다시점이 중심인 조작 논문은 드물어 카메라 구성이 핵심 요소인 5편으로 구성"
+    },
+    "2026-09-29b": {
+      "label": "다중 신호 동기화 · 지연",
+      "title": "카메라·센서·로봇 다중 신호의 동기화와 지연(latency) 문제 — 실시간 I/O 인프라, 비동기 추론과 청크 연결, 지각 지연을 감안한 정책 학습",
+      "keywords": [
+        "synchronization",
+        "latency",
+        "asynchronous inference",
+        "timestamp / ring buffer",
+        "action chunking continuation",
+        "perception staleness",
+        "streaming policy"
+      ],
+      "note": "RSS XXII 캐시 PDF 111편 본문 검색 · 인간 목욕 시연 데이터의 Vicon 타임코드 동기화(p094)는 pHRI 주제라 제외"
     }
   }
 }
