@@ -1,4 +1,4 @@
-"""Fill rss-brief.html: BRIEF_DATE / ARCHIVE / PAPERS, then snapshot to rss-brief-<date>.html and prune to 7."""
+"""Fill rss-brief.html: BRIEF_DATE / ARCHIVE / PAPERS, then snapshot to rss-brief-<date>.html and prune to 30."""
 import glob, io, os, re, sys
 root = r"C:\Users\KIMM\Desktop\2026\연구 행정 스킬화\2026.07.22 physical AI 논문 팔로우업"
 date = sys.argv[1]
@@ -16,9 +16,10 @@ def idx(prefix):
             return i
     raise SystemExit("anchor not found: " + prefix)
 
-# archive list = existing snapshots + today, newest first, max 7
+# archive list = existing snapshots + today, newest first, max 30
 snaps = sorted({re.search(r"rss-brief-(\d{4}-\d{2}-\d{2}[a-z]?)\.html$", p).group(1) for p in glob.glob(os.path.join(root, "rss-brief-*.html"))} | {date}, reverse=True)
-keep, drop = snaps[:7], snaps[7:]
+KEEP = 30
+keep, drop = snaps[:KEEP], snaps[KEEP:]
 
 lines[idx("const BRIEF_DATE")] = f'const BRIEF_DATE = "{label}";'
 lines[idx("const ARCHIVE")] = "const ARCHIVE = [" + ", ".join(f'"{d}"' for d in keep) + "];"

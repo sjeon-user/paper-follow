@@ -97,7 +97,7 @@
 const BRIEF_DATE = "2026-09-18";
 /* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
 const BRIEF_THEME = {"title": "이조(2-jaw, 평행) 그리퍼 하드웨어·파지", "keywords": ["2-jaw gripper", "parallel-jaw gripper", "two-finger gripper", "gripper design"], "note": "다지 손 계열 제외"};
-/* 보관된 RSS 브리핑 날짜 목록(최신순, 최대 7회). 각 항목은 rss-brief-<날짜>.html 로 링크됨 */
+/* 보관된 RSS 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 rss-brief-<날짜>.html 로 링크됨 */
 const ARCHIVE = [{d:"2026-09-18", t:"2-jaw 그리퍼"}, {d:"2026-09-17d", t:"UMI 계보"}, {d:"2026-09-17c", t:"분할 모델 · 인접 주제"}, {d:"2026-09-17b", t:"정교 조작·작은 물체·촉각"}, {d:"2026-09-17", t:"양팔·조작·액체·UMI"}, {d:"2026-09-16", t:"무작위 5편"}];
 /* ====== 코워크가 채웁니다 (PAPERS 배열) ======
    각 항목 형식:
@@ -243,7 +243,7 @@ const PAPERS = [
   const el = document.getElementById("archive");
   if(!el) return;
   const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
-  el.innerHTML = '<h3>지난 RSS 브리핑 (최근 7회)</h3>' +
+  el.innerHTML = '<h3>지난 RSS 브리핑 (최근 30회)</h3>' +
     (list.length
       ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="rss-brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
       : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');

@@ -36,9 +36,9 @@
 
 ## 6. 보관 (Archive)
 - 회차 스냅샷 `rss-brief-<날짜>.html` (루트에 저장, rss-img/ 상대경로 유지)
-- `rss-brief-*.html`은 **최신 7개만 유지**, 오래된 것은 삭제
+- `rss-brief-*.html`은 **최신 30개만 유지**, 오래된 것은 삭제
 - 남은 `rss-brief-*.html`·`rss-brief.html` 어디서도 참조되지 않는 `rss-img/*.png`는 삭제
-- `rss-brief.html`의 `ARCHIVE` = 현재 남아 있는 스냅샷 날짜(최신순, 최대 7개)
+- `rss-brief.html`의 `ARCHIVE` = 현재 남아 있는 스냅샷 날짜(최신순, 최대 30개)
 - arXiv 브리핑의 `brief-*.html`·`images/`·`keep*`는 이 정리와 **무관** (건드리지 않음)
 
 ## 7. 공유 (Publish)

@@ -87,7 +87,7 @@
 <script>
 /* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
 const BRIEF_DATE = "2026-08-12";
-/* 보관된 브리핑 날짜 목록(최신순, 최대 7일). 각 항목은 brief-<날짜>.html 로 링크됨 */
+/* 보관된 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 brief-<날짜>.html 로 링크됨 */
 const ARCHIVE = ["2026-08-12", "2026-08-10", "2026-08-08", "2026-08-06", "2026-08-04", "2026-08-03", "2026-07-31"];
 /* ====== 코워크가 채웁니다 (PAPERS 배열) ======
    각 항목 형식:
@@ -453,7 +453,7 @@ const PAPERS = [
   const el = document.getElementById("archive");
   if(!el) return;
   const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
-  el.innerHTML = '<h3>지난 브리핑 (최근 7일)</h3>' +
+  el.innerHTML = '<h3>지난 브리핑 (최근 30회)</h3>' +
     (list.length
       ? list.map((d,i)=>`<a class="${i===0?'cur':''}" href="brief-${d}.html">${d}</a>`).join("")
       : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');

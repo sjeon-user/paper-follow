@@ -95,8 +95,8 @@
 const BRIEF_DATE = "2026-08-06";
 /* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
 const BRIEF_THEME = {"title": "일일 브리핑 (follow-config 세부 주제, 5개로 축소)", "keywords": ["transparent object", "handheld gripper / retargeting", "diffusion policy", "diffusion VLA", "self-driving lab"], "note": ""};
-/* 보관된 브리핑 날짜 목록(최신순, 최대 7일). 각 항목은 brief-<날짜>.html 로 링크됨 */
-const ARCHIVE = [{d:"2026-08-06", t:"일일 · 주제 5개로 축소"}, {d:"2026-08-04", t:"일일 · follow-config 주제"}, {d:"2026-08-03", t:""}, {d:"2026-07-31", t:""}, {d:"2026-07-30", t:""}, {d:"2026-07-29", t:""}, {d:"2026-07-28", t:""}];
+/* 보관된 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-08-06", t:"일일 · 주제 5개로 축소"}, {d:"2026-08-04", t:"일일 · follow-config 주제"}, {d:"2026-08-03", t:"일일 브리핑"}, {d:"2026-07-31", t:"일일 브리핑"}, {d:"2026-07-30", t:"일일 브리핑"}, {d:"2026-07-29", t:"일일 브리핑"}, {d:"2026-07-28", t:"일일 브리핑"}];
 /* ====== 코워크가 채웁니다 (PAPERS 배열) ======
    각 항목 형식:
    {
@@ -261,7 +261,7 @@ const PAPERS = [
   const el = document.getElementById("archive");
   if(!el) return;
   const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
-  el.innerHTML = '<h3>지난 브리핑 (최근 7일)</h3>' +
+  el.innerHTML = '<h3>지난 브리핑 (최근 30회)</h3>' +
     (list.length
       ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
       : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');

@@ -1,4 +1,4 @@
-"""Fill paper-brief.html (arXiv brief): BRIEF_DATE / ARCHIVE / PAPERS; snapshot brief-<date>.html; keep 7 snapshots;
+"""Fill paper-brief.html (arXiv brief): BRIEF_DATE / ARCHIVE / PAPERS; snapshot brief-<date>.html; keep 30 snapshots;
 delete images/*.png not referenced by any remaining brief-*.html / paper-brief.html (keep.html / keep-img untouched)."""
 import glob, io, os, re, sys
 root = r"C:\Users\KIMM\Desktop\2026\연구 행정 스킬화\2026.07.22 physical AI 논문 팔로우업"
@@ -17,7 +17,8 @@ def idx(prefix):
     raise SystemExit("anchor not found: " + prefix)
 
 snaps = sorted({re.search(r"brief-(\d{4}-\d{2}-\d{2}[a-z]?)\.html$", p).group(1) for p in glob.glob(os.path.join(root, "brief-*.html"))} | {date}, reverse=True)
-keep, drop = snaps[:7], snaps[7:]
+KEEP = 30
+keep, drop = snaps[:KEEP], snaps[KEEP:]
 
 lines[idx("const BRIEF_DATE")] = f'const BRIEF_DATE = "{date}";'
 lines[idx("const ARCHIVE")] = "const ARCHIVE = [" + ", ".join(f'"{d}"' for d in keep) + "];"

@@ -1,6 +1,66 @@
 {
   "_readme": "회차별 주제·검색 키워드 레지스트리. label=지난 브리핑 목록의 괄호 표시(짧게), title=상단 박스 제목, keywords=검색 키워드, note=제외 조건·비고. 새 회차를 만들 때 먼저 여기에 추가한 뒤 splice 스크립트를 실행하면 BRIEF_THEME와 ARCHIVE 라벨이 자동으로 채워집니다.",
   "arxiv": {
+    "2026-07-21": {
+      "label": "일일 브리핑",
+      "title": "",
+      "keywords": [],
+      "note": ""
+    },
+    "2026-07-22": {
+      "label": "일일 브리핑",
+      "title": "",
+      "keywords": [],
+      "note": ""
+    },
+    "2026-07-23": {
+      "label": "일일 브리핑",
+      "title": "",
+      "keywords": [],
+      "note": ""
+    },
+    "2026-07-24": {
+      "label": "일일 브리핑",
+      "title": "",
+      "keywords": [],
+      "note": ""
+    },
+    "2026-07-27": {
+      "label": "일일 브리핑",
+      "title": "",
+      "keywords": [],
+      "note": ""
+    },
+    "2026-07-28": {
+      "label": "일일 브리핑",
+      "title": "",
+      "keywords": [],
+      "note": ""
+    },
+    "2026-07-29": {
+      "label": "일일 브리핑",
+      "title": "",
+      "keywords": [],
+      "note": ""
+    },
+    "2026-07-30": {
+      "label": "일일 브리핑",
+      "title": "",
+      "keywords": [],
+      "note": ""
+    },
+    "2026-07-31": {
+      "label": "일일 브리핑",
+      "title": "",
+      "keywords": [],
+      "note": ""
+    },
+    "2026-08-03": {
+      "label": "일일 브리핑",
+      "title": "",
+      "keywords": [],
+      "note": ""
+    },
     "2026-08-04": {
       "label": "일일 · follow-config 주제",
       "title": "일일 브리핑 (follow-config 세부 주제)",

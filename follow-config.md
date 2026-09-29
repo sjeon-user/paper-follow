@@ -100,14 +100,14 @@ Physical AI
 - GitHub Pages로 공개 → 폰·여러 PC에서 링크로 접근 (https://sjeon-user.github.io/paper-follow/)
 - 매일 오전 10시 루틴으로 위 결과물 갱신 후 GitHub에 push
 
-## 10. 보관 (Archive) — 최근 7일 누적
+## 10. 보관 (Archive) — 최근 30회 누적
 - 매일 최신본을 `brief-<날짜>.html`(예: brief-2026-07-21.html)로 스냅샷 저장 (루트에 두어 images/ 경로 유지)
-- `brief-*.html`은 **최신 7일치만 유지**, 그보다 오래된 날짜 파일은 삭제
+- `brief-*.html`은 **최신 30회차만 유지**, 그보다 오래된 날짜 파일은 삭제
 - 어떤 `brief-*.html`에서도 참조되지 않는 `images/*.png`는 함께 삭제(정리)
-- `paper-brief.html`(=최신)/`index.html`은 항상 오늘치를 표시, 하단 "지난 브리핑" 목록에 최근 7일 링크
+- `paper-brief.html`(=최신)/`index.html`은 항상 오늘치를 표시, 하단 "지난 브리핑" 목록에 최근 30회 링크
 - 지난 날짜 전체 기록은 GitHub 커밋 히스토리에 남음
 
-## 11. 보관함 (Keep) — 영구 보관, 7일 정리와 무관
+## 11. 보관함 (Keep) — 영구 보관, 30회 정리와 무관
 사용자가 마음에 든 논문을 오래 남기고 싶을 때 쓰는 영구 보관함입니다.
 - **입력**: `keep-list.md` — 사용자가 보관할 arXiv id를 한 줄에 하나씩 직접 적음
   (`#`/빈 줄 무시, `id · 메모` 형식으로 메모 첨부 가능)
@@ -120,7 +120,7 @@ Physical AI
     그림은 `keep-img/<id>.png`로 저장(없으면 image "").
     `kept_date`는 처음 보관된 날짜로 기록(이후 유지).
   - `keep-list.md`에서 빠진 id → KEPT에서 제거하고 그 `keep-img/*.png`도 삭제.
-- **정리 제외**: `keep.html`·`keep-list.md`·`keep-img/`는 10번의 7일 정리 대상이 **아님**(절대 삭제하지 않음).
+- **정리 제외**: `keep.html`·`keep-list.md`·`keep-img/`는 10번의 30회 정리 대상이 **아님**(절대 삭제하지 않음).
 - 최신 브리핑 페이지 상단의 "⭐ 보관함" 링크로 이동. 공개 주소: https://sjeon-user.github.io/paper-follow/keep.html
 
 ## 12. 모음집 (Collection) — 단일 파일 영구 보관본
@@ -133,5 +133,5 @@ Physical AI
 - **주의**: 변환 시 `<div class="sub">`를 통째로 갈아끼우면 그 안의 `<span id="brief-date">`가 사라집니다.
   렌더 스크립트가 첫 줄에서 이 요소를 참조하므로, 없으면 예외가 나서 **논문이 하나도 표시되지 않습니다.**
   숨김 상태로라도 반드시 남겨 두세요.
-- **정리 제외**: `collection-*.html`은 10번의 7일 정리 대상이 **아닙니다**(파일명이 `brief-*`가 아니라 자동으로 제외되지만, 실수로 지우지 마세요).
+- **정리 제외**: `collection-*.html`은 10번의 30회 정리 대상이 **아닙니다**(파일명이 `brief-*`가 아니라 자동으로 제외되지만, 실수로 지우지 마세요).
 - 현재 보관본: `collection-2026-08-10-transparent.html`(투명 물체 13편), `collection-2026-08-12-umi.html`(UMI 계보 20편)
