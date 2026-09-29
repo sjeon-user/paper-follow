@@ -274,6 +274,19 @@
         "no tactile / no force-torque sensor"
       ],
       "note": "촉각·F/T 센서를 쓰는 논문 제외(CoRAL p054는 로봇 내장 F/T 사용으로 제외) · 5편 중 CauVA(p016)는 인접 주제"
+    },
+    "2026-09-29": {
+      "label": "다중 카메라 · multi-view",
+      "title": "카메라를 여러 대 쓰는 시스템 · multi-view — 다시점 촬영으로 자유 시점 재구성, 손목+외부 카메라 민감도 분석, 다시점 관측을 쓰는 정책",
+      "keywords": [
+        "multi-view",
+        "multi-camera",
+        "wrist camera + external camera",
+        "third-person / hand-eye",
+        "camera pose perturbation",
+        "real-to-sim reconstruction"
+      ],
+      "note": "CLAMP·StereoVLA·ViserDex·RISE 등 다시점 관련 기소개 논문 제외 · RSS XXII 미소개 논문 104편 PDF 본문 검색 결과, 다시점이 중심인 조작 논문은 드물어 카메라 구성이 핵심 요소인 5편으로 구성"
     }
   }
 }
