@@ -179,6 +179,33 @@
         "delay-robust"
       ],
       "note": "2024-06 이후 arXiv, 기소개 논문 제외 · RTC(2506.07339)는 비동기 실행의 기준 논문으로 포함 · DEFLECT(2605.19294)·RAVEL(2609.34170)·FlashVLA(2608.27384) 등 VLA 가속 계열은 인접 참고"
+    },
+    "2026-09-30": {
+      "label": "조명(lighting) 활용",
+      "title": "조명(lighting)을 활용·제어·극복한 로봇 조작·지각 연구 — 조명 데이터셋과 재조명 증강, 능동 조명 제어, 조명 인식 정책, 조명 공격과 저조도 대응",
+      "keywords": [
+        "lighting / illumination",
+        "relighting augmentation",
+        "active illumination",
+        "programmable light",
+        "HDR light transport",
+        "low-light / event camera",
+        "illumination robustness"
+      ],
+      "note": "2024-06 이후 arXiv, 기소개 논문 제외 · 같은 주제의 거울 세트는 2026-09-30b 회차"
+    },
+    "2026-09-30b": {
+      "label": "거울(mirror) 활용",
+      "title": "거울(mirror)을 활용한 로봇 센싱·조작 연구 — 촉각 센서 광학 경로, 시야 확장·조향, 전방향 카메라, 그리고 '반사 대칭' 개념의 거울 학습",
+      "keywords": [
+        "mirror",
+        "curved / multi-mirror optics",
+        "galvanometer / fast steering mirror",
+        "MEMS mirror",
+        "catadioptric",
+        "reflection symmetry"
+      ],
+      "note": "물리 거울 논문이 드물어 2023년 이후로 범위 확장 · MirrorDuo·Mirror Learning은 물리 거울이 아닌 '반사·시점 변환' 개념의 인접 주제 · UMI(2402.10329, 기소개)는 그리퍼 측면 거울로 손가락 시야 확보"
     }
   },
   "rss": {
@@ -316,6 +343,20 @@
         "streaming policy"
       ],
       "note": "RSS XXII 캐시 PDF 111편 본문 검색 · 인간 목욕 시연 데이터의 Vicon 타임코드 동기화(p094)는 pHRI 주제라 제외"
+    },
+    "2026-09-30": {
+      "label": "조명·거울 활용",
+      "title": "조명(lighting)·거울(mirror)을 활용한 연구 — 빛의 경로를 설계한 촉각 센서, 저조도에 강한 이벤트 지각, 조명 일반화 평가, 3DGS의 조명 굽기 한계",
+      "keywords": [
+        "illumination / lighting",
+        "optical path design (TIR, specular reflection)",
+        "low-light",
+        "event camera",
+        "lighting generalization",
+        "baked lighting in 3DGS",
+        "mirror"
+      ],
+      "note": "RSS XXII 210편 전체 PDF 본문 검색 결과 물리 거울을 활용한 논문은 없음 · 조명이 핵심인 논문은 LightTact 1편, 나머지 3편은 조명이 부분 요소인 인접 주제"
     }
   }
 }
