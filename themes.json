@@ -206,6 +206,19 @@
         "reflection symmetry"
       ],
       "note": "물리 거울 논문이 드물어 2023년 이후로 범위 확장 · MirrorDuo·Mirror Learning은 물리 거울이 아닌 '반사·시점 변환' 개념의 인접 주제 · UMI(2402.10329, 기소개)는 그리퍼 측면 거울로 손가락 시야 확보"
+    },
+    "2026-09-30c": {
+      "label": "텔레센트릭 카메라 활용",
+      "title": "텔레센트릭(telecentric) 렌즈·카메라를 활용한 연구 — 정밀 치수·형상 계측, 액체 표면·유동 계측, 자율실험실·현미경 관측, 그리고 '정사영(orthographic) 관측'의 인접 사례",
+      "keywords": [
+        "telecentric lens / camera",
+        "orthographic projection",
+        "dimensional metrology",
+        "free-surface / PIV measurement",
+        "self-driving lab imaging",
+        "microscopy"
+      ],
+      "note": "arXiv 메타데이터(제목·초록) 검색이라 본문에서만 텔레센트릭 렌즈를 언급한 로봇 논문은 잡히지 않음 · 로봇 분야 논문이 드물어 물리·계측 분야 논문과 2022년 이후 범위 포함 · OG-VLA·VBM-NET·체적 3D 프린팅은 인접 주제 · RSS XXII에는 텔레센트릭 논문 없음"
     }
   },
   "rss": {
@@ -357,6 +370,19 @@
         "mirror"
       ],
       "note": "RSS XXII 210편 전체 PDF 본문 검색 결과 물리 거울을 활용한 논문은 없음 · 조명이 핵심인 논문은 LightTact 1편, 나머지 3편은 조명이 부분 요소인 인접 주제"
+    },
+    "2026-09-30b": {
+      "label": "텔레센트릭 · 카메라 모델 인접",
+      "title": "텔레센트릭(telecentric) 카메라 활용 — RSS XXII에는 해당 논문 없음 · 인접 주제: 카메라 내부 파라미터(intrinsics)·투영 모델을 명시적으로 다루는 정책·재구성·초기화 연구",
+      "keywords": [
+        "telecentric",
+        "orthographic projection",
+        "camera intrinsics / raymap",
+        "uncalibrated camera",
+        "pinhole model",
+        "feed-forward 3D model"
+      ],
+      "note": "RSS XXII 210편 전체 PDF 본문 검색 결과 텔레센트릭·정사영 촬영 논문 0편 · 카메라 투영 모델을 다루는 인접 3편으로 구성 (AxisGuide·Robo3R은 기소개)"
     }
   }
 }
