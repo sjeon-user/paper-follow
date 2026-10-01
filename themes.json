@@ -219,6 +219,21 @@
         "microscopy"
       ],
       "note": "arXiv 메타데이터(제목·초록) 검색이라 본문에서만 텔레센트릭 렌즈를 언급한 로봇 논문은 잡히지 않음 · 로봇 분야 논문이 드물어 물리·계측 분야 논문과 2022년 이후 범위 포함 · OG-VLA·VBM-NET·체적 3D 프린팅은 인접 주제 · RSS XXII에는 텔레센트릭 논문 없음"
+    },
+    "2026-10-01": {
+      "label": "VLA + 강화학습 · 정답 감독",
+      "title": "VLA에 강화학습을 결합한 사례와 정답(ground-truth) 감독 데이터를 함께 쓴 VLA 사례 — RL 미세조정·실세계 자기 개선, RL과 시연·합성 데이터의 결합, 밀집 주석·보조 감독 공동 학습",
+      "keywords": [
+        "VLA + reinforcement learning",
+        "RL fine-tuning / post-training",
+        "GRPO · advantage · value",
+        "real-world self-improvement",
+        "sim-real co-training",
+        "dense language annotation",
+        "embodied chain-of-thought supervision",
+        "stage / keyframe supervision"
+      ],
+      "note": "2025-06 이후 arXiv · 기소개(WCM 2607.29613, RedFlow 2607.27782, VLA-Precision 2609.04355, 키프레임 보상 2603.00719, VISTA 2606.04708) 제외"
     }
   },
   "rss": {
@@ -383,6 +398,21 @@
         "feed-forward 3D model"
       ],
       "note": "RSS XXII 210편 전체 PDF 본문 검색 결과 텔레센트릭·정사영 촬영 논문 0편 · 카메라 투영 모델을 다루는 인접 3편으로 구성 (AxisGuide·Robo3R은 기소개)"
+    },
+    "2026-10-01": {
+      "label": "VLA + 강화학습 · 정답 감독",
+      "title": "VLA에 강화학습을 결합한 사례와 정답 감독 데이터를 함께 쓴 VLA 사례 — RL 학습 인프라, 실세계 경험·보정 데이터 흡수, 다중 턴 RL, 프로세스 보상, 공동 학습 데이터 모달리티, 추론·명령 감독",
+      "keywords": [
+        "VLA + RL",
+        "advantage conditioning",
+        "multi-turn RL",
+        "process reward",
+        "co-training modalities",
+        "dense language annotation",
+        "embodied reasoning supervision",
+        "steerable commands"
+      ],
+      "note": "RSS XXII 미소개 논문 7편 · RISE(p012)·Pose-VLA(p145)·GuidedVLA(p084)·LAP(p203)는 기소개"
     }
   }
 }
