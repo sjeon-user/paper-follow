@@ -413,6 +413,20 @@
         "steerable commands"
       ],
       "note": "RSS XXII 미소개 논문 7편 · RISE(p012)·Pose-VLA(p145)·GuidedVLA(p084)·LAP(p203)는 기소개"
+    },
+    "2026-10-02": {
+      "label": "IL·RL 결합 · 보정·실패 피드백",
+      "title": "π*₀.₆ 후속 확장 — 모방학습 사전학습 위의 강화학습 미세조정, 사람 보정(정답·오답 쌍)·개입으로 학습, 성공/실패 판정기·보상 모델로 자율 개선",
+      "keywords": [
+        "imitation learning + RL",
+        "offline RL / latent steering",
+        "human corrections / interventions",
+        "negative (undesired) actions",
+        "verifier · best-of-N",
+        "reward model from failures",
+        "hindsight relabeling"
+      ],
+      "note": "RSS XXII 미소개 논문 8편 · 전일(10-01) RSS 회차에서 π*0.6(p087)·RLux-VLA·LongNav-R1·LifeLong-RFT 등 VLA+RL 7편, 이전 회차에서 RISE(p012)·USER(p037)·Q-from-BC(p153)·TAIL-Safe(p207)는 기소개 · 인간형 보행 RL·sim-to-real 위주 논문은 제외"
     }
   }
 }
