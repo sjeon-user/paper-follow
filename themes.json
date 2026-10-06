@@ -234,6 +234,20 @@
         "stage / keyframe supervision"
       ],
       "note": "2025-06 이후 arXiv · 기소개(WCM 2607.29613, RedFlow 2607.27782, VLA-Precision 2609.04355, 키프레임 보상 2603.00719, VISTA 2606.04708) 제외"
+    },
+    "2026-10-06": {
+      "label": "학습 없는 비전 제어 vs 행동 학습",
+      "title": "행동(action) 학습 없이 컴퓨터 비전 기반 피드백·제어로 로봇을 움직이는 접근과, 행동을 학습한 정책(VLA·모방학습)을 직접 비교한 연구 — 학습 없는 비전 파이프라인 vs VLA, 고전 계획·모듈과 학습 정책의 하이브리드 vs 종단간, 비주얼 서보잉·중간 표현 vs 학습 정책",
+      "keywords": [
+        "training-free / zero-shot pipeline vs VLA",
+        "perception → pose → motion planning",
+        "visual servoing (IBVS/PBVS, ViT features)",
+        "modular vs end-to-end",
+        "planner / VLA interleaving",
+        "keypoint intermediate representation",
+        "direct comparison · same benchmark"
+      ],
+      "note": "2025-06 이후 arXiv · 비교 실험이 명시된 논문만 선별(서베이·벤치마크 제안만 있는 논문 제외) · 기소개 없음"
     }
   },
   "rss": {
@@ -427,6 +441,20 @@
         "hindsight relabeling"
       ],
       "note": "RSS XXII 미소개 논문 8편 · 전일(10-01) RSS 회차에서 π*0.6(p087)·RLux-VLA·LongNav-R1·LifeLong-RFT 등 VLA+RL 7편, 이전 회차에서 RISE(p012)·USER(p037)·Q-from-BC(p153)·TAIL-Safe(p207)는 기소개 · 인간형 보행 RL·sim-to-real 위주 논문은 제외"
+    },
+    "2026-10-06": {
+      "label": "학습 없는 비전 제어 vs 행동 학습",
+      "title": "행동(action) 학습 없이 비전 기반 피드백·계획·제어로 움직이는 접근과 행동 학습 정책(VLA·모방학습)을 직접 비교한 연구 — LLM 비용 설계+MPPI vs VLA, 에이전트 파이프라인 vs 미세조정 VLA, 모델 기반 제어 vs 확산 정책, 지각–행동 분리 내비게이션, 계획·학습·FM 공통 벤치마크",
+      "keywords": [
+        "zero-shot pipeline vs VLA",
+        "LLM cost design + MPPI",
+        "FoundationPose tracking",
+        "sampling MPC + analytical kinematics vs Diffusion Policy",
+        "perception–action decoupling",
+        "TAMP vs IL vs FM benchmark",
+        "direct comparison · same tasks"
+      ],
+      "note": "RSS XXII 210편 전체 PDF 본문 검색 · 학습 정책과 학습 없는(또는 모델 기반) 제어를 같은 과제에서 비교한 논문만 선별 5편 · ENAP(p144)·CAP(p141)은 행동을 학습하는 쪽이라 제외 · MolmoSpaces(p091)·PointACT(p073)는 기소개"
     }
   }
 }
