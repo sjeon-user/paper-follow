@@ -1,0 +1,391 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physical AI 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Physical AI 논문 팔로우업</h1>
+    <div class="sub">최근 arXiv 신규 논문 · 대표 그림 + 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="keep.html">⭐ 보관함</a> <a href="rss-brief.html">🏛 RSS 학회</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>follow-config.md 설정을 기반으로 자동 생성 · arXiv 데이터</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-10-18";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "CLIP·ViT 인코더 + Diffusion Policy(U-Net) + RLinf 조합으로 로봇 정책을 만들기 위한 참고 논문 — RLinf 계열 RL 학습 인프라, Diffusion Policy RL 미세조정 알고리즘(DPPO·DSRL·ReinFlow·DIA·NCDPO·REFINE-DP·CFG-Policy), CLIP/ViT 인코더 + 확산 헤드 구조 연구", "keywords": ["RLinf / RLinf-VLA / EBRL", "diffusion policy RL fine-tuning", "DPPO · two-layer MDP", "latent-noise steering (DSRL)", "flow policy + learnable noise (ReinFlow)", "CLIP / ViT / DINOv2 encoder + diffusion head", "pretrained encoder generalization"], "note": "세 요소(CLIP ViT 인코더 · U-Net 확산 정책 · RLinf)를 한 논문에서 모두 결합한 사례는 arXiv·RSS 모두 없음 → 요소별로 나눠 14편 구성 · DPPO(2024-09)는 기간 밖이지만 주제의 출발점이라 포함 · RSS XXII의 해당 논문(RLux-VLA p089, TMRL p208, LPS p152, Q-from-BC p153, USER p037)은 모두 기소개라 RSS 회차는 생략"};
+/* 보관된 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-10-18", t:"CLIP/ViT + Diffusion Policy + RLinf"}, {d:"2026-10-06", t:"학습 없는 비전 제어 vs 행동 학습"}, {d:"2026-10-01", t:"VLA + 강화학습 · 정답 감독"}, {d:"2026-09-30c", t:"텔레센트릭 카메라 활용"}, {d:"2026-09-30b", t:"거울(mirror) 활용"}, {d:"2026-09-30", t:"조명(lighting) 활용"}, {d:"2026-09-29", t:"다중 신호 동기화 · 지연"}, {d:"2026-09-28", t:"파이펫팅 조작 특집"}, {d:"2026-09-21", t:"정밀도·정확도·재현성"}, {d:"2026-09-10", t:"Diffusion/Flow 정책 · ACT · 접촉 저널"}, {d:"2026-08-12", t:"UMI 계보 특집"}, {d:"2026-08-10", t:"투명 물체 특집"}, {d:"2026-08-08", t:"일일 · follow-config 주제"}, {d:"2026-08-06", t:"일일 · 주제 5개로 축소"}, {d:"2026-08-04", t:"일일 · follow-config 주제"}, {d:"2026-08-03", t:"일일 브리핑"}, {d:"2026-07-31", t:"일일 브리핑"}, {d:"2026-07-30", t:"일일 브리핑"}, {d:"2026-07-29", t:"일일 브리핑"}, {d:"2026-07-28", t:"일일 브리핑"}, {d:"2026-07-27", t:"일일 브리핑"}, {d:"2026-07-24", t:"일일 브리핑"}, {d:"2026-07-23", t:"일일 브리핑"}, {d:"2026-07-22", t:"일일 브리핑"}, {d:"2026-07-21", t:"일일 브리핑"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     arxiv_id: "2507.xxxxx",
+     url:      "https://arxiv.org/abs/2507.xxxxx",
+     date:     "2026-07-15",           // arXiv 최초 제출일
+     categories: "cs.RO, cs.CV",
+     topics:   ["VLA","robot arm"],     // follow-config의 세부 주제 태그
+     image:    "images/2507xxxxx.png",  // 대표 그림 (없으면 "")
+     figcap:   "Figure 1. ...",         // 그림 설명 (선택)
+     background: "배경·기존 문제 2~3문장 (설명/소개 문투)",
+     solution:   "해결·방법과 결과 2~3문장 (설명/소개 문투)",
+     rating:     4.5,                  // 논문 전체 논리 + 근거 견고함 (0~5, 0.5 단위)
+     rating_reason: "그 점수를 준 근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "RLinf: Flexible and Efficient Large-scale Reinforcement Learning via Macro-to-Micro Flow Transformation",
+    authors: "Chao Yu 외 28명",
+    arxiv_id: "2509.15965",
+    url: "https://arxiv.org/abs/2509.15965",
+    date: "2025-09-19",
+    categories: "cs.LG, cs.AI, cs.DC",
+    topics: ["A. RLinf 계열 — RL 학습 인프라", "macro-to-micro flow transformation (M2Flow)", "context switching · elastic pipelining · profiling-guided scheduling", "embodied RL 최대 2.43× 처리량"],
+    image: "images/2509.15965.png",
+    figcap: "Figure 1. RLinf가 다루는 다양한 RL 워크플로 — GRPO(생성→추론→학습), 체화 RL(시뮬레이터↔생성 롤아웃→학습), 딥 리서치 RL(검색 서버 포함), RLHF(행위자·참조·보상·비평가 추론과 행위자·비평가 학습). 실선은 데이터 전송, 점선은 가중치 갱신",
+    rating: 4.0,
+    rating_reason: "RL 학습 병목을 '알고리즘'이 아니라 '시스템 유연성'으로 진단하고 M2Flow라는 일반 원리로 추론·체화·RLHF 워크플로를 한 틀에서 다룬 논리가 명확하며, 여러 기준 시스템·모델 규모·시뮬레이터에서 처리량을 측정했습니다. 다만 시스템 논문이라 로봇 정책의 최종 성능 향상 자체는 RLinf-VLA 등 후속 논문에서 다룹니다.",
+    background: "강화학습은 추론·에이전트·체화 지능 전반에서 큰 잠재력을 보였지만, RL 워크플로의 이질성과 동적 특성 때문에 기존 시스템에서는 하드웨어 활용률이 낮고 학습이 느립니다. 특히 체화 RL은 시뮬레이션(CPU)·행동 생성(GPU 추론)·모델 갱신(GPU 학습)이 섞여 자원 요구가 단계마다 달라 고정된 실행 구조로는 효율을 내기 어렵습니다.",
+    solution: "저자들은 효율적 RL 학습의 핵심 걸림돌이 시스템 유연성에 있다는 관찰 아래 고성능 RL 학습 시스템 RLinf를 제안했습니다. 거시–미시 흐름 변환(M2Flow)이라는 설계 패러다임으로, 조합하기 쉬운 고수준 RL 워크플로를 시간·공간 차원에서 자동으로 분해한 뒤 최적화된 실행 흐름으로 재조합합니다. RLinf 워커의 적응형 통신 능력 위에 컨텍스트 스위칭과 탄력적 파이프라이닝으로 M2Flow를 구현하고, 프로파일링 기반 스케줄링으로 최적 실행 계획을 생성합니다. 수학 추론 RL에서는 veRL·Slime 대비 1.07~1.70배, 체화 RL에서는 LIBERO에서 SimpleVLA-RL 대비 1.05~2.43배, ManiSkill에서 하이브리드 모드가 최대 1.87배의 종단간 처리량 향상을 보였습니다. 이 시스템이 RLinf-VLA, EBRL, Harness VLA 등 후속 체화 RL 연구의 공통 기반입니다."
+  },
+  {
+    title: "RLinf-VLA: A Unified and Efficient Framework for Reinforcement Learning of Vision-Language-Action Models",
+    authors: "Hongzhi Zang 외 17명",
+    arxiv_id: "2510.06710",
+    url: "https://arxiv.org/abs/2510.06710",
+    date: "2025-10-08",
+    categories: "cs.RO",
+    topics: ["A. RLinf 계열 — RL 학습 인프라", "unified interface: OpenVLA · OpenVLA-OFT · π0 · π0.5 × PPO · GRPO × LIBERO · ManiSkill · RoboTwin", "hybrid fine-grained pipeline 1.61–1.88× (최대 2.27×)", "LIBERO 130과제 98.11% · ManiSkill 25과제 97.66%"],
+    image: "images/2510.06710.png",
+    figcap: "Figure 1. RLinf-VLA 개요 — 여러 시뮬레이터(LIBERO·ManiSkill·RoboTwin), RL 알고리즘(PPO·GRPO), 모델(OpenVLA·OpenVLA-OFT)을 통일 인터페이스로 결합. 가운데: 공존·분리·하이브리드 GPU 배분과 처리량 비교(최대 2.27배). 아래: LIBERO·ManiSkill·RoboTwin에서 초기(실선) 대비 RL 학습 후(빗금) 성공률",
+    rating: 4.0,
+    rating_reason: "통일 인터페이스와 자원 배분 설계라는 시스템적 해법이 문제의식과 정확히 맞물리고, 세 벤치마크·여러 VLA에서 속도와 성공률을 함께 보고했습니다. 지원 모델이 VLM 기반 VLA(자기회귀·플로 헤드)에 집중되어 있어 CLIP ViT + U-Net 확산 정책 같은 경량 구조를 돌리려면 사용자가 직접 통합해야 합니다.",
+    background: "RL이 상호작용을 통해 VLA 모델의 과제 성능을 높일 수 있음은 여러 연구가 보였지만, 기존 노력은 파편화되어 구조·알고리즘을 공정하게 비교할 통일 플랫폼이 없고 확장 가능한 학습을 위한 효율적 시스템 설계도 부족했습니다.",
+    solution: "저자들은 VLA 모델의 확장 가능한 RL 학습을 위한 통일·효율 프레임워크 RLinf-VLA(RSS XXII에는 RLux-VLA로 게재)를 제안했습니다. 다양한 VLA 구조(OpenVLA, OpenVLA-OFT, π0, π0.5), RL 알고리즘(PPO, GRPO), 이종 시뮬레이터(LIBERO, ManiSkill, RoboTwin)의 통합을 통일 인터페이스로 표준화해 확장성과 재현성을 확보하고, 렌더링·추론·학습 워크로드에 유연한 GPU 배분 구조(공존·분리·하이브리드 모드)를 채택했습니다. 특히 GPU 병렬 시뮬레이터용 하이브리드 세분화 파이프라인 배분으로 ManiSkill에서 1.61~1.88배(기준 대비 최대 2.27배)의 학습 가속을 얻었습니다. 이 프레임워크로 RL 학습한 모델은 단일 모델이 LIBERO 130과제 98.11%, ManiSkill 25과제 97.66%, RoboTwin 6과제 평균 84.63%(평균 63.75% 향상)를 기록했고, 실기기 전이에서도 RL 학습 정책이 SFT보다 나은 일반화를 보였습니다. 아울러 효과적인 RL 기반 VLA 학습을 위한 실무 지침을 정리했습니다."
+  },
+  {
+    title: "EBRL: Asynchronous Embodied RL by Multi-Grained Resource Management",
+    authors: "Liang Mi 외 14명",
+    arxiv_id: "2609.27547",
+    url: "https://arxiv.org/abs/2609.27547",
+    date: "2026-09-23",
+    categories: "cs.LG, cs.DC",
+    topics: ["A. RLinf 계열 — RL 학습 인프라", "asynchronous pipelined scheduler (rollout ∥ training)", "fine-grained CPU core · GPU SM pooling", "implemented on RLinf · OpenPI · GR00T · OpenVLA · 1.98–2.98× 처리량"],
+    image: "images/2609.27547.png",
+    figcap: "Figure 1. 체화 RL 파이프라인 — 시뮬레이터(LIBERO·ManiSkill·RoboCasa·BEHAVIOR 등)와 생성(OpenPI·GR00T·OpenVLA 등)이 롤아웃을 이루고, 궤적은 롤아웃 버퍼를 거쳐 학습(PPO·GRPO 등)으로, 갱신된 가중치는 다시 생성 모델로",
+    rating: 3.5,
+    rating_reason: "체화 RL의 CPU/GPU 자원 낭비 원인을 동기화 장벽과 독점 할당으로 특정하고 비동기 스케줄링+세분화 자원 풀로 푼 논리가 명확하며, 여러 정책·벤치마크·이기종 GPU에서 처리량을 측정했습니다. 비동기 롤아웃이 정책 품질(오프폴리시 편향)에 미치는 영향 분석은 상대적으로 적습니다.",
+    background: "체화 RL은 환경 시뮬레이션, 행동 생성, 모델 갱신의 파이프라인으로 모델 능력을 높이는데, 각 단계의 CPU·GPU 요구가 이질적이라 자원을 효율적으로 쓰기 어렵습니다. 최근 시스템들은 롤아웃(시뮬레이션+생성)과 학습을 겹치지만, GPU 독점 할당과 롤아웃 내 동기화 장벽 때문에 여전히 상당한 하드웨어 자원이 낭비됩니다.",
+    solution: "저자들은 두 핵심 기법을 갖춘 비동기 체화 RL 학습 시스템 EBRL을 제안했습니다. 비동기 파이프라인 스케줄러는 롤아웃과 학습을 겹치고, 환경 그룹에 걸쳐 시뮬레이션과 생성을 파이프라인화하며, 각 환경을 독립적으로 진행시켜 동기화 지연을 없앱니다. 세분화 자원 관리자는 CPU 코어와 GPU 스트리밍 멀티프로세서를 풀로 묶고, 단계 프로파일과 런타임 피드백으로 자원 할당량과 배치 크기를 단계별 수요 변화에 맞게 조정합니다. RLinf 위에 구현해 OpenPI·GR00T·OpenVLA 등 네 가지 체화 정책과 네 가지 시뮬레이션 벤치마크, 이기종 GPU(RTX 4090–A100 혼합) 테스트베드에서 평가한 결과, 기존 최고 체화 RL 시스템 대비 종단간 롤아웃 처리량 1.30~3.47배(최대 1.98~2.98배 향상), 학습 수렴 시간 2.5배 단축을 보였습니다."
+  },
+  {
+    title: "Harness VLA: Steering Frozen VLAs into Reliable Manipulation Primitives via Memory-Guided Agents",
+    authors: "Yixian Zhang 외 16명",
+    arxiv_id: "2607.08448",
+    url: "https://arxiv.org/abs/2607.08448",
+    date: "2026-07-09",
+    categories: "cs.RO",
+    topics: ["A. RLinf 계열 — RLinf 학습 VLA 활용", "frozen RLinf-trained VLA as retryable primitive (VLA_ACT)", "analytic primitives + memory-guided agentic planner", "LIBERO-Pro +38.6%p · RoboCasa365 +27.1%p · RoboTwin C2R 58.4%"],
+    image: "images/2607.08448.png",
+    figcap: "Figure 1. Harness VLA 개요 — 과제 설명·RGB-D·로봇 상태를 받은 에이전트형 플래너가 프리미티브 라이브러리(RLinf로 학습한 동결 VLA의 VLA_ACT + MOVE_TO·ROTATE·SET_GRIPPER 등 해석적 프리미티브)에서 구조화된 호출을 선택하고, 과제별 메모리·전역 메모리에서 성공 기록과 휴리스틱을 참조. 우측: LIBERO-Pro·RoboCasa365·RoboTwin C2R에서 π0.5·Cap-X·RATS 등 대비 성공률",
+    rating: 3.5,
+    rating_reason: "RLinf로 학습한 VLA를 바꾸지 않고 '호출 방식과 메모리'만으로 교란 강건성을 크게 높였다는 비교가 명확하고, 동일 체크포인트 직접 실행 기준선을 둬 이득의 출처를 분리했습니다. 다만 플래너로 상용 LLM을 쓰고 해석적 프리미티브에 깊이·자세 접지가 필요하며, 실기기 결과는 정성적입니다.",
+    background: "언어 조건 조작은 정밀한 접촉 제어와 언어·장면·장기 지평에 대한 강건한 추론을 함께 요구합니다. 종단간 VLA는 강한 국소 시각운동 기술을 제공하지만 분포 내 궤적으로 학습되어 의미 재지정, 목표 재결합, 공간 배치 이동, 불안정한 국소 접촉 같은 배치 교란에서 자주 실패합니다. LLM 코딩 에이전트는 상호보완적인 의미·조합 추론을 제공하지만 순수 해석적 프리미티브만으로는 불규칙 파지, 제약된 놓기, 관절 물체 상호작용이 어렵습니다.",
+    solution: "저자들은 동결된 VLA를 재시도 가능한 접촉 프리미티브로 노출하고, 접지·준비·운반·내비게이션·해제를 위한 작은 고정 해석적 프리미티브 라이브러리와 조합하는 메모리 증강 에이전트 프레임워크 Harness VLA를 제안했습니다. 기술 라이브러리를 늘리는 대신 과제별 실행 추적, 전역 성공 규칙, 실패 모델로부터 고정 프리미티브들의 작동 범위를 학습합니다. 내부의 VLA 프리미티브는 RLinf로 RL 학습한 체크포인트(π_RLinf, 표준 LIBERO 95.3%)를 그대로 쓰며, 하네스는 표준 LIBERO에서 96.0%(384/400)로 경쟁력을 유지하면서 교란 평가인 LIBERO-Pro에서 82.4%(RATS 대비 +38.6%p), RoboCasa365에서 +27.1%p, RoboTwin C2R에서 58.4%를 기록했습니다. 시각운동 백본을 바꾸지 않고 얻은 결과이며, 동일 체크포인트를 직접 돌린 기준선은 교란 하 50.0%였습니다."
+  },
+  {
+    title: "Diffusion Policy Policy Optimization",
+    authors: "Allen Z. Ren 외 8명",
+    arxiv_id: "2409.00588",
+    url: "https://arxiv.org/abs/2409.00588",
+    date: "2024-09-01",
+    categories: "cs.RO, cs.LG",
+    topics: ["B. Diffusion Policy(U-Net) RL 미세조정 알고리즘", "two-layer MDP: environment MDP × denoising MDP → PPO", "DPPO-UNet / DPPO-MLP · pixel input ViT encoder", "Robomimic Transport >90% · 실기기 80% (Gaussian 0%)"],
+    image: "images/2409.00588.png",
+    figcap: "Figure 1. DPPO — 환경 MDP 안에 확산 잡음 제거 과정을 또 하나의 MDP로 넣어 각 잡음 제거 단계의 로그 우도 그래디언트로 정책 경사를 계산. 구조화된 탐색·학습 안정성·정책 강건성을 특징으로 하며 Robomimic·Gym 보행·Furniture-Bench·실기기에서 검증",
+    rating: 4.5,
+    rating_reason: "'확산 정책에는 PG가 비효율적'이라는 통념을 두 겹 MDP 정식화로 뒤집고, 여러 벤치마크·정책 파라미터화·사전학습 유무·실기기 전이까지 폭넓게 비교한 데다 왜 되는지의 분석(탐색 구조·강건성)까지 담았습니다. 2024-09 게재로 회차 기간 밖이지만 주제의 출발점이라 포함했습니다. 샘플 효율은 후속 연구(NCDPO 등)가 개선 여지를 보였습니다.",
+    background: "정책 경사(PG) 방법은 다른 정책 파라미터화에서는 어디서나 쓰이지만, 확산 기반 정책에는 잡음 제거 과정의 행동 우도를 계산하기 어려워 비효율적일 것이라 추측되어 왔습니다. 그래서 시연으로 사전학습한 Diffusion Policy를 환경 상호작용으로 더 개선하는 표준 방법이 없었습니다.",
+    solution: "저자들은 Diffusion Policy 같은 확산 기반 정책을 RL의 정책 경사로 미세조정하는 모범 사례를 담은 알고리즘 프레임워크 DPPO(Diffusion Policy Policy Optimization)를 제안했습니다. 잡음 제거 체인을 환경 MDP 안의 내부 MDP로 취급해 두 겹 MDP에 PPO를 적용하며, 정책 헤드로 MLP와 U-Net 둘 다를 다뤘습니다(U-Net은 예측 지평 16 중 실행 지평 8만 미세조정하는 식의 부분 미세조정이 가능). 놀랍게도 DPPO는 확산 정책용 다른 RL 방법들과 다른 파라미터화의 PG 미세조정 모두에 비해 가장 강한 종합 성능과 효율을 보였고, 그 이유로 다양체 위의 구조화된 탐색, 안정적 학습, 강한 정책 강건성이라는 RL 미세조정과 확산 파라미터화의 시너지를 실험으로 밝혔습니다. 상태·픽셀 입력 모두에서 Robomimic Transport를 50% 이상(상태 입력 >90%) 성공률로 푼 첫 RL 알고리즘이며, 시뮬레이션에서 미세조정한 정책을 실기기에 제로샷 전이해 80%(16/20)를 달성했습니다 — 가우시안 정책은 시뮬레이션 88%였지만 실기기에서는 0%였습니다. 이후 ReinFlow·DIA·NCDPO 등 확산 정책 RL 연구의 공통 기준선이 되었습니다."
+  },
+  {
+    title: "Steering Your Diffusion Policy with Latent Space Reinforcement Learning",
+    authors: "Andrew Wagenmaker 외 7명",
+    arxiv_id: "2506.15799",
+    url: "https://arxiv.org/abs/2506.15799",
+    date: "2025-06-18",
+    categories: "cs.RO, cs.LG",
+    topics: ["B. Diffusion Policy(U-Net) RL 미세조정 알고리즘", "DSRL: RL over latent noise space, black-box BC policy", "no weight update · offline + online · policy-agnostic", "실기기 20% → 90% in < 50 episodes · π0에도 적용"],
+    image: "images/2506.15799.png",
+    figcap: "Figure 1. (위) 표준 확산 정책 배치: 가우시안 잡음 w를 넣어 행동 a를 생성. (아래) DSRL: 가중치는 그대로 두고 잠재 잡음 정책 π^W(s)가 어떤 잡음을 넣을지 RL로 학습해 확산 정책을 '조종' — 블록 담기·토스터 과제에서 실패하던 행동이 성공으로",
+    rating: 4.5,
+    rating_reason: "가중치를 건드리지 않고 잡음만 조종한다는 발상이 확산 정책 RL의 불안정성과 샘플 비효율을 동시에 피하며, 시뮬레이션·실기기·π0 같은 대형 정책까지 일관된 결과를 보여 근거가 넓습니다. 다만 조종 가능한 행동이 기본 정책이 이미 표현하는 분포 안으로 제한되고, 블랙박스 설정이라 인코더 미세조정은 다루지 않습니다.",
+    background: "사람 시연으로 학습한 로봇 제어 정책은 실세계에서 인상적인 결과를 냈지만, 새로운 개방 환경처럼 초기 성능이 만족스럽지 않으면 행동 복제(BC) 정책은 보통 추가 시연을 모아야 하며 이는 비싸고 느립니다. RL은 자율 온라인 개선을 약속하지만 필요한 샘플 수가 많아 실제로는 잘 이루지 못합니다.",
+    solution: "저자들은 BC 학습 정책, 특히 확산 정책의 빠른 자율 적응을 위해 잠재 잡음 공간에서 RL을 돌리는 DSRL(diffusion steering via RL)을 제안했습니다. 확산 정책의 가중치를 바꾸거나 출력을 후처리하는 대신 입력 잡음 분포를 바꿔 원하는 행동을 내도록 '조종'합니다. DSRL은 샘플 효율이 매우 높고 BC 정책에 대한 블랙박스 접근만 필요하며, 오프라인 데이터를 쓰면 샘플 복잡도가 약 2배 더 좋아집니다. 시뮬레이션 벤치마크와 실세계 로봇 과제에서 효과적인 RL 기반 정책 개선을 보였고, 실세계에서는 50회 미만의 온라인 상호작용으로 성공률을 20%에서 90%로 끌어올린 사례도 있으며, DiT 구조 확산 정책뿐 아니라 VLM 백본에 플로 헤드를 쓰는 3.3B π0 범용 정책도 20%에서 거의 100%로 개선했습니다. Robometer(RSS XXII) 등 후속 연구에서 온라인 RL 엔진으로 채택되었습니다."
+  },
+  {
+    title: "ReinFlow: Fine-tuning Flow Matching Policy with Online Reinforcement Learning",
+    authors: "Tonghe Zhang 외 3명",
+    arxiv_id: "2505.22094",
+    url: "https://arxiv.org/abs/2505.22094",
+    date: "2025-05-28",
+    categories: "cs.RO, cs.LG",
+    topics: ["B. Diffusion Policy(U-Net) RL 미세조정 알고리즘", "ReinFlow: learnable noise injection → discrete-time Markov flow, exact likelihood", "1-step Rectified Flow · Shortcut models", "Robomimic ViT encoder · 성공률 +40.34% · DPPO 대비 wall time −62.82%"],
+    image: "images/2505.22094.png",
+    figcap: "Figure 1. ReinFlow — 센서→인코더→시각운동 특징에서 속도 헤드 v_θ가 플로 경로를 내고, 잡음 주입 네트워크 σ_θ'가 학습 가능한 잡음을 더해 결정론적 플로를 이산 시간 마르코프 과정으로 바꿔 정확한 우도 계산과 탐색을 가능하게 함",
+    rating: 4.0,
+    rating_reason: "결정론적 플로에 학습 가능한 잡음을 넣어 우도를 되살린다는 이론적으로 깔끔한 해법으로 DPPO 대비 속도·성능을 함께 개선했고, 보행·조작·시각 입력에서 검증했습니다. 다만 비교 대상이 주로 DPPO이고 실기기 실험이 없습니다.",
+    background: "플로 매칭 정책은 적은 잡음 제거 단계로 빠르지만 경로가 결정론적이라 RL 미세조정에 필요한 우도 계산과 탐색이 어렵습니다. 기존 최고 확산 RL 미세조정 방법 DPPO는 많은 잡음 제거 단계가 필요해 학습 벽시계 시간이 깁니다.",
+    solution: "저자들은 연속 로봇 제어용 플로 매칭 정책군을 온라인 RL로 미세조정하는 간단하고 효과적인 프레임워크 ReinFlow를 제안했습니다. 엄밀한 RL 이론에서 유도해, 플로 정책의 결정론적 경로에 학습 가능한 잡음을 주입함으로써 플로를 이산 시간 마르코프 과정으로 바꿔 정확하고 간단한 우도 계산을 가능하게 합니다. 이 변환은 탐색을 돕고 학습 안정성을 보장해 Rectified Flow와 Shortcut 모델 등 다양한 플로 변형을 매우 적은(심지어 한 번의) 잡음 제거 단계에서도 미세조정할 수 있게 합니다. 시각 입력·희소 보상의 장기 계획을 포함한 보행·조작 과제에서 벤치마크한 결과, Rectified Flow 정책의 에피소드 보상이 어려운 보행 과제에서 평균 135.36% 순증했고 DPPO 대비 잡음 제거 단계와 벽시계 시간 82.63%를 절약했습니다. Robomimic 시각 조작(단일 층 ViT 인코더 + 랜덤 시프트 증강)에서는 사전학습 정책 대비 성공률 평균 40.34~45.77% 향상, 전체 과제 평균 벽시계 시간 62.82% 단축을 보였고, 성공률이 100%에 수렴하면 잡음 수준이 자연히 줄었습니다."
+  },
+  {
+    title: "DIA: Denoising Intermediate Advantage for Diffusion Policy Optimization",
+    authors: "Arjun Sohal 외 3명",
+    arxiv_id: "2609.12245",
+    url: "https://arxiv.org/abs/2609.12245",
+    date: "2026-09-10",
+    categories: "cs.RO",
+    topics: ["B. Diffusion Policy(U-Net) RL 미세조정 알고리즘", "DIA: value over partially denoised actions → per-step denoising advantage", "inner credit + outer PPO advantage", "Transport return +23% · pixel +8% · Lamp-Med 성공률 +12% vs DPPO"],
+    image: "images/2609.12245.png",
+    figcap: "Figure 1. 확산 정책 미세조정의 두 겹 MDP — 외부 MDP의 각 상태 S_t에서 내부 MDP가 잡음 x_{t,0}부터 k단계 잡음 제거로 행동 a_{t+1}을 생성하며, 각 중간 단계에 내부 보상 r_{t,i}를 부여해 어떤 잡음 제거 결정이 최종 수익에 기여했는지 구분",
+    rating: 3.5,
+    rating_reason: "DPPO의 '모든 잡음 제거 단계에 같은 크레딧'이라는 약점을 정확히 짚고 내부 가치 함수로 푼 논리가 깔끔하며, 상태·픽셀·가구 조립 벤치마크에서 DPPO와 직접 비교했습니다. 다만 향상 폭이 수익 중심이고 성공률 차이는 작은 편이며 실기기 검증이 없습니다.",
+    background: "확산 기반 로봇 정책은 보통 행동 복제로 학습되어 시연 데이터의 품질과 범위에 묶이고, RL이 상호작용으로 이를 개선할 수 있습니다. 흔한 접근은 확산 정책 미세조정을 외부 환경 MDP와 내부 잡음 제거 MDP로 정식화하는 정책 경사(DPPO)인데, 기존 방법은 행동 청크를 만든 모든 잡음 제거 단계에 같은 환경 수준 크레딧을 배정해 어떤 중간 결정이 최종 수익에 가장 기여했는지 구분하지 못합니다.",
+    solution: "저자들은 부분적으로 잡음 제거된 행동에 대한 가치 함수를 학습하고 이를 써서 생성 과정의 각 단계에 잡음 제거 수준 이점(advantage)을 구성하는 정책 경사 방법 DIA(Denoising Intermediate Advantage)를 제안했습니다. 이 내부 크레딧 신호를 표준 환경 수준 PPO 이점과 결합해 상태 의존적인 단계별 크레딧 배정을 제공합니다. Robomimic 상태·픽셀 입력 과제와 Furniture-Bench에서 평가한 결과, 어려운 양팔 Transport에서 DPPO와 비슷한 성공률에 수익이 23% 높고 과제 완료 시간 중앙값이 21% 짧았으며, 이미지 기반 Square-Pixel·Can-Pixel에서 평균 약 8% 수익 향상, Furniture-Bench One-Leg에서 수익 +12%·성공률 +3%, 더 어려운 Lamp-Med에서 수익 +20%·성공률 +12%를 기록했습니다. 궤적 시각화에서 DIA는 장애물을 더 넓게 우회하는 안정적인 경로로 수렴했습니다."
+  },
+  {
+    title: "Fine-tuning Diffusion Policies with Backpropagation Through Diffusion Timesteps",
+    authors: "Ningyuan Yang 외 4명",
+    arxiv_id: "2505.10482",
+    url: "https://arxiv.org/abs/2505.10482",
+    date: "2025-05-15",
+    categories: "cs.LG, cs.AI",
+    topics: ["B. Diffusion Policy(U-Net) RL 미세조정 알고리즘", "NCDPO: noise-conditioned deterministic policy, backprop through denoising steps", "vs DPPO: Robomimic visual 성공률 +68.9% · 샘플 효율 +313.8%", "vs ViT-MLP+PPO from scratch"],
+    image: "images/2505.10482.png",
+    figcap: "Figure. 무작위 초기화에서 온라인 학습한 Gym 보행(walker2d·halfcheetah) 보상 곡선 — DP+DPPO(파랑)는 MLP+PPO(초록)보다 크게 뒤지지만, DP+NCDPO(빨강)는 확산 정책으로도 MLP+PPO와 대등한 샘플 효율에 도달",
+    rating: 3.5,
+    rating_reason: "확산 정책 PG의 샘플 비효율이라는 실제 약점을 '잡음 조건 결정론적 정책'이라는 재정식화로 크게 줄였고 DPPO·MLP+PPO와 다양한 벤치마크에서 비교했습니다. 다만 모두 시뮬레이션이고, 전 단계 역전파의 메모리·계산 비용과 깊은 잡음 제거 체인에서의 그래디언트 안정성 논의가 제한적입니다.",
+    background: "확산 정책은 표현력이 높아 시연에서 다양한 기술을 배우지만 시연의 준최적성과 제한된 범위 때문에 준최적 궤적이나 치명적 실패를 낼 수 있습니다. RL 미세조정이 유망한 해법이지만 잡음 제거 과정의 행동 우도 계산이 다루기 어려워 PPO를 확산 모델에 효과적으로 적용하기 어렵고, 저자들은 무작위 초기화에서 확산 정책을 온라인 학습하면 MLP 정책에 PPO를 직접 쓰는 것보다 샘플 효율이 훨씬 낮음을 확인했습니다.",
+    solution: "저자들은 확산 정책을 사전 샘플링된 잡음에 조건 지어진 결정론적 정책으로 재정식화하는 NCDPO를 제안했습니다. 모든 잡음 제거 단계를 통한 역전파로 다루기 쉬운 우도 추정과 그래디언트 전파가 가능해져 PPO 스타일 미세조정이 단순해집니다. Gym 보행, Franka Kitchen, Robomimic(시각 입력 포함) 등 다양한 벤치마크에서 DPPO 대비 보상이 Gym 30.6%, Kitchen 15.4% 높고, 시각 입력 Robomimic에서는 성공률이 평균 68.9% 높았으며(transport-vision 4M 샘플), 샘플 효율은 Gym 800%, Kitchen 34.6%, Robomimic 상태 97.3%, 시각 313.8% 향상됐습니다. 무작위 초기화에서도 MLP+PPO와 대등하고(ViT 인코더+MLP 가우시안 정책과 비교), 잡음 제거 단계 수가 달라져도 강건했으며, 다중 모달 행동 분포 학습 능력은 유지했습니다."
+  },
+  {
+    title: "REFINE-DP: Diffusion Policy Fine-tuning for Humanoid Loco-manipulation via Reinforcement Learning",
+    authors: "Zhaoyuan Gu 외 13명",
+    arxiv_id: "2603.13707",
+    url: "https://arxiv.org/abs/2603.13707",
+    date: "2026-03-14",
+    categories: "cs.RO, cs.AI, cs.LG",
+    topics: ["B. Diffusion Policy(U-Net) RL 미세조정 알고리즘", "REFINE-DP: PPO diffusion policy gradient + jointly updated RL loco-manip controller", "humanoid · command tracking distribution shift", "시뮬레이션 >90% · 최대 무작위화 0% → 80%"],
+    image: "images/2603.13707.png",
+    figcap: "Figure 1. (a) 원격조종·행동 플래너로 동결 보행-조작 제어기에 명령을 내려 데이터 수집, (b) 오프라인 시연으로 DP 운동 플래너 사전학습, (c) REFINE-DP: PPO로 확산 정책을 미세조정하면서 보행-조작 제어기도 동시에 갱신해 플래너의 변하는 명령 분포를 정확히 추종 — 성공률↑·추종 오차↓",
+    rating: 3.5,
+    rating_reason: "확산 플래너만 미세조정하면 하위 제어기와의 분포 불일치가 남는다는 인간형 특유의 문제를 짚고 두 층을 함께 갱신한 설계가 타당하며, 여러 플래너·미세조정 기준선과 비교했습니다. 다만 주 평가가 시뮬레이션이고 실세계는 시연 수준이며, 플래너가 U-Net이 아닌 DiT 백본입니다.",
+    background: "인간형 보행-조작은 복잡한 로봇–환경 동역학과 장기 과제 아래 작업 공간 운동 계획과 안정적 명령 추종을 함께 요구합니다. 확산 정책(DP)은 시연 학습에 유망하지만 인간형에 배치하면 오프라인 학습한 운동 플래너가 보행-조작 제어기와 분리되어 명령 추종이 나쁘고 분포 이동이 누적되며 과제가 실패합니다. 고차원 인간형에서 시연 데이터를 늘리는 것은 비용이 너무 큽니다.",
+    solution: "저자들은 DP 운동 플래너와 RL 기반 보행-조작 제어기를 함께 최적화하는 계층 프레임워크 REFINE-DP를 제안했습니다. DP는 PPO 기반 확산 정책 경사로 미세조정해 과제 성공률을 높이고, 제어기는 동시에 갱신해 플래너의 변해 가는 명령 분포를 정확히 추종하게 함으로써 운동 품질을 떨어뜨리는 분포 불일치를 줄입니다. 사전학습 DiT·LSTM·MLP 플래너, RL 미세조정 MLP, 잔차 RL 등과 비교해 시뮬레이션에서 사전학습 데이터에 없는 분포 밖 경우에도 90% 이상 성공했고, 사전학습 정책이 0%이던 최대 무작위화 수준에서도 커리큘럼 미세조정으로 80% 이상으로 올렸으며, 자세 오차는 최대 50% 줄었습니다. 특권 상태 정보 없이 실세계 실행도 가능했고, 미세조정은 사전학습 정책이 약 50~70%의 중간 성공률일 때 가장 효과적임을 밝혔습니다."
+  },
+  {
+    title: "CFG-Policy: Unified Diffusion Policy Learning Framework via Classifier-free Guidance",
+    authors: "Shutong Ding 외 5명",
+    arxiv_id: "2610.14936",
+    url: "https://arxiv.org/abs/2610.14936",
+    date: "2026-10-10",
+    categories: "cs.RO, cs.LG",
+    topics: ["B. Diffusion Policy(U-Net) RL 미세조정 알고리즘", "CFG-Policy: frozen exploration branch + exploitation branch, classifier-free guidance", "online RL · offline-to-online · VLA post-training (π0)", "π0 Adjust Bottle 82.81 → 98.44%"],
+    image: "images/2610.14936.png",
+    figcap: "Figure 1. (좌) 온라인 확산 RL: 학습이 진행될수록 탐색 능력이 줄어 더 나은 모드를 놓치고 국소 최솟값에 빠짐. (우) VLA RL 사후학습: VLM + 확산/플로 행동 헤드를 직접 미세조정하면 불안정하고, 잔차 RL은 탐색이 제한됨 — 더 나은 활용과 탐색을 함께 얻을 수 있을까",
+    rating: 3.5,
+    rating_reason: "확산 RL의 '다양성 붕괴'와 VLA 사후학습의 '능력 손상'을 하나의 CFG 결합으로 함께 다룬 통일성이 돋보이고 온라인·오프라인→온라인·VLA 세 설정에서 검증했습니다. 다만 매우 최근 논문으로 실기기 결과가 없고 안내 가중치 선택 민감도 분석이 제한적입니다.",
+    background: "확산 정책은 로봇 제어·조작, VLA, 세계 모델 기반 에이전트에서 점점 널리 쓰이며 다중 모달 행동 분포는 RL 탐색에 풍부한 기회를 줍니다. 그러나 RL로 확산 정책을 최적화하면 행동 다양성이 줄어 탐색 능력이 더 제한되고, RL 사후학습에서 사전학습 정책을 직접 미세조정하면 습득한 능력이 손상될 수 있으며 행동 공간 잔차는 다중 모달 탐색에 표현력이 부족합니다.",
+    solution: "저자들은 탐색과 활용을 두 생성 정책으로 분리하고 샘플링 시 분류기 없는 안내(classifier-free guidance)로 두 정책의 스코어 또는 속도장을 결합하는 통일 플러그앤플레이 프레임워크 CFG-Policy를 제안했습니다. 온라인 RL에서는 동결된 탐색 가지가 행동 다양성을 유지하고 활용 가지가 보상을 최적화하며, 오프라인→온라인과 VLA 사후학습에서는 사전학습 정책이 탐색 가지가 되어 능력을 보존하면서 활용 가지가 과제 성능을 끌어올립니다. 두 전문가는 동결된 비전-언어 백본과 관측 특징을 공유하고 행동 전문가 파라미터만 따로 둡니다. 시뮬레이션 보행·조작과 π0 사후학습에서 기존 확산 RL 방법보다 높은 성능과 다양성을 보였고, π0의 Adjust Bottle 성공률을 82.81%에서 98.44%로, Pick Dual Bottles를 43.75%에서 57.81%로 높였습니다."
+  },
+  {
+    title: "RoboBERT: An End-to-end Multimodal Robotic Manipulation Model",
+    authors: "Sicheng Wang 외 4명",
+    arxiv_id: "2502.07837",
+    url: "https://arxiv.org/abs/2502.07837",
+    date: "2025-02-11",
+    categories: "cs.RO, cs.LG",
+    topics: ["C. CLIP/ViT 인코더 + Diffusion Policy 구조", "ViT (partial unfreeze) + frozen BERT → CNN-based diffusion head (Conv1d FiLM)", "two-stage training · language variants", "CALVIN ABCD-D 4.52 · ABC-D 3.79 SOTA"],
+    image: "images/2502.07837.png",
+    figcap: "Figure. RoboBERT 구조 — (a) 부분 해동 ViT의 이미지 토큰과 동결 BERT의 언어 토큰을 언어 연결기·모달리티 융합기가 결합해 잠재 토큰을 만들고, Conv1d·FiLM 기반 확산 헤드가 행동 청크를 잡음 제거로 생성. (b) 2프레임 관측으로 미래 행동 청크 예측",
+    rating: 3.5,
+    rating_reason: "범용 ViT·BERT 인코더 + CNN 확산 헤드라는 경량 구성으로 CALVIN 최고 성능을 낸 결과가 명확하고, 2단계 학습의 효과를 소거로 보였습니다. 다만 RL 미세조정은 다루지 않아 본 회차 조합의 '인코더+확산 헤드' 절반만 해당하며 실기기 평가 규모가 작습니다.",
+    background: "체화 지능은 비전·언어·행동을 매끄럽게 통합해야 하지만, 대부분의 다중 모달 로봇 모델은 대규모 미세조정에 의존해 시간·하드웨어 비용이 큽니다. 대형 VLM 백본 없이 사전학습 ViT·BERT 같은 범용 인코더와 경량 확산 헤드만으로 언어 조건 조작을 얼마나 할 수 있는지는 불분명했습니다.",
+    solution: "저자들은 2단계 학습 패러다임을 중심으로 한 종단간 다중 모달 조작 모델 RoboBERT를 제안했습니다. 1단계에서는 비전 인코더(ViT, 마지막 층만 해동)를 대부분 동결하고 하나의 '표준' 지시 표현으로 학습해 CNN 기반 확산 정책(Conv1d U-Net 계열 헤드)의 안정적 정책 학습에 집중하고, 2단계에서 모든 모듈을 해동하고 다양한 자연어 변형을 주입해 이미 배운 정책에 다양한 지시를 성능 저하 없이 빠르게 정렬합니다. 체계적인 데이터 증강으로 시각 교란에 대한 강건성도 높였습니다. 보조 데이터셋 없이 언어 라벨 전문가 시연만으로 CALVIN ABCD-D 평균 에피소드 길이 4.52, ABC-D 3.79의 새 최고 성능을 비교적 가벼운 구조로 달성했고, 실기기 시험에서도 다른 방법보다 높은 성공률을 보였습니다."
+  },
+  {
+    title: "From Representational Complementarity to Dual Systems: Synergizing VLM and Vision-Only Backbones for End-to-End Driving",
+    authors: "Sining Ang 외 10명",
+    arxiv_id: "2602.10719",
+    url: "https://arxiv.org/abs/2602.10719",
+    date: "2026-02-11",
+    categories: "cs.RO, cs.CV",
+    topics: ["C. CLIP/ViT 인코더 + Diffusion Policy 구조", "ResNet · ViT · EVA-CLIP vs VLM encoders, same diffusion-policy planner", "CKA/CCA · SAE representation analysis", "NAVSIM PDMS 90.80 → 92.10 (hybrid) · 1.9× faster dual"],
+    image: "images/2602.10719.png",
+    figcap: "Figure 1. VLM 인코더와 비전 전용 인코더(ResNet·ViT·EVA-CLIP)를 같은 확산 정책 플래너·학습 설정에 연결해 비교 — 정책 학습이 공통 결정 부분공간을 키우지만 각 가지는 전이되지 않는 잔차 요인을 유지(RQ1), 비전 전용은 기하 중심 장면·VLM은 의미·상호작용 장면에 강함(RQ2), 이를 활용한 HybridDriveVLA(90.80→92.10)와 DualDriveVLA(VLM 15%만 호출, 1.9배 빠름)",
+    rating: 4.0,
+    rating_reason: "같은 확산 정책 플래너를 고정하고 인코더만 바꾸는 통제 비교에 표현 분석(CKA·SAE)과 행동 분석, 시스템 설계까지 이어져 'CLIP/ViT vs VLM 인코더' 선택의 근거를 가장 직접적으로 제공합니다. 자율주행(NAVSIM·nuPlan) 도메인이라 조작으로의 전이는 추론이 필요합니다.",
+    background: "VLA 주행은 언어 가능 시각 백본으로 종단간 계획을 보강하지만, 정책 학습 후 VLM 표현이 비전 전용 인코더와 어떻게 다른지, 그 차이가 계획에 중요한지는 불분명했습니다. 즉 확산 정책 앞단에 CLIP·ViT 같은 비전 인코더를 둘지 VLM을 둘지에 대한 통제된 근거가 부족했습니다.",
+    solution: "저자들은 통일된 'VLM 은닉 + 확산 정책' 패러다임 아래 하류 플래너를 고정한 채 여러 VLM 계열·규모(InternVL3, Qwen3VL)와 표준 비전 전용 인코더(ResNet, ViT, EVA-CLIP)를 비교해 표현·행동·시스템 설계를 연구했습니다. CKA/CCA와 공유–고유 희소 오토인코더 분석은 정책 학습이 공통 결정 부분공간을 키우지만 두 가지 모두 전이되지 않는 잔차 요인을 유지함을 보였고, nuPlan의 AsyncDrive 스택에서도 같은 패턴이 재현됐습니다. 잠재 개입 정책과 시나리오 분석으로 이 잔차가 행동적으로 의미 있음을 확인했는데, 비전 전용 인코더는 기하가 지배하는 단순 장면에, VLM은 의미적으로 복잡하고 상호작용이 많은 롱테일에 강했습니다. 이를 바탕으로 학습된 궤적 점수기로 두 후보 중 고르는 HybridDriveVLA는 NAVSIM PDMS를 90.80에서 92.10으로 높였고, 대부분 비전 전용으로 처리하다 필요할 때만 VLM을 부르는 DualDriveVLA는 VLM 호출 약 15%로 91.00 PDMS를 유지하며 지연을 약 280ms에서 150ms로 1.9배 줄였습니다."
+  },
+  {
+    title: "Factor-Aware Mixture-of-Experts with Pretrained Encoder for Combinatorial Generalization",
+    authors: "Feihong Zhang 외 10명",
+    arxiv_id: "2606.21100",
+    url: "https://arxiv.org/abs/2606.21100",
+    date: "2026-06-19",
+    categories: "cs.RO",
+    topics: ["C. CLIP/ViT 인코더 + Diffusion Policy 구조", "FAME: frozen pretrained encoder (DINOv2/CLIP/R3M) + factor-aware MoE adapters", "3-stage: warmup → factor adapters → joint router", "Meta-World 54.15% (+34%) · 실기기 +35%"],
+    image: "images/2606.21100.png",
+    figcap: "Figure 1. (좌) Meta-World 9과제와 실기기 집어 놓기. (우) 조명·질감 등 환경 변화 아래 시뮬레이션 성공률 — ResNet 20.11, R3M 7.85, CLIP 17.78, DINO 19.67 대비 FAME 54.15; 실기기에서 카메라 위치·테이블 질감 변화 시 ResNet 25~45, DINO 35 대비 FAME 60~80",
+    rating: 3.5,
+    rating_reason: "'동결 사전학습 인코더 + 확산 정책' 조합의 환경 변화 취약성을 명확히 보이고(CLIP·DINO 모두 20% 미만) 어댑터 MoE라는 가벼운 해법으로 큰 폭 개선을 시뮬레이션·실기기 모두에서 확인했습니다. 다만 요인별 맞춤 데이터셋이 필요해 사전에 요인을 정의해야 하고 RL 미세조정과의 결합은 다루지 않습니다.",
+    background: "사전학습 인코더와 확산 정책의 결합은 시각 로봇 조작의 지배적 패러다임이 되었지만, 조명·표면 질감 같은 요인이 바뀌는 복잡한 환경으로의 일반화는 여전히 어렵습니다. DINOv2·CLIP·R3M 같은 대표 인코더를 동결해 써도 환경 변화 아래 성공률은 20% 안팎에 그칩니다.",
+    solution: "저자들은 요인 인지 전문가 혼합(MoE)을 사전학습 인코더와 통합해 환경 변화 일반화를 높이는 프레임워크 FAME을 제안했습니다. 3단계 학습으로 (1) 동결 인코더 위에서 표준 환경 데이터로 확산 정책을 워밍업하고, (2) 동결 인코더와 임시 동결 정책 사이에 경량 어댑터를 넣어 조명·질감 등 각 환경 요인을 겨냥한 맞춤 데이터셋으로 요인별 어댑터를 학습하며, (3) 중앙 라우터와 워밍업된 정책을 혼합 데이터로 함께 미세조정해 여러 요인을 동시에 다룹니다. 중앙 라우터가 요인을 인식해 어댑터를 고르므로 '요인 인지'이며, 요인 조합으로의 조합적 일반화를 노립니다. Meta-World 9과제의 모든 환경 설정 평균 54.15% 성공률로 두 번째 방법보다 34% 높았고(Door Lock 59.33%, Peg Insert Side 60.33% 등), 새로 수집한 데이터로 학습한 소형 모델의 실세계 집어 놓기에서 카메라 위치·테이블 질감 변화 아래 ResNet·DINO 대비 35% 향상(60~80%)을 보였습니다."
+  }
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.date} · ${p.categories}${p.arxiv_id ? ' · arXiv:' + p.arxiv_id : ''}${p.doi ? ' · DOI:' + p.doi : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      <div class="figwrap">
+        <div class="fig">
+          ${p.image
+            ? `<img src="${p.image}" alt="${p.title}">`
+            : `<div class="noimg">대표 그림 없음</div>`}
+        </div>
+        ${p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``}
+      </div>
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+  el.innerHTML = '<h3>지난 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>

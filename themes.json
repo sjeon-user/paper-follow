@@ -248,6 +248,20 @@
         "direct comparison · same benchmark"
       ],
       "note": "2025-06 이후 arXiv · 비교 실험이 명시된 논문만 선별(서베이·벤치마크 제안만 있는 논문 제외) · 기소개 없음"
+    },
+    "2026-10-18": {
+      "label": "CLIP/ViT + Diffusion Policy + RLinf",
+      "title": "CLIP·ViT 인코더 + Diffusion Policy(U-Net) + RLinf 조합으로 로봇 정책을 만들기 위한 참고 논문 — RLinf 계열 RL 학습 인프라, Diffusion Policy RL 미세조정 알고리즘(DPPO·DSRL·ReinFlow·DIA·NCDPO·REFINE-DP·CFG-Policy), CLIP/ViT 인코더 + 확산 헤드 구조 연구",
+      "keywords": [
+        "RLinf / RLinf-VLA / EBRL",
+        "diffusion policy RL fine-tuning",
+        "DPPO · two-layer MDP",
+        "latent-noise steering (DSRL)",
+        "flow policy + learnable noise (ReinFlow)",
+        "CLIP / ViT / DINOv2 encoder + diffusion head",
+        "pretrained encoder generalization"
+      ],
+      "note": "세 요소(CLIP ViT 인코더 · U-Net 확산 정책 · RLinf)를 한 논문에서 모두 결합한 사례는 arXiv·RSS 모두 없음 → 요소별로 나눠 14편 구성 · DPPO(2024-09)는 기간 밖이지만 주제의 출발점이라 포함 · RSS XXII의 해당 논문(RLux-VLA p089, TMRL p208, LPS p152, Q-from-BC p153, USER p037)은 모두 기소개라 RSS 회차는 생략"
     }
   },
   "rss": {
