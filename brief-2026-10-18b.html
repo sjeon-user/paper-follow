@@ -1,0 +1,406 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physical AI 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Physical AI 논문 팔로우업</h1>
+    <div class="sub">최근 arXiv 신규 논문 · 대표 그림 + 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="keep.html">⭐ 보관함</a> <a href="rss-brief.html">🏛 RSS 학회</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>follow-config.md 설정을 기반으로 자동 생성 · arXiv 데이터</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-10-18b";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "지그·고정구·전용 장비·수작업 프로그래밍(전통 자동화)이나 자세 추정·가림·투명 물체(컴퓨터 비전)의 한계를 직접 거론하고 모방학습·강화학습으로 대응한 로봇 조작 사례 — 산업 조립·연구실·공장 배치, 공차·가공 오차·부품 변동, 가림·자세 추정 잡음·투명 기구", "keywords": ["jigless / fixtureless", "traditional automation limits", "manual programming · changeover", "high-mix low-volume", "fabrication tolerance · part variation", "pose estimation noise · occlusion", "transparent / reflective objects", "imitation learning · RL in industry"], "note": "2025-01 이후 arXiv · 서론·초록에 자동화 또는 CV 한계가 명시된 논문만 선별 15편 · 'jigless/fixtureless' 직접 검색 결과는 계획 논문(WRAP, 모듈형 고정구 배치) 2편뿐으로 학습 기반이 아니라 제외 · RSS XXII 210편 본문 검색 결과 미소개 논문 중 해당 사례 없음 — 가장 가까운 기소개 논문은 CoRAL(p054, 산업 접촉 조작)·Force Policy(p128)"};
+/* 보관된 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-10-18b", t:"자동화·CV 한계 극복 학습 조작"}, {d:"2026-10-18", t:"CLIP/ViT + Diffusion Policy + RLinf"}, {d:"2026-10-06", t:"학습 없는 비전 제어 vs 행동 학습"}, {d:"2026-10-01", t:"VLA + 강화학습 · 정답 감독"}, {d:"2026-09-30c", t:"텔레센트릭 카메라 활용"}, {d:"2026-09-30b", t:"거울(mirror) 활용"}, {d:"2026-09-30", t:"조명(lighting) 활용"}, {d:"2026-09-29", t:"다중 신호 동기화 · 지연"}, {d:"2026-09-28", t:"파이펫팅 조작 특집"}, {d:"2026-09-21", t:"정밀도·정확도·재현성"}, {d:"2026-09-10", t:"Diffusion/Flow 정책 · ACT · 접촉 저널"}, {d:"2026-08-12", t:"UMI 계보 특집"}, {d:"2026-08-10", t:"투명 물체 특집"}, {d:"2026-08-08", t:"일일 · follow-config 주제"}, {d:"2026-08-06", t:"일일 · 주제 5개로 축소"}, {d:"2026-08-04", t:"일일 · follow-config 주제"}, {d:"2026-08-03", t:"일일 브리핑"}, {d:"2026-07-31", t:"일일 브리핑"}, {d:"2026-07-30", t:"일일 브리핑"}, {d:"2026-07-29", t:"일일 브리핑"}, {d:"2026-07-28", t:"일일 브리핑"}, {d:"2026-07-27", t:"일일 브리핑"}, {d:"2026-07-24", t:"일일 브리핑"}, {d:"2026-07-23", t:"일일 브리핑"}, {d:"2026-07-22", t:"일일 브리핑"}, {d:"2026-07-21", t:"일일 브리핑"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     arxiv_id: "2507.xxxxx",
+     url:      "https://arxiv.org/abs/2507.xxxxx",
+     date:     "2026-07-15",           // arXiv 최초 제출일
+     categories: "cs.RO, cs.CV",
+     topics:   ["VLA","robot arm"],     // follow-config의 세부 주제 태그
+     image:    "images/2507xxxxx.png",  // 대표 그림 (없으면 "")
+     figcap:   "Figure 1. ...",         // 그림 설명 (선택)
+     background: "배경·기존 문제 2~3문장 (설명/소개 문투)",
+     solution:   "해결·방법과 결과 2~3문장 (설명/소개 문투)",
+     rating:     4.5,                  // 논문 전체 논리 + 근거 견고함 (0~5, 0.5 단위)
+     rating_reason: "그 점수를 준 근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "Industrial Dexterity Benchmark: A Hardware-Software Benchmarking Platform for Industrial Dexterous Manipulation",
+    authors: "Honglu He 외 10명",
+    arxiv_id: "2607.14021",
+    url: "https://arxiv.org/abs/2607.14021",
+    date: "2026-07-15",
+    categories: "cs.RO",
+    topics: ["A. 지그·전용 장비·수작업 프로그래밍 없이", "classical vision pipeline (CAD pose, 5× re-estimation) → end-to-end multimodal DP", "IDB boards: datacenter cable · automotive harness · gearbox", "multi-view RGB + point cloud + wrench · 76% vs 36%"],
+    image: "images/2607.14021.png",
+    figcap: "Fig. 1. 이 연구가 겨냥하는 현장 — 가동률이 중요한 생산 데이터센터의 빽빽한 랙 스위치와 케이블 다발. 이런 케이블 정리·커넥터 삽입은 수십 년의 로봇 연구에도 여전히 사람 손에 의존",
+    rating: 3.5,
+    rating_reason: "고전 비전 파이프라인의 한계를 저자들이 직접 구축·경험한 뒤 종단간 학습으로 넘어간 과정을 기록하고, 입력 모달리티별 48회 시행 비교로 3D 맥락의 중요성을 보였습니다. 다만 평가가 한 보드의 한 과제(케이블 1개)에 머물고 고전 파이프라인과의 정량 비교는 없으며 벤치마크 보드의 재현성은 공개 후 확인이 필요합니다.",
+    background: "케이블 라우팅, 커넥터 삽입, 정밀 조립 같은 정교 조작은 산업 자동화의 핵심 병목으로, 수십 년의 로봇 연구에도 여전히 수작업에 크게 의존합니다. 저자들은 NIST ATB4 6커넥터 하네스 삽입을 CAD 참조 모델 기반 자세 추정과 최대 5회 반복 재추정으로 푸는 고전 비전 파이프라인부터 시작했는데, 이런 모듈형 파이프라인은 부품마다 모델·마스크·검색 단계를 손으로 짜야 하고 현대 인프라의 운영 요구와 전통 자동화 능력 사이의 간극을 드러냅니다.",
+    solution: "저자들은 고전 모듈형 로봇 파이프라인에서 종단간 다중 모달 모방학습 프레임워크로의 진행 과정을 제시했습니다. 데이터센터 케이블 관리, 자동차 케이블 하네스, 기어박스 조립을 모사한 산업 정교 조작 벤치마크(IDB) 보드, 확장 가능한 모방학습 프레임워크 DAG-ROS, RGB 영상·점군·관절 위치·손목 렌치 데이터를 융합하는 확산 정책 프레임워크 AG-iDP3가 핵심 기여입니다. 데이터센터 케이블 보드의 케이블 1개 정리 과제에서 구성별 48회 시행으로 평가한 결과, 다중 뷰 RGB를 R3M 인코더로 처리하는 다중 모달 확장 확산 정책이 파지+삽입 복합 성공률 76%를 기록해 단일 카메라 RGB 확산 정책 기준선(36%)을 크게 앞섰습니다. 점군이든 두 대의 RGB 카메라든 3D 맥락이 있으면 파지 성공률이 88~98%로 높았고, 파지 후 정리 단계는 전 구성에서 100% 성공했습니다."
+  },
+  {
+    title: "Simulation-based Learning of Electrical Cabinet Assembly Using Robot Skills",
+    authors: "Arik Laemmle 외 6명",
+    arxiv_id: "2602.14561",
+    url: "https://arxiv.org/abs/2602.14561",
+    date: "2026-02-16",
+    categories: "cs.RO",
+    topics: ["A. 지그·전용 장비·수작업 프로그래밍 없이", "DIN-rail terminal snap-fit · high programming effort & product variability", "DRL (SAC/TD3) + parameterizable pitasc skills · beam-theory & MuJoCo joining models", "domain randomization → UR10e zero-shot · up to 100%"],
+    image: "images/2602.14561.png",
+    figcap: "Figure. DIN 레일 단자 스냅핏 조립의 기술 시퀀스 — 직선 접근(lin) → 하강 접근(approach, 접촉력 F_X·F_Z) → 미끄러뜨림(slide) → y축 피벗 → z축 피벗으로 걸쇠를 체결. 각 단계가 파라미터화된 로봇 기술로 구성되고 DRL이 그 파라미터를 학습",
+    rating: 3.5,
+    rating_reason: "'프로그래밍 노력·전환 유연성·공차 적응'이라는 산업 자동화의 미해결 이유를 서두에 명시하고 기술 파라미터 학습으로 답한 구조가 명확하며, 두 체결 모델 비교와 실기기 제로샷 전이까지 보였습니다. 다만 성공률 수치가 요약 수준이고 비교 기준선(수작업 튜닝 기술 등)과의 정량 비교가 부족합니다.",
+    background: "많은 조립 과제가 자동화 잠재력이 높지만 로봇 프로그래밍에 드는 높은 노력, 제품 전환(changeover) 시 유연성 부족, 공차와 불확실성에 로봇이 스스로 적응하지 못하는 문제 때문에 대부분 자동화되지 못한 채 남아 있습니다. 전기 캐비닛의 DIN 레일 단자 스냅핏 조립이 대표적으로, 전통적으로 높은 프로그래밍 노력과 제품 다양성에 가로막혀 왔습니다.",
+    solution: "저자들은 DIN 레일 전기 단자의 힘 제어 조립을 자동화하는 시뮬레이션 주도 접근을 제시했습니다. 심층 강화학습(DRL)을 물리 기반 시뮬레이션 환경 안의 파라미터화 가능한 로봇 기술(pitasc 프레임워크로 구조화된 모듈형·재사용 가능 제어 전략)과 결합하고, 스냅핏 체결 과정을 현실적으로 모델링하기 위해 빔 이론 기반 해석 모델과 MuJoCo 강체 모델 두 가지 체결 모델을 개발·평가해 학습에 필수적인 상호작용 힘을 정확히 시뮬레이션했습니다. SAC와 TD3로 학습하며 공정·제품별 불확실성과 공차를 학습 중 미리 주입하고 도메인 무작위화로 강건성을 높였습니다. 학습된 정책은 추가 조정 없이 실제 UR10e에 전이되어, 상당한 위치·회전 편차 아래에서도 시뮬레이션·실세계 모두 최대 100%의 높은 성공률을 보였고, 새 단자 유형과 위치로 잘 일반화해 수작업 프로그래밍 노력을 크게 줄였습니다."
+  },
+  {
+    title: "SHaRe-RL: Structured, Interactive Reinforcement Learning for Contact-Rich Industrial Assembly Tasks",
+    authors: "Jannick Stranghöner 외 4명",
+    arxiv_id: "2509.13949",
+    url: "https://arxiv.org/abs/2509.13949",
+    date: "2025-09-17",
+    categories: "cs.RO",
+    topics: ["A. 지그·전용 장비·수작업 프로그래밍 없이", "high-mix low-volume (HMLV) · manual programming brittle & costly", "primitives + demos + online corrections + per-axis compliance", "Harting connector 0.2–0.4 mm: 100% @ 3.5 s (human 4.5 s · HIL-SERL 65%)"],
+    image: "images/2509.13949.png",
+    figcap: "Figure. SHaRe-RL — 저차원 과제 프레임 행동을 임피던스 제어와 축별 힘 제한(clip)으로 안전하게 실행하는 환경(10 Hz), 사람 개입 버퍼와 정책 버퍼로 학습하는 행위자–비평가, 접근(MP1)→삽입(AMP2)→누르기(MP3)로 구조화된 조작 프리미티브. 위: 서브밀리미터 커넥터 삽입 장면",
+    rating: 4.0,
+    rating_reason: "HMLV 조립에서 '수작업 프로그래밍은 취약하고 학습은 위험하다'는 양쪽 한계를 명시하고 구조·시연·컴플라이언스라는 세 사전 지식으로 3시간 내 사람 초과 성능을 실기기에서 보였으며, HIL-SERL·BC·PPO와의 비교와 힘 제한 소거가 충실합니다. 단일 커넥터 과제라는 범위 한계가 있습니다.",
+    background: "중소기업에 흔한 다품종 소량(HMLV) 산업 조립은 대량 자동화와 같은 정밀도·안전·신뢰성을 요구하면서도 제품 변동과 환경 불확실성에 유연해야 합니다. 현재 로봇 시스템은 이 요구를 못 맞추는데, 수작업 프로그래밍은 취약하고 적응 비용이 크며, 학습 기반 방법은 접촉 과제에서 표본 효율이 낮고 탐색이 안전하지 않습니다. 전통 제어는 강건하지만 보수적이고 엔지니어링 전문성에 크게 의존합니다.",
+    solution: "저자들은 여러 출처의 사전 지식을 활용하는 강화학습 프레임워크 SHaRe-RL을 제시했습니다. (i) 기술을 조작 프리미티브(접근·삽입·누르기)로 구조화하고, (ii) 사람 시연과 온라인 보정을 포함하며, (iii) 축별 컴플라이언스로 상호작용 힘을 제한해 장기·접촉 산업 조립 과제의 효율적이고 안전한 온라인 학습을 가능하게 합니다. 공차 0.2~0.4 mm의 산업용 Harting Han-Modular 커넥터 모듈 삽입 실험에서 SHaRe-RL은 실세계 상호작용 3시간 안에 100% 성공·사이클 타임 3.5초에 도달해 숙련된 사람 시연자(100%, 4.5초)와 모든 학습 기준선을 앞섰고, 구조화되지 않은 사람 개입 RL인 HIL-SERL(65%, 7.4초)보다 크게 좋았습니다. 시연만 쓴 SHaRe-BC는 80%에서 정체했고, 온폴리시 PPO 변형은 희소 보상·시각 입력을 다루지 못해 5%에 그쳤습니다."
+  },
+  {
+    title: "ATG-MoE: Autoregressive trajectory generation with mixture-of-experts for assembly skill learning",
+    authors: "Weihang Huang 외 6명",
+    arxiv_id: "2603.19029",
+    url: "https://arxiv.org/abs/2603.19029",
+    date: "2026-03-19",
+    categories: "cs.RO",
+    topics: ["A. 지그·전용 장비·수작업 프로그래밍 없이", "flexible manufacturing · manual teaching & reprogramming labor-intensive", "end-to-end autoregressive trajectory generation + MoE multi-skill LfD", "pressure-reducing valve · 8 skills · grasp 96.3% · overall 91.8%"],
+    image: "images/2603.19029.png",
+    figcap: "Fig. 2. ATG-MoE 개요 — RGB-D 관측·자연어 지시·고유수용 감각을 다중 모달 특징 융합으로 결합하고, 자기회귀 시퀀스 모델로 시간적으로 일관된 조작 궤적을 생성하며, 기술별 라우팅 네트워크와 공유 전문가로 여러 조립 기술을 단일 모델에 통합",
+    rating: 3.5,
+    rating_reason: "유연 생산에서 수작업 교시·재프로그래밍의 비용과 고정 궤적의 한계를 서론에서 구체적으로 짚고 종단간 다중 기술 LfD로 답한 논리가 일관되며, 실제 산업 부품(감압 밸브) 8개 기술로 평가했습니다. 다만 주 결과가 시뮬레이션이고 실세계는 검증 수준이며 기준선 비교 범위가 좁습니다.",
+    background: "제조업이 고다양성·소량 생산의 유연 생산으로 옮겨 가면서 수작업 교시와 프로그래밍에 의존하는 전통 로봇 시스템은 적응성에 한계를 보입니다. 생산 과제가 바뀔 때마다 엔지니어가 공정을 다시 계획하고 궤적을 수정해야 해 시간과 노동이 많이 들고, 고정 궤적은 과제 안의 변동을 다루지 못합니다. 비전 유도 파지가 물체 자세의 정밀 보정 의존을 일부 덜어 주지만 새 과제·물체 범주 앞에서는 성능이 급락하고, 기존 LfD는 힘 제어 방법에 머물러 위치 변동에 일반화하지 못하거나 지각과 제어를 단계별로 분리합니다.",
+    solution: "저자들은 시연으로부터 조립 기술을 배우는 종단간 자기회귀 궤적 생성 방법 ATG-MoE를 제안했습니다. RGB-D 관측·자연어 지시·로봇 고유수용 감각 등 다중 모달 입력에서 조작 궤적으로의 폐루프 매핑을 구축하며, 장면·과제 이해를 위한 다중 모달 특징 융합, 시간적으로 일관된 궤적 생성을 위한 자기회귀 시퀀스 모델링, 통합 다중 기술 학습을 위한 전문가 혼합(MoE) 구조를 결합합니다. 시각 지각과 제어를 분리하거나 기술을 따로 학습하는 기존 방법과 달리 시각 정보를 궤적 생성에 직접 넣고 한 모델 안에 여러 기술을 효율적으로 통합합니다. 감압 밸브 조립의 대표 기술 8개로 학습·평가한 결과 시뮬레이션에서 평균 파지 성공률 96.3%, 평균 전체 성공률 91.8%를 기록하며 강한 일반화와 효과적인 다중 기술 통합을 보였고, 실세계 실험으로 다중 기술 산업 조립의 실용성을 확인했습니다."
+  },
+  {
+    title: "Compact Task-Aligned Imitation Learning for Laboratory Automation",
+    authors: "Kanata Suzuki 외 3명",
+    arxiv_id: "2603.01110",
+    url: "https://arxiv.org/abs/2603.01110",
+    date: "2026-03-01",
+    categories: "cs.RO",
+    topics: ["A. 지그·전용 장비·수작업 프로그래밍 없이", "lab automation: engineered motion pipelines · task-specific hardware interfaces · jig interfaces", "TVF-DiT < 500M: vision FM + VLM adapter + DiT action expert", "test tube cleaning/arrangement · powder transfer 86.6%"],
+    image: "images/2603.01110.png",
+    figcap: "Figure. 연구실 자동화 — 시험관 세척·정렬·분말 이송 같은 일상 실험실 과제를 경량 모델로 학습해 저사양 GPU에서 추론",
+    rating: 3.5,
+    rating_reason: "연구실 자동화의 '사전 설계 동작 + 전용 지그·장비 인터페이스' 관행을 한계로 명시하고 경량 모방학습으로 대체한 문제의식이 명확하며, 실제 세 과제에서 기준선 대비 큰 격차를 보였습니다. 다만 비교 대상이 경량 모델들에 한정되고 과제당 시행 수와 변동 조건 서술이 적습니다.",
+    background: "로봇 연구실 자동화는 전통적으로 세심하게 설계된 동작 파이프라인과 과제별 하드웨어 인터페이스(장비 전용 인터페이스, 지그 인터페이스 등)에 의존해 설계 비용이 높고 유연성이 낮았습니다. 최근 모방학습이 일반적인 로봇 행동을 만들 수 있지만 모델이 커서 고성능 연산 자원이 필요해 실제 연구실 환경에는 적용하기 어렵습니다.",
+    solution: "저자들은 소형 파운데이션 모델을 쓰는 연구실 자동화용 경량 모방학습 프레임워크를 제안했습니다. 제안 방법 TVF-DiT는 자기지도 비전 파운데이션 모델을 경량 어댑터로 비전-언어 모델과 정렬하고 이를 Diffusion Transformer 기반 행동 전문가와 통합하며, 전체 모델이 5억 파라미터 미만이라 저용량 VRAM GPU에서 추론할 수 있습니다. 시험관 세척, 시험관 정렬, 분말 이송이라는 세 실세계 연구실 과제에서 평균 성공률 86.6%를 달성해 대안 경량 기준선(20.0%, 36.6%)을 크게 앞섰습니다 — 전용 지그나 장비 인터페이스를 설계하지 않고 시연으로 과제를 가르친 결과입니다."
+  },
+  {
+    title: "BioProVLA-Agent: An Affordable, Protocol-Driven, Vision-Enhanced VLA-Enabled Embodied Multi-Agent System with Closed-Loop-Capable Reasoning for Biological Laboratory Manipulation",
+    authors: "Zhaohui Du 외 11명",
+    arxiv_id: "2605.07306",
+    url: "https://arxiv.org/abs/2605.07306",
+    date: "2026-05-08",
+    categories: "cs.RO, cs.AI",
+    topics: ["A. 지그·전용 장비·수작업 프로그래밍 없이 · C. CV 한계(투명·반사 기구)", "wet lab: unstructured protocols · transparent/reflective labware · dedicated instruments & fixed workflows", "LLM protocol agent + VLM-RAG verification + AugSmolVLA", "transparent-labware augmentation · tube placement 40 → 65%"],
+    image: "images/2605.07306.png",
+    figcap: "Figure. BioProVLA-Agent — LLM 프로토콜 에이전트가 생물 실험 프로토콜을 사전·사후 조건이 있는 하위 과제로 변환하고, VLM-RAG 검증 에이전트가 실시간 영상으로 조건을 확인하며, 안내 결정 에이전트가 실행·재시도를 관리하고, 다중 스케일 증강으로 학습한 VLA 체화 에이전트가 원심분리기 뚜껑 열기·시험관 삽입 등 단일·복합·양팔 과제를 수행",
+    rating: 3.5,
+    rating_reason: "전용 기기·고정 워크플로라는 자동화 한계와 투명·반사 기구라는 CV 한계를 함께 명시하고 프로토콜 인터페이스 + 증강 VLA로 대응한 시스템 설계가 문제에 잘 맞으며, 여러 VLA 기준선과 조건별 성공률을 공개했습니다. 다만 절대 성공률이 40~65%대로 아직 낮고 시스템 구성 요소가 많아 각 부분의 기여 분리가 제한적입니다.",
+    background: "생물 실험실 자동화는 반복 수작업을 줄이고 재현성을 높일 수 있지만 습식 실험실에서의 신뢰성 있는 체화 실행은 어렵습니다. 프로토콜은 비구조화된 자연어이고, 시험관·병 같은 기구는 투명하거나 반사되어 시각 지각이 어렵고, 다단계 절차는 상태 인지 실행을 요구합니다. 기존 로봇 실험실 플랫폼은 값비싼 하드웨어, 전용 기기, 고정 워크플로, 로봇 공학자용 인터페이스에 의존해 자원이 부족한 연구실이 쓰기 어렵습니다.",
+    solution: "저자들은 저렴하고 프로토콜 주도적이며 시각 강화된 VLA 기반 다중 에이전트 시스템 BioProVLA-Agent를 제안했습니다. 프로토콜을 과제 인터페이스로 삼아 맞춤 LLM 프로토콜 에이전트가 프로토콜을 검증 가능한 하위 과제로 바꾸고, VLM-RAG 검증 에이전트가 사전·사후 조건을 시각으로 확인하며(RAG로 전체 정확도 +9.34%p), 안내 결정 에이전트가 실행과 재시도를 관리하고, VLA 체화 에이전트가 동작을 수행하는 폐루프 워크플로입니다. 습식 실험실의 시각 교란에 맞서 투명 기구·경면 반사·조명 변화·과노출을 겨냥한 온라인 증강 AugSmolVLA를 개발해, 정상·고노출 설정 모두에서 ACT·X-VLA·원본 SmolVLA보다 안정적으로 실행했고 특히 정밀 놓기와 투명 물체 조작에서 이득이 컸습니다(냉동 튜브 랙 놓기 40.00%→65.00%, 원심분리 튜브 놓기 43.33%→53.33%)."
+  },
+  {
+    title: "A Factory-Floor Deployment Case Study of VLA Pipelines for Industrial Packaging Task: Workflow, Failures, and Lessons",
+    authors: "Brian Zhu 외 14명",
+    arxiv_id: "2605.27461",
+    url: "https://arxiv.org/abs/2605.27461",
+    date: "2026-05-25",
+    categories: "cs.RO",
+    topics: ["A. 산업 현장 배치 사례 · C. CV 한계(투명 봉투·가림)", "Siemens factory packaging: transparent bag from cluttered pile → cavity", "π0.5 fine-tuning · 2535 episodes (10 h) · recovery data loops", "deployment constraints: throughput · occlusion · latency · quality"],
+    image: "images/2605.27461.png",
+    figcap: "Figure. 산업 포장 과제 4단계 — 1) 통에서 투명 부속품 봉투를 분리해 집기, 2) 상자 빈 공간에 봉투 놓기, 3) 부속품을 공간 안으로 밀어 넣고 눌러 평평하게 하기, 4) 양팔을 홈 자세로 복귀해 완료 표시",
+    rating: 3.0,
+    rating_reason: "실제 공장 현장에서 학습 기반 정책을 운용하며 투명 물체·가림·처리량 같은 현장 제약을 실패 유형별로 기록한 드문 사례 연구라는 가치가 있습니다. 다만 새로운 방법 제안이 아니고 최종 성공률·기준선 비교 같은 정량 결과가 요약에 거의 없어 근거 견고성은 제한적입니다.",
+    background: "VLA 정책은 유망한 조작 능력을 보였지만 실세계 배치의 신뢰성 요구 때문에 실제 영향은 제한적입니다. 연구실 성능이 좋아 보여도 공장 현장은 처리량, 가림에 대한 강건성, 낮은 지연, 안전한 실행, 엄격한 후공정 품질 요구를 부과해 취약한 행동을 드러냅니다. 특히 사용 설명서와 커넥터 케이블이 든 투명 부속품 봉투를 비슷한 봉투 더미에서 분리하고, 봉투 방향에 따라 달라지는 파지점을 다루며, 내용물이 포장된 제품 위가 아니라 빈 공간 안에 들어가게 하는 일은 고전 비전 파이프라인으로 다루기 어려운 변동입니다.",
+    solution: "저자들은 Siemens 공장(GWE, 독일 에를랑겐)의 산업 포장 과제 배치 연구를 제시했습니다. 로봇은 어수선한 더미에서 투명 부속품 봉투를 집어 이미 주 제품이 든 골판지 상자의 남은 공간에 넣고 봉투와 내용물이 닫힘 면 아래에 머물게 해야 합니다. 목표는 사전학습 π0.5 정책을 반복 미세조정과 배치 주도 정제로 단일 공장 과제에 적응시키는 데 드는 실질적 노력을 이해하는 것으로, 데이터 수집→큐레이션→미세조정→평가→표적 복구 데이터 수집의 반복 루프로 현장에서 2,535 에피소드(10시간)를 누적했고 다음 라운드로 넘어가려면 평가 성공률 70% 이상을 요구했습니다. 논문은 반복되는 실패 유형(투명 봉투 분리, 파지점 변동, 내용물 안착)과 배치 워크플로 개선을 위한 교훈을 경험적으로 기록했습니다."
+  },
+  {
+    title: "Contact-Rich Robotic Manipulation in Construction via Zero-Shot Learning: A Diffusion Policy-Guided Adaptive Control",
+    authors: "Roman Ibrahimov 외 2명",
+    arxiv_id: "2608.22100",
+    url: "https://arxiv.org/abs/2608.22100",
+    date: "2026-08-22",
+    categories: "cs.RO",
+    topics: ["B. 공차·가공 오차·부품 변동 (규격화 불필요)", "construction assembly: fabrication inaccuracies · accumulated tolerances · as-planned ≠ as-built", "sim-trained DP (pose + F/T) + L1-inspired adaptive controller · zero-shot sim-to-real", "timber joinery · pipe fitting · full-scale truss 90–100%"],
+    image: "images/2608.22100.png",
+    figcap: "Figure. 시뮬레이션에서 로봇 위치·힘/토크 데이터를 합성해 CNN 기반 확산 정책을 학습하고, 실세계 배치 시 적응 제어기가 정책 예측 행동을 온라인 보정해 모델링되지 않은 접촉 동역학을 보상 — 목재 장부 조립 실험 장면",
+    rating: 4.0,
+    rating_reason: "'계획 형상 ≠ 시공 형상'이라는 건설 자동화 고유의 공차 문제를 명확히 정의하고, 실세계 데이터 없이 시뮬레이션 학습 + 적응 보정으로 실물 크기 트러스까지 조립한 근거가 뚜렷하며 기준선·컴플라이언트 변형과 비교했습니다. 과제당 10회 시행과 세 과제라는 규모, 시각 입력 없이 자세·힘만 쓰는 설정은 감안할 부분입니다.",
+    background: "건설 로봇과 자동화는 생산성 향상, 인력 부족 완화, 힘든 작업 노출 감소를 약속하지만, 빡빡한 공차·가공 부정확·불확실한 접촉 동역학 아래의 신뢰성 있는 접촉 조립은 여전히 어렵습니다. 비정형 벽돌·목재 구조 조립 시연들은 보정·계획된 공차·후속 접합 기법이 위치 오차를 보상할 때는 효과적이지만, 꽉 끼는 연결에서는 가공 부정확과 누적 공차가 계획 형상과 실제 시공 형상 사이에 상당한 편차를 만들어 피드백 없는 사전 계획 궤적 실행이 실패합니다.",
+    solution: "저자들은 시뮬레이션에서 생성한 자세·힘/토크 데이터로 학습한 확산 정책과, 정책이 예측한 행동을 온라인으로 보정해 모델링되지 않은 접촉 동역학을 보상하는 L1 적응 제어 영감 제어기를 결합한 프레임워크를 제시했습니다. 목재 장부 맞춤(mortise-and-tenon), 파이프 끼우기, 순차 실물 크기 트러스 조립에서 기준선과 비교한 결과 단일 과제 조립 100%, 순차 트러스 조립 하위 과제 90~100%(기둥 삽입 100%, 우측 서까래 100%, 좌측 서까래 90%, 각 10회)를 달성했고 접촉 힘이 기준선보다 낮고 안정적이었습니다. 시뮬레이션 장부 조립에서 기준선은 73%였고, 컴플라이언트 정책은 실세계 95%로 제안 방법(100%)에 근접했습니다. 힘 인지 접촉 조립의 제로샷 sim-to-real 전이로 비용이 큰 실세계 데이터 수집을 줄였습니다."
+  },
+  {
+    title: "Learning Diffusion Policies for Robotic Manipulation of Timber Joinery under Fabrication Uncertainty",
+    authors: "Salma Mozaffari 외 5명",
+    arxiv_id: "2511.17774",
+    url: "https://arxiv.org/abs/2511.17774",
+    date: "2025-11-21",
+    categories: "cs.RO",
+    topics: ["B. 공차·가공 오차·부품 변동 (규격화 불필요)", "fabrication uncertainty: tolerance accumulation · material imperfection · positioning errors", "teleop demos + F/T on construction-scale industrial robot · 25% recovery demos", "perturbation up to 10 mm ≫ clearance · 100% nominal · 75% under uncertainty"],
+    image: "images/2511.17774.png",
+    figcap: "Figure. 로봇 자세와 힘/토크 관측을 CNN 기반 확산 정책에 넣어 행동 시퀀스를 생성하고 폐루프로 조립 — 산업용 로봇 끝단의 목재 장부(tenon)를 들보의 장붓구멍(mortise)에 끼우는 건설 규모 조립",
+    rating: 3.5,
+    rating_reason: "가공 불확실성이라는 건설 자동화의 구체적 장벽을 정의하고 여유의 수 배에 달하는 교란 아래 성공률을 체계적으로 측정했으며 복구 시연 비율 같은 실무 지침도 담았습니다. 다만 단일 접합 유형·단일 로봇 셀이고 기준선이 없어 확산 정책 자체의 상대적 이점은 평가하기 어렵습니다.",
+    background: "공차 누적, 재료 결함, 위치 오차에서 비롯되는 가공 불확실성은 건설의 자동화 로봇 조립, 특히 최소 기하 여유 아래 접촉 조작 과제에서 결정적 장벽으로 남아 있습니다. 접합 여유가 서브밀리미터에 가까워지면 조립 단계에 걸친 공차 누적과 기하 변동이 허용 삽입 여유를 쉽게 넘어 순수 피드포워드 실행이 실제로는 신뢰할 수 없고, 시각 피드백과 기준 마커를 쓴 선행 목재 패널 조립도 완전 삽입 성공이 약 50%에 그쳤습니다.",
+    solution: "저자들은 꽉 끼는 장부 맞춤 목재 접합을 대표 사례로 삼아 건설 규모 산업용 로봇에 확산 정책 학습을 배치해 불확실성 아래 강건한 고정밀 조립을 연구했습니다. 힘/토크 센서를 갖춘 산업 로봇 작업 셀에서 원격조종 시연을 모아 감각운동 확산 정책을 학습했고, 시연의 25%(100회)를 오류 복구 시나리오에 할애했습니다. 2단계 실험으로 기준 성능과 접합 여유를 훨씬 넘는 최대 10 mm 무작위 위치 교란 아래 강건성을 평가한 결과, 최고 정책은 공칭 조건 100%, 불확실성 아래 평균 75% 성공률을 보였으며 추론 단계 수·파라미터 설정에 따른 민감도도 보고했습니다. 저자들은 확산 정책이 가공으로 인한 정렬 불량에 대한 강건성을 높여 빡빡한 공차의 건설 로봇 조립으로 가는 한 걸음이라고 정리했습니다."
+  },
+  {
+    title: "Harnessing human expertise for high-precision robotic assembly in industrialized construction: A sample-efficient installer-in-the-loop interactive reinforcement learning framework",
+    authors: "Zekai Jin 외 3명",
+    arxiv_id: "2609.13234",
+    url: "https://arxiv.org/abs/2609.13234",
+    date: "2026-09-02",
+    categories: "cs.RO, stat.ML",
+    topics: ["B. 공차·가공 오차·부품 변동 (규격화 불필요)", "industrialized construction: prefab window seating · 2 mm per-side clearance · binding/wedging/jamming", "installer-in-the-loop interactive RL · Q-chunking + Flow Q-Learning · warm-start", "100% seating with 12–15 min supervision over 3 h · 95% in 0.5–1.5 h"],
+    image: "images/2609.13234.png",
+    figcap: "Fig. 1. 밀리미터 여유의 공차 임계 창문 끼우기 말기 실패 메커니즘 — (a) 한 변당 2 mm 여유의 삽입 개요, (b) 단면에서 본 세 실패 모드: 걸림(binding)·쐐기(wedging)·끼임(jamming)",
+    rating: 3.5,
+    rating_reason: "조립식 부품 공차 문제를 실패 모드(걸림·쐐기·끼임) 수준에서 정의하고 설치 기술자의 짧은 개입을 학습 신호로 바꾼 설계가 명확하며, 감독 시간·개입률 감소 같은 운영 지표와 소거를 충실히 보고했습니다. 다만 전적으로 시뮬레이션 평가이며 실제 창문 유닛 실험이 없습니다.",
+    background: "산업화 건설은 조립식 창문 유닛 같은 모듈 부품의 로봇 조립에 엄격한 정밀도를 요구합니다. 공차 임계 작업의 핵심 병목은 기계적 여유만이 아니라, 희소한 합격 피드백·접촉 변동·밀리미터 제약 아래에서 설치 기술자의 암묵적 전문성을 데이터 효율적인 자율성으로 바꾸는 일입니다. 한 변당 2 mm 여유에서는 걸림·쐐기·끼임 같은 말기 실패가 자주 일어나 사전 계획만으로는 안착이 어렵습니다.",
+    solution: "저자들은 설치 기술자가 루프 안에 있는 대화형 강화학습 프레임워크를 제시했습니다. 오프라인 원격조종 시연, 접촉 실패 경계에서의 희소한 이벤트 기반 이진 인계(takeover), 합격 기준에 맞춘 종단 보상을 통해 전문성을 획득하고, 추적 가능한 오프라인→온라인 적응을 위해 통일 스키마로 기록합니다. Q-청킹과 Flow Q-Learning 위에 세운 시간 추상 행동 시퀀스 정책이 희소 종단 보상 아래 다중 모달 복구 동작을 포착하고, 갱신 없는 워밍업 단계가 오프라인→온라인 전환을 안정화합니다. MuJoCo에서 흡착 파지부터 여유 제한 안착까지의 워크플로를 구조화 준비와 종단간 무작위 배치 아래 평가한 결과, 한 변당 2 mm 여유·자세 교란·마찰 무작위화의 스트레스 시험에서 3.0시간 온라인 학습 동안 누적 12~15분의 기술자 감독만으로 100% 자율 안착에 도달했고 95% 성공 이정표는 두 실험에서 약 0.5시간과 1.5시간에 달성했습니다. 벽시계 적응 시간, 누적 인계 시간, 개입률 감소, 단계별 실패 귀속을 보고하고 시간 추상화·개입·워밍업의 기여를 소거로 분리했습니다."
+  },
+  {
+    title: "Vision-Language Grounded Task-Context-Aware Imitation Learning for Robotic Disassembly",
+    authors: "Jeon Ho Kang 외 4명",
+    arxiv_id: "2609.17714",
+    url: "https://arxiv.org/abs/2609.17714",
+    date: "2026-09-15",
+    categories: "cs.RO",
+    topics: ["B. 공차·가공 오차·부품 변동 (규격화 불필요) · 분해", "disassembly: combinatorial configurations · diverse connector geometries", "VLM task selection + task-context-aware DiT (DINOv2 · CLIP-text · force)", "object selection 30/30 vs 13/30 (plain DiT)"],
+    image: "images/2609.17714.png",
+    figcap: "Figure. (A) VLM이 장기 과제를 추론해 현재 하위 과제를 고르고, (B) 물체·하위 과제 텍스트(CLIP), 영상(DINOv2), 힘/토크를 인코딩해 교차 어텐션으로 언어 접지 임베딩을 만들며, (C) Diffusion Transformer 정책이 적응적 실행 지평으로 행동을 생성 — KUKA 팔의 커넥터 분해",
+    rating: 3.5,
+    rating_reason: "분해 과제의 '조합적 구성·커넥터 기하 변동을 데이터로 다 덮을 수 없다'는 한계를 명시하고 언어 과제 맥락으로 구조를 보완한 논리가 타당하며, 실기기에서 소거 비교를 했습니다. 다만 보고된 정량 결과가 물체 선택 정확도 중심이고 분해 성공률·기하 변동별 수치는 제한적입니다.",
+    background: "실세계 로봇 분해는 한 장면 안의 여러 부품에 걸쳐 순서가 있는 조작 과제 시퀀스를 수행하는 장기 실행을 요구합니다. 여러 유효한 과제 목표와 다양한 조립 구성 때문에 모방 정책이 원시 관측만으로 의도된 기술을 추론하기 어렵고, 특히 학습 데이터가 실세계 구성과 부품 기하의 조합적 다양성을 덮지 못할 때 그렇습니다. 기존 행동 복제는 특정 조립 구성에 과적합되고 명시적 과제 구조가 없어 다중 과제 분해에서 일반화가 나쁘고 시간적으로 멈추는 현상을 보입니다.",
+    solution: "저자들은 언어로 과제 맥락을 넣으면 기술 선택에 명시적 구조를 주고 언어로 지정된 과제를 시각 장면의 조작 대상과 연결해 이 문제를 완화함을 보였습니다. 제안 프레임워크는 계층적 과제 선택(VLM의 장기 과제 추론)과 과제 맥락 인지 모방학습을 결합해, 물체·하위 과제의 CLIP 텍스트 임베딩, DINOv2 시각 패치, 힘/토크를 교차 어텐션으로 융합한 뒤 Diffusion Transformer 정책이 적응적 실행 지평으로 행동을 생성합니다. 공간 배치, 학습에 없던 여러 개의 동일 커넥터, 커넥터 기하 변동에 걸친 일반화 실험에서 사용자 또는 VLM의 언어 명령에 따른 올바른 물체 선택이 30/30으로, 교차 어텐션·대조 손실이 없는 DiT(13/30)와 대조 손실만 더한 변형(20/30)을 크게 앞섰습니다."
+  },
+  {
+    title: "Enhanced View Planning for Robotic Harvesting: Tackling Occlusions with Imitation Learning",
+    authors: "Lun Li 외 1명",
+    arxiv_id: "2503.10334",
+    url: "https://arxiv.org/abs/2503.10334",
+    date: "2025-03-13",
+    categories: "cs.RO",
+    topics: ["C. CV 한계(가림·자세 추정·투명·반사) 극복", "harvesting: inherent occlusion defeats fixed-view perception", "ACT viewpoint policy from 50 demos · continuous 6-DoF camera motion", "ideal view 86.7% (sim) · 66.7% (real) · cross-crop without reprogramming"],
+    image: "images/2503.10334.png",
+    figcap: "Figure. 농업 수확 현장의 가림 — 잎에 가려진 과일은 고정 시점 카메라로는 완전히 보이지 않아 검출·위치 추정이 어려움",
+    rating: 3.0,
+    rating_reason: "'고정 시점 CV는 가림을 못 푼다'는 한계를 능동 시점 학습으로 우회한 발상이 명확하고 시뮬레이션·실세계·작물 간 일반화를 모두 시험했습니다. 다만 시행 수가 15회로 적고 실세계 성공률이 66.7%에 머물며 전통 시점 플래너와의 정량 비교가 제한적입니다.",
+    background: "농업 자동화에서 고유한 가림(occlusion)은 로봇 수확의 주요 난제입니다. 잎과 가지에 가려진 과일은 고정 시점 지각으로 검출·위치 추정이 어렵고, 전통적 시점 플래너와 기존 학습 기반 방법은 손으로 설계한 평가 지표나 보상 함수에 의존해 복잡하고 처음 보는 상황에 일반화하기 어렵습니다.",
+    solution: "저자들은 카메라 시점을 능동적으로 조정해 대상 작물의 가려지지 않은 영상을 얻는 모방학습 기반 시점 계획 접근을 제안했습니다. ACT(Action Chunking with Transformer) 알고리즘으로 전문가 시연에서 카메라 운동 정책을 배워, 가려진 대상을 드러내는 더 부드럽고 정밀한 연속 6자유도 시점 조정을 가능하게 합니다. RGB-D 카메라를 단 6자유도 팔로 농업 시나리오의 시뮬레이션·실세계 실험을 수행한 결과, 50개 시연만으로 시뮬레이션에서 15회 중 13회(86.7%) 이상적 시점을 찾았고 실세계에서는 15회 중 10회(66.7%)를 기록했는데, 저자들은 실세계 하락의 원인을 더 복잡하고 어수선한 배경에서 대상 과일과 배경을 구분하기 어려웠던 점으로 분석했습니다. 복잡한 가림 조건에서 성공률과 효율이 우수했고 재프로그래밍 없이 다른 작물로 일반화했습니다."
+  },
+  {
+    title: "Spatially anchored Tactile Awareness for Robust Dexterous Manipulation",
+    authors: "Jialei Huang 외 5명",
+    arxiv_id: "2510.14647",
+    url: "https://arxiv.org/abs/2510.14647",
+    date: "2025-10-16",
+    categories: "cs.RO",
+    topics: ["C. CV 한계(가림·자세 추정·투명·반사) 극복", "finger occlusion · specular/textureless surfaces degrade visual localization", "SaTA: tactile anchored to hand kinematic frame via FK · no object model / pose estimation", "avg 76.7% vs 46.7% · USB-C mating 35% vs 0% · hand vs world frame +35%"],
+    image: "images/2510.14647.png",
+    figcap: "Figure. (좌) 접촉은 감지되지만 촉각 신호가 공간 맥락 없이 따로 존재. (우) SaTA는 순운동학으로 손끝 6D 자세에 촉각 신호를 고정해, 심한 시각 가림 아래에서도 각 측정이 손 좌표계의 정확한 기하 정보를 담아 USB-C 같은 정밀 결합을 가능하게 함",
+    rating: 4.0,
+    rating_reason: "접촉 순간의 가림·반사·무질감이라는 CV 한계와 모델 기반 촉각 복원의 전제 조건을 함께 짚고, '촉각을 손 좌표계에 고정'이라는 단순한 표현으로 큰 격차를 낸 결과가 여러 과제·소거로 뒷받침됩니다. 다만 절대 성공률이 USB-C에서 35%로 아직 낮고 특정 손·촉각 센서 구성에 의존합니다.",
+    background: "정교 조작은 정밀한 기하 추론을 요구하지만, 기존 시각–촉각 학습 방법은 전통 모델 기반 접근에서는 일상적인 서브밀리미터 정밀 과제에서 고전합니다. 특히 접촉 순간에는 손가락이 시야를 크게 가리고 경면 반사·무질감 표면이 시각 위치 추정 정확도를 더 떨어뜨리며, 촉각 기반 자세 추정·촉각 SLAM 같은 명시적 기하 복원은 알려진 물체 모델이나 복잡한 최적화를 요구합니다.",
+    solution: "저자들은 촉각 센서가 풍부한 접촉 정보를 주는데도 현재 학습 프레임워크가 촉각 신호의 풍부함과 손 운동학과의 공간 관계를 함께 활용하지 못한다는 한계를 짚고, 촉각 특징을 순운동학으로 손의 운동학 프레임에 명시적으로 고정하는 종단간 정책 프레임워크 SaTA를 제안했습니다. 물체 모델이나 명시적 자세 추정 없이도 정책이 접촉 발생뿐 아니라 손 좌표계에서 물체 기하를 정밀하게 추론할 수 있습니다. 여러 벤치마크에서 강력한 시각–촉각 기준선 대비 성공률을 최대 30% 높이고 과제 완료 시간을 27% 줄였으며, 평균 성공률 76.7% 대 최강 기준선 46.7%, 가장 어려운 USB-C 결합에서는 거의 모든 기준선이 0%인 반면 35%를 달성했습니다. 소거에서 FiLM을 단순 연결로 바꾸면 25%, 손 프레임 대신 월드 프레임에 고정하면 35% 성공률이 떨어져 설계 선택을 뒷받침했습니다."
+  },
+  {
+    title: "Exploring Pose-Guided Imitation Learning for Robotic Precise Insertion",
+    authors: "Han Sun 외 7명",
+    arxiv_id: "2505.09424",
+    url: "https://arxiv.org/abs/2505.09424",
+    date: "2025-05-14",
+    categories: "cs.RO",
+    topics: ["C. CV 한계(가림·자세 추정·투명·반사) 극복", "pose-guided policies brittle under noisy online pose estimation (small connectors, tight clearance)", "relative SE(3) pose DP + goal-conditioned RGBD encoder + gated residual fusion", "RPDP 100% std · 80% OOD vs PoseDP 81.7/76.7 · SPOT 71.7/61.7"],
+    image: "images/2505.09424.png",
+    figcap: "Figure. (a) RL은 정밀하지만 탐색 부담과 sim-to-real 간극, (b) 기존 영상·점군 모방학습(ACT/RISE)은 정밀 삽입이 어려움, (c) 자세 유도 모방학습: 상대 SE(3) 자세만 쓰는 확산 정책에 목표 조건 RGBD 인코더를 게이트 융합으로 더해 자세 추정 잡음에 강건한 정밀 삽입",
+    rating: 3.5,
+    rating_reason: "'자세 추정 잡음이 정책을 무너뜨린다'는 CV 한계를 정면으로 다루며 자세 전용·RGBD 보강 변형과 기존 방법(SPOT)을 표준/분포 밖 조건에서 비교해 설계 선택의 효과를 보였습니다. 다만 과제 수와 시행 규모가 작고 자세 추정기 자체의 오차 분포에 따른 민감도 분석은 제한적입니다.",
+    background: "모방학습은 로봇 조작에 유망하지만 실세계의 정밀 삽입은 접촉 동역학, 빡빡한 여유, 적은 시연 때문에 여전히 어렵습니다. 많은 시각운동 정책이 고차원 RGB/점군 관측에 의존해 데이터 효율이 낮고 자세 변동에 일반화가 나쁘며, 반대로 물체 자세를 입력으로 쓰는 정책은 작은 커넥터와 빡빡한 여유에서 흔한 온라인 자세 추정 잡음에 취약합니다 — 즉 CV 자세 추정의 오차가 그대로 정책 실패로 이어집니다.",
+    solution: "저자들은 SE(3) 물체 자세를 간결한 물체 중심 관측으로 쓰는 자세 유도 모방학습을 정밀 삽입에 대해 연구했습니다. 먼저 대상 물체에 대한 원천 물체의 상대 SE(3) 자세를 관측하고 미래 상대 자세 궤적을 행동으로 예측하는 정밀 삽입용 확산 정책을 제안했고, 자세 추정 잡음에 대한 강건성을 높이기 위해 현재와 목표 관측의 차이를 포착하는 목표 조건 RGBD 인코더로 자세 유도 정책을 보강했습니다. 자세 특징이 주 제어 신호를 주고 RGBD 특징이 보정 역할을 하는 자세 유도 잔차 게이트 융합 모듈을 제안했으며, 결과적으로 분리된 자세 인코더를 쓴 PoseDP는 표준 조건 81.7%·분포 밖 76.7%로 SPOT(71.7%·61.7%)을 앞섰고, 게이트 RGBD 보강 자세 확산 정책 RPDP는 표준 조건 100%, 분포 밖 시나리오에서도 80%를 유지했습니다."
+  },
+  {
+    title: "CLAP: Closed-Loop Alignment with Pressure for Precise Suction Manipulation",
+    authors: "Yixian Zou 외 5명",
+    arxiv_id: "2609.32767",
+    url: "https://arxiv.org/abs/2609.32767",
+    date: "2026-09-26",
+    categories: "cs.RO",
+    topics: ["C. CV 한계(가림·자세 추정·투명·반사) 극복", "stacking/palletising: cup and held face occlude each other — vision cannot observe attachment", "vacuum pressure signal replaces suction command in proprioception · aborts open-loop chunk", "Unitree Z1 96.67% avg · 15.92 mm · ACT/DP/DP3 0% on multi-block"],
+    image: "images/2609.32767.png",
+    figcap: "Figure. CLAP — 언어·상태·두 카메라 영상에 더해 진공 라인에 꽂은 압력 센서 값을 투영해 다중 모달 융합 모듈에서 게이트 잔차로 주입하고, 폐루프 압력 피드백이 실행·판독→분류(FSM)→갱신으로 흡착 상태를 갱신하며 임계값 초과 시 진행 중인 행동 청크를 중단하고 재계획",
+    rating: 3.5,
+    rating_reason: "'카메라가 아무리 좋아도 컵과 면이 서로를 가린다'는 CV의 구조적 한계를 정확히 짚고 압력이라는 비시각 신호를 정책 입력과 중단 트리거로 쓴 설계가 문제에 맞으며, 실기기에서 여러 기준선·중단 소거와 비교했습니다. 다만 과제가 블록 쌓기에 한정되고 시행 수가 많지 않습니다.",
+    background: "쌓기와 팔레타이징은 정밀한 놓기를 요구합니다 — 한 층의 오차는 다음 층에 상속되고 평평한 패드에는 잘못된 자세를 올바른 자세로 유도할 특징이 없습니다. 위에서 내려오는 흡착은 이런 조밀한 배열에 적합하고 이미 VLA 정책에 도입되었지만, 측정된 진공 신호에 조건 지어진 정책이나 그 신호로 진행 중인 행동을 중단하는 정책은 보고된 바 없습니다. 여기서 비전은 답을 주지 못하는데, 결정적인 순간에 흡착 컵과 그것이 잡은 면이 서로를 가리기 때문입니다 — 더 좋은 카메라의 문제가 아닙니다.",
+    solution: "저자들은 진공 라인에 꽂은 압력 모듈로 부착 상태를 관측 가능하게 만드는 CLAP을 제시했습니다. 해독된 압력 값이 정책 고유수용 감각의 흡착 명령을 대체하고 시각 특징과 융합되며, 개루프 실행 창을 종료시켜 정책이 새 관측으로 다시 추론하게 합니다. 데이터는 실제 로봇에서 목표 상태의 분해(disassembly)를 기록하고 그 순서를 뒤집어 조립 시연으로 만드는 방식으로 모았습니다. 흡착 엔드이펙터를 단 Unitree Z1에서 하나의 다중 과제 체크포인트가 두 색상 설정 모두에서 세 과제 평균 96.67% 성공률(최강 기준선 대비 16.67·10.00점 높음)과 4블록 구조 평균 15.92 mm 오차를 기록했습니다. 과제별 모델인 ACT·Diffusion Policy·DP3는 블록 하나는 어느 정도 놓지만 두 개 이상에서는 두 색상 설정 모두 0%로 무너졌고, 즉시 중단을 끄면 평균 성공률이 96.67%에서 91.67%로 떨어졌습니다."
+  }
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.date} · ${p.categories}${p.arxiv_id ? ' · arXiv:' + p.arxiv_id : ''}${p.doi ? ' · DOI:' + p.doi : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      <div class="figwrap">
+        <div class="fig">
+          ${p.image
+            ? `<img src="${p.image}" alt="${p.title}">`
+            : `<div class="noimg">대표 그림 없음</div>`}
+        </div>
+        ${p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``}
+      </div>
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+  el.innerHTML = '<h3>지난 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>

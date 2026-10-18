@@ -262,6 +262,21 @@
         "pretrained encoder generalization"
       ],
       "note": "세 요소(CLIP ViT 인코더 · U-Net 확산 정책 · RLinf)를 한 논문에서 모두 결합한 사례는 arXiv·RSS 모두 없음 → 요소별로 나눠 14편 구성 · DPPO(2024-09)는 기간 밖이지만 주제의 출발점이라 포함 · RSS XXII의 해당 논문(RLux-VLA p089, TMRL p208, LPS p152, Q-from-BC p153, USER p037)은 모두 기소개라 RSS 회차는 생략"
+    },
+    "2026-10-18b": {
+      "label": "자동화·CV 한계 극복 학습 조작",
+      "title": "지그·고정구·전용 장비·수작업 프로그래밍(전통 자동화)이나 자세 추정·가림·투명 물체(컴퓨터 비전)의 한계를 직접 거론하고 모방학습·강화학습으로 대응한 로봇 조작 사례 — 산업 조립·연구실·공장 배치, 공차·가공 오차·부품 변동, 가림·자세 추정 잡음·투명 기구",
+      "keywords": [
+        "jigless / fixtureless",
+        "traditional automation limits",
+        "manual programming · changeover",
+        "high-mix low-volume",
+        "fabrication tolerance · part variation",
+        "pose estimation noise · occlusion",
+        "transparent / reflective objects",
+        "imitation learning · RL in industry"
+      ],
+      "note": "2025-01 이후 arXiv · 서론·초록에 자동화 또는 CV 한계가 명시된 논문만 선별 15편 · 'jigless/fixtureless' 직접 검색 결과는 계획 논문(WRAP, 모듈형 고정구 배치) 2편뿐으로 학습 기반이 아니라 제외 · RSS XXII 210편 본문 검색 결과 미소개 논문 중 해당 사례 없음 — 가장 가까운 기소개 논문은 CoRAL(p054, 산업 접촉 조작)·Force Policy(p128)"
     }
   },
   "rss": {
