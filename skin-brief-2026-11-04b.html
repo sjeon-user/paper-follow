@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FT 피부 모델 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .capbox{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 13px;color:var(--muted);font-size:.82rem;line-height:1.65;background:var(--bg)}
+  .capbox .caplabel{display:block;font-weight:700;color:var(--text);font-size:.72rem;margin-bottom:4px}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .meta a{color:var(--accent);text-decoration:none}
+  .meta a:hover{text-decoration:underline}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>FT 피부 모델 논문 팔로우업</h1>
+    <div class="sub">FT(전층) 인체 피부 모델의 기하 불안정 → 분화·장벽 → OECD TG 431/439 규제 적합성 · 하루 1키워드 최대 5편 · 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="paper-brief.html">← arXiv 브리핑</a> <a href="rss-brief.html">🏛 RSS 학회</a> <a href="keep.html">⭐ 보관함</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-04b";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "문제 해결을 위한 장치적 접근 10편 — 구속 인서트·앵커링 장치·트랜스웰 일체 프린팅·신축 인서트·관류 칩·다축 바이오리액터로 수축과 탈착을 물리적으로 붙잡은 사례", "keywords": ["radial constraint insert", "anchoring culture device", "perforation-type anchor", "3D-printed culture insert", "perfusable microchannel insert", "multiaxial bioreactor", "flexible skin-on-a-chip", "PCL mesh in printed transwell"], "note": "Europe PMC 최근 12년, 저널 범위 제한 없음 · 장치/구속 어휘 × 수축·탈착 어휘 × 체외 피부 모델 어휘 6개 질의 병합 177건에서 임상 이식·봉합 논문을 걸러 낸 뒤 10편 선별 · 1회차 기소개 3편(ASD, contraction-free chip, 나노섬유 보강)은 제외 · 상처 치유·이식편 고정 등 생체 내 연구 제외"};
+/* 보관된 FT 피부 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 skin-brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-04b", t:"특집 ① 장치적 접근"}, {d:"2026-11-04", t:"① 섬유아세포 콜라겐 수축"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     paper_id: "10.1016/j.xxx",        // DOI 우선, 없으면 "PMID:12345678" (skin-seen.json 중복 방지 키)
+     url:      "https://doi.org/...",
+     doi:      "10.1016/j.xxx",
+     date:     "2025-03",              // 출판 연-월
+     venue:    "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
+     image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
+     figcap:   "Figure 1. ...",
+     background: "배경·기존 문제 2~3문장",
+     solution:   "해결·방법과 결과 2~3문장 + 마지막에 이 회차 문제 진술과의 관련성 한 줄",
+     rating:     4.0,
+     rating_reason: "근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "Radial matrix constraint influences tissue contraction and promotes maturation of bi-layered skin equivalents",
+    authors: "Polak J 외 11명",
+    paper_id: "10.1016/j.bioadv.2023.213702",
+    url: "https://doi.org/10.1016/j.bioadv.2023.213702",
+    doi: "10.1016/j.bioadv.2023.213702",
+    date: "2023-11",
+    venue: "Biomaterials Advances · 2023",
+    topics: ["B. 기하 안정화 대응", "3D 프린팅 링형 배양 인서트", "기질 접착을 통한 정적 반경 구속", "링 지름에 따라 분화·BM 형성 달라짐"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 기질 접착으로 이중층 피부 등가물에 정적 반경 구속을 가하는 3D 프린팅 배양 인서트. 링 지름을 바꿔 가며 무구속·평면 구속 대조군과 비교",
+    rating: 4.5,
+    rating_reason: "구속을 켜고 끄는 이분법이 아니라 링 지름이라는 연속 변수로 다뤄 수축 정도와 분화·기저막 형성의 관계를 보인 설계가 뛰어나고, 무구속·평면 구속이라는 두 종류의 대조군을 함께 두었습니다. 다만 초록 수준에서 수축률 수치가 제시되지 않고 장벽 기능 정량도 없습니다.",
+    background: "인체 피부 등가물(HSE)은 기전 연구·약물 탐색·이식 연구의 도구인데, 세포와 세포외기질 조성뿐 아니라 성숙 과정에서 스캐폴드에 가해지는 물리적 구속이 조직의 구성·기능·균질성을 좌우합니다. 그러나 구속 조건을 설계 변수로 다룬 연구는 드물었습니다.",
+    solution: "저자들은 이중층 HSE에 기질 접착을 통해 정적 반경 구속을 가하는 3D 프린팅 배양 인서트를 도입하고, 링 모양 인서트의 지름을 여러 가지로 바꿔 가며 무구속·평면 구속 HSE와 비교했습니다. 반경 구속은 조직 수축을 조절했을 뿐 아니라 생체 피부와 유사한 섬유아세포·기질 배열을 유도했고, 인서트 지름에 따라 각질형성세포 분화·표피 층화·기저막 형성이 개선되었습니다. 즉 수축 정도 자체가 피부 조직공학의 중요한 설계 변수임을 보였습니다. 이 특집의 핵심인 '장치로 기하를 붙잡는다'를 가장 직접적으로 구현하면서 C 계층(분화·기저막)까지 연결한 사례입니다."
+  },
+  {
+    title: "Control of Tissue Strain Is Essential for Enhanced Dermal Innervation in the Three-Dimensional Skin Engineering",
+    authors: "Miura S 외 3명",
+    paper_id: "10.1021/acsbiomaterials.4c01097",
+    url: "https://doi.org/10.1021/acsbiomaterials.4c01097",
+    doi: "10.1021/acsbiomaterials.4c01097",
+    date: "2024-12",
+    venue: "ACS Biomaterials Science & Engineering · 2024",
+    topics: ["B. 기하 안정화 대응", "앵커링 배양 장치로 수축력 균형", "콜라겐:Matrigel 2:1 복합 하이드로겔", "콜라겐 단독은 앵커에서 탈착"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 앵커링 배양 장치로 수축력을 균형 잡은 전층 3D 피부 모델에서, 진피층 바닥에 둔 DRG 신경 스페로이드로부터의 신경돌기 신장을 하이드로겔 조성별로 비교",
+    rating: 4.0,
+    rating_reason: "'수축이 심하면 앵커에서 조직이 떨어진다'는 탈착 현상을 명시적으로 보고하고, 기질 조성을 체계적으로 바꿔 수축 감소와 신경 신장을 함께 측정했습니다. 다만 주 평가 지표가 신경돌기 신장이라 수축·탈착 자체의 정량은 부수적이고, 연구 목적이 신경 분포라 장벽 기능은 다루지 않습니다.",
+    background: "감각 신경이 들어간 피부 모델은 재생의료·바이오센싱·약물 스크리닝을 겨냥한 연구 분야지만, 전층 피부 모델의 신경 분포는 아직 달성되지 않았습니다. 콜라겐 스펀지·배양 인서트·미세유체 장치로 피부의 층 구조를 부분적으로 흉내 내는 시도가 있었을 뿐입니다.",
+    solution: "저자들은 이전에 보고한 앵커링 배양 장치(조직 수축력을 균형 잡아 전층 3D 피부 모델을 만드는 도구)를 써서 콜라겐과 Matrigel 복합 하이드로겔로 진피층 신경 분포를 크게 개선했습니다. 여러 하이드로겔(진피 유래·힘줄 유래 1형 콜라겐, 조성이 다른 Coll:MG 복합)을 비교한 결과 Coll:MG 2:1 복합 하이드로겔이 수직 방향 신경돌기 신장을 유의하게 늘렸고 동시에 배양 중 조직 수축이 줄었습니다. 반대로 콜라겐 단독 하이드로겔에서는 신경돌기가 대부분 수평으로만 자랐고 수축이 심해 조직이 앵커에서 떨어져 나가기도 했습니다. 즉 앵커 장치가 있어도 기질 조성이 받쳐 주지 않으면 탈착이 일어난다는 점을 보여 주어, 장치와 재료를 함께 봐야 함을 시사합니다."
+  },
+  {
+    title: "Culture insert device with perfusable microchannels enhances in vitro skin model development and barrier function assessment",
+    authors: "Mikimoto D 외 5명",
+    paper_id: "10.1088/1758-5090/ad3a15",
+    url: "https://doi.org/10.1088/1758-5090/ad3a15",
+    doi: "10.1088/1758-5090/ad3a15",
+    date: "2024-04",
+    venue: "Biofabrication · 2024",
+    topics: ["B. 기하 안정화 대응", "역플랜지형 앵커 미세유체 인서트", "표준 6-웰 플레이트에서 그대로 사용", "관류로 표피 형태형성 개선 · 카페인 투과 평가"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 역플랜지 모양 앵커를 가진 미세유체 배양 인서트. 일반 6-웰 플레이트에서 피부 모델을 배양하고, 모델을 다른 장치로 옮기지 않은 채 혈관 유사 채널 관류와 장벽 기능 평가를 함께 수행",
+    rating: 4.0,
+    rating_reason: "앵커 형상·관류·장벽 평가를 하나의 인서트에 통합하고 표준 6-웰 포맷을 유지해 실용성이 높으며, 관류군과 정적군을 비교해 형태형성 개선을 보였습니다. 다만 앵커가 수축·탈착을 얼마나 억제했는지에 대한 정량은 초록에 없고, 투과 평가는 카페인 한 가지입니다.",
+    background: "화장품 분야 동물실험 규제가 강화되면서 생체 피부 구조를 체외에서 재현하려는 연구가 늘었고, 모델도 진피+표피의 단순 2층에서 피하조직·혈관 구조·피부 부속기를 넣는 쪽으로 복잡해지고 있습니다. 그러나 이런 모델은 배양 장치와 평가 장치가 달라 모델을 옮겨야 하거나 별도 장치를 덧붙여야 하는 번거로움이 있었습니다.",
+    solution: "저자들은 역플랜지 모양 앵커를 가진 미세유체 장치를 설계해, 일반적인 6-웰 플레이트 안에서 체외 피부 모델을 배양하면서 모델을 다른 장치로 옮기거나 추가 장치를 쓰지 않고 장벽 기능까지 평가할 수 있게 했습니다. 혈관 유사 채널을 통한 관류는 정적 조건에서 배양한 피부 모델보다 표피 형태형성을 개선했고, 카페인의 경피 투과와 혈관 흡수를 측정할 수 있어 전신 약물 노출 평가의 핵심 지표를 얻었습니다. 앵커 형상으로 기하를 잡으면서 평가까지 한 장치에서 끝내는 접근으로, 장치 설계가 기하 안정화와 처리 효율을 동시에 겨냥할 수 있음을 보여 줍니다."
+  },
+  {
+    title: "Direct 3D cell-printing of human skin with functional transwell system",
+    authors: "Kim BS 외 3명",
+    paper_id: "10.1088/1758-5090/aa71c8",
+    url: "https://doi.org/10.1088/1758-5090/aa71c8",
+    doi: "10.1088/1758-5090/aa71c8",
+    date: "2017-06",
+    venue: "Biofabrication · 2017",
+    topics: ["B. 기하 안정화 대응", "트랜스웰 자체를 한 공정으로 프린팅", "PCL 메시가 콜라겐 수축 방지", "압출+잉크젯 하이브리드 프린터"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 압출 모듈과 잉크젯 모듈을 함께 쓰는 하이브리드 3D 세포 프린팅으로, 트랜스웰 구조체와 PCL 메시를 넣은 콜라겐 진피를 연속 제작하고 각질형성세포를 균일 분주",
+    rating: 4.0,
+    rating_reason: "수축 방지용 PCL 메시와 트랜스웰 구조를 프린팅 공정 안으로 끌어들여 다단계 수작업을 줄인 설계가 명확하고, 두 분주 모듈의 역할을 각각 검증했습니다. 2017년 연구라 분화·장벽 지표가 최근 기준으로는 제한적이고, 수축 억제 효과의 정량 비교도 충분하지 않습니다.",
+    background: "3D 세포 프린팅은 설계가 빠르고 유연해 인체 피부 모델 제작에 유망하지만, 천연 조직의 복잡성을 재현하는 완전한 기능성 모델은 여전히 과제입니다. 기존 피부 모델은 PDMS 칩과 시판 트랜스웰 인서트를 쓰는 다단계 공정에 의존해 왔습니다.",
+    solution: "저자들은 단일 공정으로 트랜스웰 시스템까지 함께 만드는 3D 세포 프린팅 전략을 제시했습니다. 압출과 잉크젯 모듈을 동시에 쓰는 하이브리드 프린팅 시스템을 개발하고, 압출 분주 모듈로는 조직 성숙 중 콜라겐이 수축하는 것을 막는 폴리카프로락톤(PCL) 메시를 넣은 콜라겐 구조체를 만들었으며, 잉크젯 분주 모듈로는 각질형성세포를 균일하게 분포시켰습니다. 이어서 트랜스웰 구조체와 섬유아세포가 든 진피를 압출 모듈로 연속 제작해 기능성 트랜스웰을 갖춘 인체 피부 모델을 완성했습니다. 배양 용기(트랜스웰)와 수축 방지 보강재(PCL 메시)를 모두 프린팅으로 해결한 초기 사례로, 장치와 모델을 한 공정으로 묶는 방향을 보여 줍니다."
+  },
+  {
+    title: "FleXert: A Soft, Actuatable Multiwell Plate Insert for Cell Culture under Stretch",
+    authors: "Correia Carreira S 외 3명",
+    paper_id: "10.1021/acsbiomaterials.0c01448",
+    url: "https://doi.org/10.1021/acsbiomaterials.0c01448",
+    doi: "10.1021/acsbiomaterials.0c01448",
+    date: "2021-04",
+    venue: "ACS Biomaterials Science & Engineering · 2021",
+    topics: ["B. 기하 안정화 대응", "PDMS 다공성 막 인서트 · 6-웰 호환", "공압 구동으로 최대 30% 인장", "폴리도파민 코팅으로 콜라겐 겔 고정"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 6-웰 플레이트에 끼우는 PDMS 재질의 부드러운 배양 인서트(FleXert). 다공성 PDMS 막이 세포·조직을 지지하고, 주사기 펌프로 공압 구동해 최대 30% 인장 변형을 가함",
+    rating: 3.5,
+    rating_reason: "값비싼 장비 없이 표준 멀티웰 포맷에서 인장을 가할 수 있게 한 실용적 설계이고, 변형이 세포층까지 전달되는지 확인했습니다. 다만 피부 모델 적용은 생체적합성 확인 수준이고, 인장이 수축·탈착이나 분화·장벽에 미치는 영향은 정량되지 않았습니다.",
+    background: "다공성 멀티웰 플레이트 인서트는 물질 수송 연구나 기중 배양에 널리 쓰이지만, 단단한 재질로 만들어져 정적 조건에서만 쓰이기 때문에 생체 미세환경을 대표하지 못합니다. 기존의 신축 배양 기술은 값비싼 장비나 맞춤 제작 챔버를 요구했습니다.",
+    solution: "저자들은 6-웰 플레이트와 맞물리는 부드럽고 구동 가능한 배양 인서트 FleXert를 제시했습니다. PDMS로 만들고 다공성 PDMS 막을 세포·조직 지지체로 쓰며, 표준 주사기 펌프로 공압 구동해 최대 30%의 인장 변형을 가할 수 있고 공기압과 펌프 속도를 바꿔 다양한 구동 패턴을 낼 수 있습니다. 다공성 PDMS 막은 피브로넥틴으로 간단히 표면 기능화하면 사람 진피 섬유아세포가 접착하고, 섬유아세포가 든 콜라겐 겔 같은 3D 조직 모델은 폴리도파민 코팅 후 PDMS에 고정할 수 있으며, 콜라겐 코팅 막은 인체 피부 모델 수립을 지원했습니다. 장치(인서트)와 코팅(폴리도파민·피브로넥틴)을 함께 써야 조직이 막에 붙어 있다는 점에서 다음 특집(부착성 코팅)과도 이어집니다."
+  },
+  {
+    title: "Development of an Aged Full-Thickness Skin Model Using Flexible Skin-on-a-Chip Subjected to Mechanical Stimulus Reflecting the Circadian Rhythm",
+    authors: "Jeong S 외 4명",
+    paper_id: "10.3390/ijms222312788",
+    url: "https://doi.org/10.3390/ijms222312788",
+    doi: "10.3390/ijms222312788",
+    date: "2021-11",
+    venue: "International Journal of Molecular Sciences · 2021 (OA)",
+    topics: ["B. 기하 안정화 대응", "유연 skin-on-a-chip · 주기적 압축", "28일 일주기 모사 자극", "수축률을 노화 지표로 측정"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 사람 섬유아세포·각질형성세포로 만든 전층 3D 피부 등가물을 유연한 skin-on-a-chip에서 배양하고, 일주기 리듬을 본뜬 주기적 압축 자극을 28일간 가해 노화를 가속",
+    rating: 3.5,
+    rating_reason: "장기 내인성 노화를 기계 자극으로 가속한다는 착상이 분명하고 표피 두께·수축률·노화 마커를 함께 측정했습니다. 다만 자극이 없는 대조군과의 비교 범위, 그리고 '수축률 감소'가 노화인지 장치 구속 효과인지의 구분이 초록 수준에서는 분명하지 않습니다.",
+    background: "피부는 체내 대사에 의한 내인성 노화와 환경 요인에 의한 외인성 노화를 함께 겪습니다. 그중 내인성 노화는 진행이 오래 걸려 체외 실험으로 재현하기 어렵다는 점이 큰 장애물이었습니다.",
+    solution: "저자들은 전층 피부 등가물에 일주기 리듬을 본뜬 주기적 기계 자극을 28일간 가해 노화를 가속했습니다. 사람 섬유아세포와 각질형성세포로 전층 3차원 피부 등가물을 배양해 유연한 skin-on-a-chip을 만들고 주기적 압축 응력을 가했는데, 표피층 두께 감소, 수축률 감소, Myb 분비 감소로 노화 가속이 확인되었고 β-갈락토시다아제 유전자 발현과 활성산소·TGF-β1 분비는 늘었습니다. 기계 자극을 가하는 장치에서 수축률을 조직 상태의 정량 지표로 함께 측정했다는 점이 이 특집 맥락에서 의미가 있습니다."
+  },
+  {
+    title: "A Multiaxial Bioreactor Integrated with an Environmental Monitoring System for Tissue-Engineered Skin Grafts",
+    authors: "Jeon S 외 13명",
+    paper_id: "10.1002/adhm.202504798",
+    url: "https://doi.org/10.1002/adhm.202504798",
+    doi: "10.1002/adhm.202504798",
+    date: "2026-01",
+    venue: "Advanced Healthcare Materials · 2026",
+    topics: ["B. 기하 안정화 대응", "Hoberman 링 기반 다축 신장", "pH·DO·글루코스·락테이트·배지 수위 센서", "균일한 세포 분포·배향"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 선형 액추에이터의 운동을 Hoberman 링 구조로 반경 방향 힘으로 바꿔 피부 이식편을 다축으로 균일하게 늘리는 바이오리액터. pH·용존산소·글루코스·락테이트·배지 수위 센서를 통합해 기중 배양 중 환경을 연속 감시",
+    rating: 3.5,
+    rating_reason: "단축·이축의 한계를 Hoberman 링이라는 기구학적 해법으로 풀고 표면적 확대로 변형을 검증했으며 센서 통합까지 갖춘 구성이 충실합니다. 다만 평가가 증식·완결성 수준이고 수축 억제나 장벽 기능과의 연결은 제시되지 않았으며, 이식편 제작용이라 TG 포맷과는 거리가 있습니다.",
+    background: "조직공학 피부 이식편을 성숙시키려고 기계 자극을 주는 피부 바이오리액터가 쓰여 왔지만, 대부분 단축 또는 이축 신장에 그치고 조직 성숙도를 감시할 수단이 없어 조직이 고르지 않게 성숙하는 문제가 있었습니다.",
+    solution: "저자들은 피부 이식편을 균일하게 늘리면서 환경을 연속 감시하는 다축 바이오리액터를 제시했습니다. 다축 신장을 위해 선형 액추에이터의 운동을 반경 방향 힘으로 바꾸는 Hoberman 링 설계를 썼고, 이 방식으로 늘린 이식편은 세포 분포와 배향이 균일했으며 표면적 확대로 사용자가 지정한 변형이 실제로 가해졌음을 확인했습니다. pH·용존산소·글루코스·락테이트·기중 배양용 배지 수위 센서를 통합해 배양 환경을 계속 감시할 수 있게 했고, 주기적 다축 신장으로 진피 섬유아세포 증식과 표피 각질형성세포 완결성이 개선되었습니다. 기하를 능동적으로 제어하면서 공정 상태를 계측하는 방향을 보여 줍니다."
+  },
+  {
+    title: "Perforation-type anchors inspired by skin ligament for the robotic face covered with living skin",
+    authors: "Kawai M 외 3명",
+    paper_id: "10.1101/2024.01.24.576563",
+    url: "https://doi.org/10.1101/2024.01.24.576563",
+    doi: "10.1101/2024.01.24.576563",
+    date: "2024-01",
+    venue: "bioRxiv (preprint) · 2024",
+    topics: ["B. 기하 안정화 대응", "피부 인대 모사 천공형 앵커", "플라즈마 처리로 콜라겐 겔 침투", "앵커 지름에 따른 수축 방지·유지력"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 피부 인대 구조에서 착안한 천공형 앵커. 구멍 안으로 콜라겐 겔이 침투해 피부 등가물을 아래 구조물에 고정하며, 앵커 지름을 바꿔 가며 수축 방지 효과와 유지력을 평가",
+    rating: 3.0,
+    rating_reason: "천공 구조로 기질을 물리적으로 물리게 하고 플라즈마 처리로 침투를 돕는다는 원리가 명확하며 앵커 지름을 변수로 수축 방지와 유지력을 함께 측정했습니다. 다만 프리프린트이고 목적이 바이오하이브리드 로봇이라 표피 분화·장벽은 다루지 않으며, 진피 등가물 중심입니다.",
+    background: "세포와 세포외기질로 이루어진 피부 등가물은 생물학적 기능을 갖춘 로봇 피복재로서 잠재력이 있지만, 이를 아래 구조물에 안정적으로 붙이는 방법이 필요합니다. 표면에 튀어나오지 않으면서 자연 피부처럼 밀착시키는 고정 기법이 과제였습니다.",
+    solution: "저자들은 피부 인대 구조에서 착안한 천공형 앵커를 개발해 피부 등가물을 로봇 표면에 매끄럽게 고정했습니다. 천공형 앵커 안으로 콜라겐 겔이 침투하도록 플라즈마 처리가 효과적임을 보였고, 앵커 지름이 수축 방지와 유지력에 미치는 영향을 조사해 앵커 시스템을 특성화했습니다. 복잡한 표면 구조를 가진 3차원 안면 몰드를 피부 등가물로 덮어 3D 피복 적용 가능성을 보였고, 진피 등가물로 덮은 로봇 얼굴이 앵커를 통한 구동으로 미소를 지을 수 있음을 시연했습니다. 로봇 공학 맥락이지만 '구멍으로 기질을 물려 수축을 막는다'는 고정 원리와 플라즈마 처리 병용은 피부 모델 기하 안정화에 그대로 적용할 수 있는 발상입니다."
+  },
+  {
+    title: "Dual-chambered membrane bioreactor for coculture of stratified cell populations",
+    authors: "Navarro J 외 5명",
+    paper_id: "10.1002/bit.27164",
+    url: "https://doi.org/10.1002/bit.27164",
+    doi: "10.1002/bit.27164",
+    date: "2019-09",
+    venue: "Biotechnology and Bioengineering · 2019",
+    topics: ["B. 기하 안정화 대응", "막으로 분리된 이중 챔버 관류", "대류-확산 균형으로 혼합도 조절", "28일 두 세포군 유지"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 공통 챔버 안에 인접한 두 유로를 두고 막으로 층류와 혼합을 조절하는 이중 챔버 바이오리액터. 스캐폴드 안에 세포군의 층 또는 농도 구배를 만들 수 있음",
+    rating: 3.5,
+    rating_reason: "막을 매개로 한 수송을 전산 모델과 실험으로 함께 검증하고 28일 장기 공배양을 보인 점이 탄탄합니다. 다만 검증 사례가 지방세포 분화이고 전층 피부 모델의 수축·탈착이나 표피 분화에 직접 적용한 결과는 제시되지 않았습니다.",
+    background: "피부 조직공학에서는 진피와 표피, 나아가 피하조직까지 층을 이루는 세포군을 함께 배양해야 하는데, 기존 배양 방식으로는 각 층에 서로 다른 환경을 주면서 층 구조를 유지하기 어려웠습니다.",
+    solution: "저자들은 막을 끼워 층을 이루는 3D 세포군을 연구할 수 있는 이중 챔버 바이오리액터(DCB)를 개발했습니다. 공통 챔버 안에 인접한 두 유로를 두고, 막이 유동의 층 분리 또는 혼합을 조절해 스캐폴드 안에 세포군의 층이나 농도 구배를 만들 수 있습니다. 전산 모델링과 실험으로 수송 현상을 분석해 막을 가로지르는 분자 수송이 대류와 확산의 균형으로 정의됨을 보였고, 이 균형 덕분에 두 가지 다른 유체를 관류시키면서 막이 혼합 정도를 결정하게 됩니다. 이 바이오리액터는 인접한 두 세포군을 28일간 유지했고, 세포군 간 분자 교신으로 중간엽 줄기세포의 간접 지방세포 분화를 유도하는 데 쓰였습니다. 진피-피하조직 복합체를 다루는 플랫폼으로 제시되었습니다."
+  },
+  {
+    title: "A microfluidic skin-on-a-chip enabling in situ construction of full-thickness human skin for modeling inflammatory diseases",
+    authors: "Sang L 외 6명",
+    paper_id: "10.1039/d6lc00189k",
+    url: "https://doi.org/10.1039/d6lc00189k",
+    doi: "10.1039/d6lc00189k",
+    date: "2026-05",
+    venue: "Lab on a Chip · 2026",
+    topics: ["B. 기하 안정화 대응", "수직 적층 이중 챔버 · 분리형 조립", "초기 관류 조건 조절로 콜라겐 수축 억제", "조직 꺼내 조직학·분자 분석 가능"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 수직으로 쌓은 이중 챔버 미세유체 플랫폼. 분리 가능한 조립 구조로 장기 관류를 유지하면서도 조직을 온전히 꺼내 일반 조직학·분자 분석에 쓸 수 있음",
+    rating: 4.0,
+    rating_reason: "수축 억제를 재료가 아니라 '초기 형성 단계의 관류·구성 조건'으로 달성하고, 조직을 꺼내 표준 분석을 할 수 있게 한 설계가 실용적입니다. 다만 초록에 수축률 수치가 없고 수축 억제에 기여한 구체적 변수 조합이 명시되지 않았습니다.",
+    background: "skin-on-a-chip은 동적 배양과 미세환경 제어를 가능하게 하지만, 대부분의 플랫폼은 조직 구조가 불완전하고 제작 흐름이 끊기며 실험 접근성이 떨어져 재현성과 후속 분석을 함께 떨어뜨립니다.",
+    solution: "저자들은 수직으로 쌓은 이중 챔버 미세유체 플랫폼을 분리 가능한 조립 구조로 만들어, 장기 관류를 안정적으로 유지하면서도 조직을 온전히 꺼내 표준 조직학·분자 분석에 쓸 수 있게 했습니다. 특히 연속 관류 아래에서 형성 초기의 진피 구성 변수를 조절하자 콜라겐 수축이 효과적으로 억제되어, 균일하고 기계적으로 안정한 진피 경계면이 만들어졌고 그 위에 재현성 있게 표피를 파종·층화하고 기중 배양으로 성숙시킬 수 있었습니다. 1차 사람 진피 섬유아세포와 표피 각질형성세포로 적절한 표피 층화와 분화 마커 발현을 갖춘 전층 피부 모델을 칩 위에서 바로 만들었고, Th2 사이토카인 유도 염증 표현형에서 장벽 손상의 분자적 특징을 재현했습니다. 장치 설계가 아니라 장치 안의 공정 조건으로 수축을 잡은 사례입니다."
+  }
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.venue} · ${p.date}${p.doi ? ' · DOI:' + p.doi : ''}${p.pdf ? ' · <a href="' + p.pdf + '" target="_blank" rel="noopener">PDF</a>' : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      ${p.image
+        ? `<div class="figwrap"><div class="fig"><img src="${p.image}" alt="${p.title}"></div>`
+          + (p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``) + `</div>`
+        : (p.figcap
+            ? `<div class="figwrap"><div class="capbox"><span class="caplabel">Figure 1 설명</span>${p.figcap}</div></div>`
+            : ``)}
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+    el.innerHTML = '<h3>지난 FT 피부 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="skin-brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>
