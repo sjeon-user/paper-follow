@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FT 피부 모델 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .capbox{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 13px;color:var(--muted);font-size:.82rem;line-height:1.65;background:var(--bg)}
+  .capbox .caplabel{display:block;font-weight:700;color:var(--text);font-size:.72rem;margin-bottom:4px}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .meta a{color:var(--accent);text-decoration:none}
+  .meta a:hover{text-decoration:underline}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>FT 피부 모델 논문 팔로우업</h1>
+    <div class="sub">FT(전층) 인체 피부 모델의 기하 불안정 → 분화·장벽 → OECD TG 431/439 규제 적합성 · 하루 1키워드 최대 5편 · 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="paper-brief.html">← arXiv 브리핑</a> <a href="rss-brief.html">🏛 RSS 학회</a> <a href="keep.html">⭐ 보관함</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-04";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "A 계층 1회차 — 섬유아세포가 콜라겐 기질을 끌어당겨 일으키는 수축: 수축 규모의 정량, 수축을 일으키는 세포·신호 기전, 그리고 반경 구속·다공성 지지체·나노섬유 보강으로 기하를 붙잡은 대응", "keywords": ["fibroblast contraction", "collagen gel / lattice contraction", "myofibroblast · α-SMA", "skin equivalent · dermal equivalent", "full-thickness skin", "anti-shrinkage constraint", "porous / nanofibrous reinforcement"], "note": "Europe PMC 최근 8년, 저널 범위 제한 없음 · 'contraction/contractility/shrinkage' × '피부 등가물·전층 피부' 80건에서 체외 FT 모델의 기하 안정성을 직접 다룬 5편 선별 · 상처 치유·이식편 수축 등 생체 내(in vivo) 연구는 제외 · 수축 억제를 다룬 미세유체 FT 모델 1편(10.1039/d6lc00189k)은 B·C 계층 회차 후보로 남김"};
+/* 보관된 FT 피부 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 skin-brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-04", t:"① 섬유아세포 콜라겐 수축"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     paper_id: "10.1016/j.xxx",        // DOI 우선, 없으면 "PMID:12345678" (skin-seen.json 중복 방지 키)
+     url:      "https://doi.org/...",
+     doi:      "10.1016/j.xxx",
+     date:     "2025-03",              // 출판 연-월
+     venue:    "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
+     image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
+     figcap:   "Figure 1. ...",
+     background: "배경·기존 문제 2~3문장",
+     solution:   "해결·방법과 결과 2~3문장 + 마지막에 이 회차 문제 진술과의 관련성 한 줄",
+     rating:     4.0,
+     rating_reason: "근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "Radial constraint of plastically compressed human dermo-epidermal skin substitutes mitigates in vitro contraction and enhances structural maturity",
+    authors: "Pontiggia L 외 7명",
+    paper_id: "10.1088/1758-5090/ae5e0c",
+    url: "https://doi.org/10.1088/1758-5090/ae5e0c",
+    doi: "10.1088/1758-5090/ae5e0c",
+    date: "2026-04",
+    venue: "Biofabrication · 2026",
+    topics: ["A. 수축·탈착 원인", "반경 구속 장치(ASD)로 물리적 고정", "수축 23–36% → 3–8%", "α-SMA 음성 · 표피 조직화 개선"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 기존 제작 공정과 호환되는 맞춤형 수축 방지 장치(ASD)로 진피-표피 대체물을 반경 방향으로 구속한 뒤, 구속한 것과 구속하지 않은 것의 수축 거동·형태·세포 조직화를 비교",
+    rating: 4.5,
+    rating_reason: "'표피를 올리면 수축이 더 심해진다'는 문제를 구속이라는 단순한 기계적 해법으로 풀고, 수축률·형태 변동성·α-SMA 발현을 비구속 대조군과 함께 정량해 인과를 분명히 했습니다. 기존 제작 공정을 바꾸지 않아 실용성도 높습니다. 다만 소성 압축 공정 한 가지에 한정되고 TEER·TEWL 같은 장벽 지표는 측정하지 않았습니다.",
+    background: "진피-표피 피부 대체물(DESS)은 전층 피부 결손 치료에 유망하지만, 장기간 체외 배양하면 조직이 크게 수축합니다. 특히 표피층이 올라가 있고 공여 세포의 수축성이 높을 때 심해지며, 그 결과 이식편의 품질과 재현성이 떨어져 전임상 연구에 걸림돌이 됩니다.",
+    solution: "저자들은 소성 압축(plastic compression)으로 만드는 기존 DESS 제작 공정을 그대로 두면서 대체물을 물리적으로 구속하는 맞춤형 수축 방지 장치(ASD)를 개발했습니다. 비구속 대체물이 23~36% 수축하고 형태가 불규칙해진 반면, ASD를 쓴 쪽은 수축이 3~8%에 그쳐 형태가 보존되고 시료 간 변동도 줄었습니다. 구속된 대체물의 섬유아세포는 방추형을 유지했고 α-평활근 액틴이 발현되지 않아 병적인 근섬유아세포 분화가 일어나지 않았으며, 표피층의 구조적 조직화도 개선됐습니다. 이 회차 문제 진술에서 A(수축)와 B(기하 안정화)를 직접 잇고 C의 앞단(표피 구조)까지 보여 주지만, 장벽 기능 정량과 OECD TG 적합성은 다루지 않습니다."
+  },
+  {
+    title: "Development of a contraction-free, vascularized full-thickness skin-on-a-chip platform for modeling immune responses and inflammation in atopic dermatitis",
+    authors: "Kim K 외 4명",
+    paper_id: "10.1039/d5lc00606f",
+    url: "https://doi.org/10.1039/d5lc00606f",
+    doi: "10.1039/d5lc00606f",
+    date: "2025-11",
+    venue: "Lab on a Chip · 2025",
+    topics: ["B. 기하 안정화 대응", "다공성 지지체로 거시 수축 제거", "면적 유지 100% (기존 11.9%)", "HUVEC 미세혈관망 + 장기 ALI"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약) — 기질 수축을 억제하는 다공성 지지체 위에 혈관내피세포(HUVEC)·진피 섬유아세포·각질형성세포를 순차 파종해, 수축 없이 미세혈관망을 갖춘 전층 피부 등가물을 칩 위에 구성",
+    rating: 4.0,
+    rating_reason: "수축을 '해결해야 할 부수 문제'가 아니라 설계 목표로 삼고 면적 유지율을 100% 대 11.9%로 대조해 제시한 점이 명확하며, 혈관망의 관류 가능성까지 검증했습니다. 다만 비교 대상인 '기존 구성'의 조건 서술이 요약 수준이고, 칩 기반이라 OECD TG가 전제하는 인서트 포맷과는 거리가 있습니다.",
+    background: "체외 피부 모델은 신뢰할 수 있는 약물 스크리닝 플랫폼으로서 여전히 근본적 과제를 안고 있는데, 저자들은 그중에서도 기질 수축이 장기 실험을 가로막아 왔다는 점을 핵심 제약으로 지목했습니다. 기존 피부 등가물 구성에서는 배양이 길어질수록 면적이 줄어 장기 진피 성숙과 안정적인 기중 배양이 어렵습니다.",
+    solution: "저자들은 기질 수축을 제한하는 다공성 지지체를 써서 수축하지 않는 전층 피부 등가물을 만들고 여기에 미세혈관 유사 내피 네트워크를 넣었습니다. 다공성 지지체는 거시적 수축을 없애 면적 유지율이 100%였는데, 비교한 기존 구성에서는 11.9%만 남았습니다. 그 덕분에 진피 성숙 기간을 늘리고 기중 배양(ALI)을 장기간 안정적으로 유지할 수 있었고, HUVEC·진피 섬유아세포·각질형성세포를 순차 파종해 CD31/CD144 면역형광과 형광 미세구 관류로 확인되는 연결된 혈관 구조를 얻었습니다. 아토피 피부염 모델(IL-4·IL-13·IL-22 자극)에서 각질층 형태와 표피 단백질 발현 변화를 관찰해 C 계층(분화·장벽)까지 이어 보였으나, 평가 목적이 질환 모델링이라 TG 적합성 지표는 다루지 않습니다."
+  },
+  {
+    title: "Monocytes strongly induce (myo)fibroblast contraction in a 3D skin model to understand inflammation-fibrosis crosstalk",
+    authors: "Zanin-Silva DC 외 8명",
+    paper_id: "10.1038/s41598-026-62996-0",
+    url: "https://doi.org/10.1038/s41598-026-62996-0",
+    doi: "10.1038/s41598-026-62996-0",
+    date: "2026-07",
+    venue: "Scientific Reports · 2026 (OA)",
+    topics: ["A. 수축·탈착 원인", "단핵구·대식세포 → (근)섬유아세포 수축", "JAK/STAT3 · TGF-β/Smad2/3 매개", "TGF-β 중화로 차단, IL-6 차단은 무효"],
+    image: "",
+    figcap: "Figure 1. 단핵구는 3D 피부 콜라겐 하이드로겔 모델에서 (근)섬유아세포 수축을 강하게 유도한다. (A) 72시간 후 하이드로겔 스캔 사진 — (근)섬유아세포 단독 배양과 면역세포(PBMC 또는 단핵구) 공배양 비교, 수축은 하이드로겔 표면적 감소로 나타남. (B) 시간에 따른 수축 거동 — 섬유아세포만 있는 하이드로겔은 수축하지 않은 반면, 단핵구나 PBMC와 공배양한 하이드로겔은 48시간 이후 뚜렷이 수축해 72시간에 최대에 이름. (C) 수축은 수축된 하이드로겔 군의 평균 표면적을 수축하지 않은 하이드로겔의 전체 면적으로 나누어 평가",
+    rating: 4.0,
+    rating_reason: "공배양·상층액 전달·억제제·중화항체를 단계적으로 써서 '단핵구 → TGF-β → 수축'이라는 인과를 좁혀 들어간 설계가 탄탄하고, 수축을 표면적 비로 정량했습니다. 다만 목적이 섬유증 기전 규명이라 표피가 없는 진피 하이드로겔 모델이며, 공여자 수가 제한적입니다.",
+    background: "전신경화증 연구 맥락에서 단핵구·대식세포가 섬유화를 일으키는 근섬유아세포 형성에 기여한다는 점은 알려져 있었지만 그 기전은 충분히 밝혀지지 않았습니다. 피부 모델 입장에서 보면, 진피 구획에 들어온 면역세포가 수축을 얼마나 그리고 어떤 경로로 유발하는지가 불분명했습니다.",
+    solution: "저자들은 3D 피부 모델에서 CD14⁺ 단핵구와 M1·M2 유사 대식세포가 제1형 콜라겐 하이드로겔 안의 섬유아세포를 어떻게 활성화·수축시키는지 조사했습니다. 섬유아세포만 있을 때는 수축이 없었지만 단핵구와 공배양하면 48시간 이후 강한 자발적 수축이 시작돼 72시간에 최대에 이르렀고 α-평활근 액틴 같은 근섬유아세포 활성 마커가 함께 올라갔습니다. 전사인자 반응 리포터와 저분자 억제제로 이 신호가 JAK/STAT3와 TGF-β/Smad2/3를 통해 전달됨을 보였고, 배양 상층액 전달만으로도 수축이 재현되었으며 TGF-β 중화는 이 효과를 없앤 반면 IL-6 차단은 그렇지 않았습니다. 이 회차 문제 진술의 A 계층(수축 원인)을 세포·신호 수준에서 규명하지만, 진피 하이드로겔 단독 모델이라 표피 분화·장벽(C)과 규제 적합성(D)으로는 직접 이어지지 않습니다."
+  },
+  {
+    title: "In vitro pre-vascularized model of the human skin based on collagen hydrogel reinforced by fibrin-coated nanofibrous membrane",
+    authors: "Tomsu J 외 9명",
+    paper_id: "10.1177/20417314261478553",
+    url: "https://doi.org/10.1177/20417314261478553",
+    doi: "10.1177/20417314261478553",
+    date: "2026-01",
+    venue: "Journal of Tissue Engineering · 2026 (OA)",
+    topics: ["B. 기하 안정화 대응", "전기방사 PCL/PLCL 막 + 피브린 코팅 보강", "세포 유발 하이드로겔 수축 방지", "3D 프린팅 ALI 인서트 · 삼중 배양"],
+    image: "",
+    figcap: "Figure 1. 피부 구성체를 지지하는 막을 잡아 주도록 설계한 기중 배양 인서트의 3D 프린팅 모델 — (a) 분리된 인서트(빨강), 고정 링(노랑), 홀더(파랑). (b) 고정 링으로 막을 인서트에 고정. (c) 침지 배양 위치. (d) 기중 배양(ALI) 위치",
+    rating: 3.5,
+    rating_reason: "보강막과 고정 인서트로 수축을 막는 접근이 문제에 잘 맞고 삼중 배양·혈관 네트워크 형성까지 보여 구성이 충실합니다. 다만 초록 수준에서 수축률을 대조군과 함께 정량 비교하지 않아 '수축 방지' 주장의 근거 강도를 가늠하기 어렵고, 표피 분화·장벽 지표도 제시되지 않았습니다.",
+    background: "이식 후 혈관 문합을 개선하려면 기능적 전층 피부 등가물에 미리 혈관을 만들어 두는 것이 중요합니다. 그러나 제1형 콜라겐 하이드로겔만으로 진피를 만들면 세포가 기질을 끌어당겨 수축하고, 천연 피부가 가진 기계적 이질성(층마다 다른 강성)도 재현되지 않습니다.",
+    solution: "저자들은 제1형 콜라겐 하이드로겔에 피브린 임시 기질을 입힌 전기방사 PCL/PLCL 나노섬유막을 결합해, 세포가 유발하는 하이드로겔 수축을 막고 천연 피부의 기계적 이질성을 재현하는 복합 스캐폴드를 만들었습니다. 사람 내피세포·지방 유래 기질세포·각질형성세포를 동시에 삼중 배양하고, 막을 고정해 주는 맞춤 3D 프린팅 조절식 인서트로 기중 배양을 해 진피층과 표피층의 층화를 유도했습니다. 지방 유래 기질세포가 주피세포처럼 작용해 3D 진피 안에 모세혈관 유사 네트워크 형성을 이끌었습니다. 기하 안정화(B)를 보강재와 고정 인서트 두 방향으로 다루지만, 수축 억제 정도를 수치로 비교하지 않았고 장벽 기능도 측정하지 않았습니다."
+  },
+  {
+    title: "Adipose tissue and adipose-derived stromal cells can reduce skin contraction in an in vitro tissue engineered full thickness skin model",
+    authors: "Workman VL 외 4명",
+    paper_id: "10.1080/21623945.2025.2473367",
+    url: "https://doi.org/10.1080/21623945.2025.2473367",
+    doi: "10.1080/21623945.2025.2473367",
+    date: "2025-03",
+    venue: "Adipocyte · 2025 (OA)",
+    topics: ["A. 수축·탈착 원인", "무처리 14일 → 원면적의 약 60%", "지방조직 첨가로 수축 50% 감소", "ADSC는 고용량에서만 효과"],
+    image: "",
+    figcap: "Figure 1. 지방조직과 지방 유래 기질세포(ADSC)의 처리·준비 과정 — (a) 적출한 지방조직을 지방흡입물과 비슷한 상태로 잘게 썰어 조직공학 피부 모델에 넣기 쉽게 함. (b) 두 개의 Luer-Lok 주사기 사이로 30회 통과시켜 유화 지방 제조. (c) 유화 지방을 여과·원심분리하면 유리 지질(상층), 지방농축물(중층), 적색 수성 성분(하층)으로 분리되며 중층을 분리해 모델에 첨가. (d) 잘게 썬 지방조직을 콜라게네이스로 처리해 ADSC를 분리하고 부착 배양으로 증식",
+    rating: 3.5,
+    rating_reason: "체외 전층 모델에서 수축 정도와 용량 의존적 억제 효과를 깔끔하게 정량해 문제의 크기를 보여 줍니다. 다만 연구 목적이 임상 지방 이식의 근거 제시라 표피 분화·장벽이나 기하 재현성은 평가하지 않았고, 효과 기전도 규명하지 않았습니다.",
+    background: "피부는 상처 치유 과정에서 수축해 상처를 닫지만, 일부 환자에서는 이 수축이 운동을 제한하는 구축(contracture)으로 이어집니다. 자가 지방 이식이 흉터 피부의 구조와 기능을 개선한다고 알려져 있으나 지방이 피부 수축 자체에 어떤 영향을 주는지는 거의 알려지지 않았습니다.",
+    solution: "저자들은 체외 조직공학 인체 전층 피부 모델로 지방조직과 지방 유래 기질세포(ADSC)가 수축에 미치는 영향을 시험했습니다. 아무 처리도 하지 않은 조직공학 피부는 14일 배양 동안 원래 면적의 약 60% 수준까지 수축했는데, 지방조직을 더하면 이 수축이 절반으로 줄었습니다. 유화하거나 농축한 지방, 그리고 고용량 ADSC가 비슷한 정도로 수축을 억제한 반면 저용량 ADSC는 같은 효과를 내지 못해 용량 의존성이 확인됐습니다. 이 회차 문제 진술에서 FT 모델이 2주 만에 면적의 40%를 잃는다는 수축 규모를 수치로 못 박아 준다는 점이 가장 큰 기여이고, 억제 수단은 세포·조직 첨가라 공학적 기하 고정(B)과는 결이 다릅니다."
+  }
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.venue} · ${p.date}${p.doi ? ' · DOI:' + p.doi : ''}${p.pdf ? ' · <a href="' + p.pdf + '" target="_blank" rel="noopener">PDF</a>' : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      ${p.image
+        ? `<div class="figwrap"><div class="fig"><img src="${p.image}" alt="${p.title}"></div>`
+          + (p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``) + `</div>`
+        : (p.figcap
+            ? `<div class="figwrap"><div class="capbox"><span class="caplabel">Figure 1 설명</span>${p.figcap}</div></div>`
+            : ``)}
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+    el.innerHTML = '<h3>지난 FT 피부 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="skin-brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>

@@ -13,6 +13,10 @@ import glob, io, json, os, re, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REG = os.path.join(ROOT, "themes.json")
 
+# kind -> snapshot filename prefix / current-page filename
+PREFIX = {"arxiv": "brief-", "rss": "rss-brief-", "skin": "skin-brief-"}
+CURRENT = {"arxiv": "paper-brief.html", "rss": "rss-brief.html", "skin": "skin-brief.html"}
+
 CSS = """  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
   .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
   .theme .ttitle{font-weight:650}
@@ -40,7 +44,7 @@ def js_str(s):
 def apply(kind, date, path, reg=None):
     reg = reg or load_registry()
     themes = reg.get(kind, {})
-    prefix = "brief-" if kind == "arxiv" else "rss-brief-"
+    prefix = PREFIX[kind]
     src = io.open(path, encoding="utf-8", newline="").read()
     eol = "\r\n" if "\r\n" in src else "\n"
     lines = src.split(eol)
@@ -105,7 +109,9 @@ def main():
             jobs.append(("arxiv", re.search(r"brief-(\d{4}-\d{2}-\d{2}[a-z]?)\.html$", p).group(1), p))
         for p in glob.glob(os.path.join(ROOT, "rss-brief-*.html")):
             jobs.append(("rss", re.search(r"rss-brief-(\d{4}-\d{2}-\d{2}[a-z]?)\.html$", p).group(1), p))
-        for kind, cur in (("arxiv", "paper-brief.html"), ("rss", "rss-brief.html")):
+        for p in glob.glob(os.path.join(ROOT, "skin-brief-*.html")):
+            jobs.append(("skin", re.search(r"skin-brief-(\d{4}-\d{2}-\d{2}[a-z]?)\.html$", p).group(1), p))
+        for kind, cur in CURRENT.items():
             path = os.path.join(ROOT, cur)
             d = re.search(r'^const BRIEF_DATE = "(\d{4}-\d{2}-\d{2}[a-z]?)', io.open(path, encoding="utf-8").read(), re.M)
             jobs.append((kind, d.group(1) if d else "", path))

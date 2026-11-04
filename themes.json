@@ -485,5 +485,21 @@
       ],
       "note": "RSS XXII 210편 전체 PDF 본문 검색 · 학습 정책과 학습 없는(또는 모델 기반) 제어를 같은 과제에서 비교한 논문만 선별 5편 · ENAP(p144)·CAP(p141)은 행동을 학습하는 쪽이라 제외 · MolmoSpaces(p091)·PointACT(p073)는 기소개"
     }
+  },
+  "skin": {
+    "2026-11-04": {
+      "label": "① 섬유아세포 콜라겐 수축",
+      "title": "A 계층 1회차 — 섬유아세포가 콜라겐 기질을 끌어당겨 일으키는 수축: 수축 규모의 정량, 수축을 일으키는 세포·신호 기전, 그리고 반경 구속·다공성 지지체·나노섬유 보강으로 기하를 붙잡은 대응",
+      "keywords": [
+        "fibroblast contraction",
+        "collagen gel / lattice contraction",
+        "myofibroblast · α-SMA",
+        "skin equivalent · dermal equivalent",
+        "full-thickness skin",
+        "anti-shrinkage constraint",
+        "porous / nanofibrous reinforcement"
+      ],
+      "note": "Europe PMC 최근 8년, 저널 범위 제한 없음 · 'contraction/contractility/shrinkage' × '피부 등가물·전층 피부' 80건에서 체외 FT 모델의 기하 안정성을 직접 다룬 5편 선별 · 상처 치유·이식편 수축 등 생체 내(in vivo) 연구는 제외 · 수축 억제를 다룬 미세유체 FT 모델 1편(10.1039/d6lc00189k)은 B·C 계층 회차 후보로 남김"
+    }
   }
 }
