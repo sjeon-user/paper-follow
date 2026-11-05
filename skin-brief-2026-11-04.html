@@ -91,7 +91,7 @@
   </header>
   <main id="papers"></main>
   <nav id="archive" class="archive"></nav>
-  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음</footer>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
 </div>
 
 <script>
@@ -110,7 +110,7 @@ const ARCHIVE = [{d:"2026-11-04", t:"① 섬유아세포 콜라겐 수축"}];
      url:      "https://doi.org/...",
      doi:      "10.1016/j.xxx",
      date:     "2025-03",              // 출판 연-월
-     venue:    "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
      topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
      image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
      figcap:   "Figure 1. ...",
@@ -128,7 +128,7 @@ const PAPERS = [
     url: "https://doi.org/10.1088/1758-5090/ae5e0c",
     doi: "10.1088/1758-5090/ae5e0c",
     date: "2026-04",
-    venue: "Biofabrication · 2026",
+    venue: "Biofabrication · 2026 (IF 8.2)",
     topics: ["A. 수축·탈착 원인", "반경 구속 장치(ASD)로 물리적 고정", "수축 23–36% → 3–8%", "α-SMA 음성 · 표피 조직화 개선"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 기존 제작 공정과 호환되는 맞춤형 수축 방지 장치(ASD)로 진피-표피 대체물을 반경 방향으로 구속한 뒤, 구속한 것과 구속하지 않은 것의 수축 거동·형태·세포 조직화를 비교",
@@ -144,7 +144,7 @@ const PAPERS = [
     url: "https://doi.org/10.1039/d5lc00606f",
     doi: "10.1039/d5lc00606f",
     date: "2025-11",
-    venue: "Lab on a Chip · 2025",
+    venue: "Lab on a Chip · 2025 (IF 6.1)",
     topics: ["B. 기하 안정화 대응", "다공성 지지체로 거시 수축 제거", "면적 유지 100% (기존 11.9%)", "HUVEC 미세혈관망 + 장기 ALI"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 기질 수축을 억제하는 다공성 지지체 위에 혈관내피세포(HUVEC)·진피 섬유아세포·각질형성세포를 순차 파종해, 수축 없이 미세혈관망을 갖춘 전층 피부 등가물을 칩 위에 구성",
@@ -160,7 +160,7 @@ const PAPERS = [
     url: "https://doi.org/10.1038/s41598-026-62996-0",
     doi: "10.1038/s41598-026-62996-0",
     date: "2026-07",
-    venue: "Scientific Reports · 2026 (OA)",
+    venue: "Scientific Reports · 2026 (OA, IF 3.9)",
     topics: ["A. 수축·탈착 원인", "단핵구·대식세포 → (근)섬유아세포 수축", "JAK/STAT3 · TGF-β/Smad2/3 매개", "TGF-β 중화로 차단, IL-6 차단은 무효"],
     image: "",
     figcap: "Figure 1. 단핵구는 3D 피부 콜라겐 하이드로겔 모델에서 (근)섬유아세포 수축을 강하게 유도한다. (A) 72시간 후 하이드로겔 스캔 사진 — (근)섬유아세포 단독 배양과 면역세포(PBMC 또는 단핵구) 공배양 비교, 수축은 하이드로겔 표면적 감소로 나타남. (B) 시간에 따른 수축 거동 — 섬유아세포만 있는 하이드로겔은 수축하지 않은 반면, 단핵구나 PBMC와 공배양한 하이드로겔은 48시간 이후 뚜렷이 수축해 72시간에 최대에 이름. (C) 수축은 수축된 하이드로겔 군의 평균 표면적을 수축하지 않은 하이드로겔의 전체 면적으로 나누어 평가",
@@ -176,7 +176,7 @@ const PAPERS = [
     url: "https://doi.org/10.1177/20417314261478553",
     doi: "10.1177/20417314261478553",
     date: "2026-01",
-    venue: "Journal of Tissue Engineering · 2026 (OA)",
+    venue: "Journal of Tissue Engineering · 2026 (OA, IF 6.7)",
     topics: ["B. 기하 안정화 대응", "전기방사 PCL/PLCL 막 + 피브린 코팅 보강", "세포 유발 하이드로겔 수축 방지", "3D 프린팅 ALI 인서트 · 삼중 배양"],
     image: "",
     figcap: "Figure 1. 피부 구성체를 지지하는 막을 잡아 주도록 설계한 기중 배양 인서트의 3D 프린팅 모델 — (a) 분리된 인서트(빨강), 고정 링(노랑), 홀더(파랑). (b) 고정 링으로 막을 인서트에 고정. (c) 침지 배양 위치. (d) 기중 배양(ALI) 위치",
@@ -192,7 +192,7 @@ const PAPERS = [
     url: "https://doi.org/10.1080/21623945.2025.2473367",
     doi: "10.1080/21623945.2025.2473367",
     date: "2025-03",
-    venue: "Adipocyte · 2025 (OA)",
+    venue: "Adipocyte · 2025 (OA, IF 3.3)",
     topics: ["A. 수축·탈착 원인", "무처리 14일 → 원면적의 약 60%", "지방조직 첨가로 수축 50% 감소", "ADSC는 고용량에서만 효과"],
     image: "",
     figcap: "Figure 1. 지방조직과 지방 유래 기질세포(ADSC)의 처리·준비 과정 — (a) 적출한 지방조직을 지방흡입물과 비슷한 상태로 잘게 썰어 조직공학 피부 모델에 넣기 쉽게 함. (b) 두 개의 Luer-Lok 주사기 사이로 30회 통과시켜 유화 지방 제조. (c) 유화 지방을 여과·원심분리하면 유리 지질(상층), 지방농축물(중층), 적색 수성 성분(하층)으로 분리되며 중층을 분리해 모델에 첨가. (d) 잘게 썬 지방조직을 콜라게네이스로 처리해 ADSC를 분리하고 부착 배양으로 증식",

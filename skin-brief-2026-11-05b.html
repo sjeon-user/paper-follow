@@ -91,7 +91,7 @@
   </header>
   <main id="papers"></main>
   <nav id="archive" class="archive"></nav>
-  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음</footer>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
 </div>
 
 <script>
@@ -110,7 +110,7 @@ const ARCHIVE = [{d:"2026-11-05b", t:"특집 ⑤ 수축 억제 합성·가교"},
      url:      "https://doi.org/...",
      doi:      "10.1016/j.xxx",
      date:     "2025-03",              // 출판 연-월
-     venue:    "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
      topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
      image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
      figcap:   "Figure 1. ...",
@@ -128,7 +128,7 @@ const PAPERS = [
     url: "https://doi.org/10.1111/exd.13725",
     doi: "10.1111/exd.13725",
     date: "2018-08-20",
-    venue: "Experimental Dermatology (Wiley)",
+    venue: "Experimental Dermatology (Wiley, IF 3.5)",
     topics: ["B. 기하 안정화 대응", "제니핀 가교", "수축 87%→28%", "EDC 비교", "21일 추적"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 콜라겐 진피에 제니핀과 EDC를 농도별(0.2·0.4 mmol/L)로 가교한 뒤 21일에 걸쳐 피부 등가물의 수축률을 추적하고, 표피 층 형성과 진피–표피 접합부를 비교한 구성입니다.",
@@ -144,7 +144,7 @@ const PAPERS = [
     url: "https://doi.org/10.3389/ftox.2026.1639389",
     doi: "10.3389/ftox.2026.1639389",
     date: "2026-05-13",
-    venue: "Frontiers in Toxicology (OA)",
+    venue: "Frontiers in Toxicology (OA, IF 4.6)",
     topics: ["B. 기하 안정화 대응", "전기방사 스캐폴드", "동물 성분 완전 배제", "2개 실험실 전이성", "장벽 개선"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 동물 유래 콜라겐 대신 전기방사 스캐폴드를 기질 골격으로 쓰고 FBS·BPE가 없는 배지로 전층 피부 모델을 만든 뒤, 두 독립 실험실에서 로트 내·로트 간 재현성을 검증한 구성입니다.",
@@ -160,7 +160,7 @@ const PAPERS = [
     url: "https://doi.org/10.3390/ijms21134644",
     doi: "10.3390/ijms21134644",
     date: "2020-06-30",
-    venue: "International Journal of Molecular Sciences (MDPI, OA)",
+    venue: "International Journal of Molecular Sciences (MDPI, OA, IF 4.9)",
     topics: ["B. 기하 안정화 대응", "제니핀 20 µM", "수축 59%→24%", "3종 세포", "사이토카인 분비"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 상용 세포주로 각질형성세포·섬유아세포·멜라닌세포를 함께 배양하면서 제니핀 농도를 바꿔 12일째 콜라겐 수축률과 세포 독성을 동시에 비교한 구성입니다.",
@@ -176,7 +176,7 @@ const PAPERS = [
     url: "https://doi.org/10.2147/ijn.s200782",
     doi: "10.2147/ijn.s200782",
     date: "2019-07-08",
-    venue: "International Journal of Nanomedicine (Dove, OA)",
+    venue: "International Journal of Nanomedicine (Dove, OA, IF 6.6)",
     topics: ["B. 기하 안정화 대응", "PLLA 나노섬유 보강", "피브린 메시 코팅", "견인력 저항", "자발적 이주"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 피브린 나노메시를 얇게 코팅한 폴리-L-락타이드(PLLA) 나노섬유막에 섬유아세포를 먼저 올리고, 그 위에 콜라겐 하이드로겔과 각질형성세포를 얹은 2층 구조체의 구성입니다.",
@@ -192,7 +192,7 @@ const PAPERS = [
     url: "https://doi.org/10.3390/cells11030445",
     doi: "10.3390/cells11030445",
     date: "2022-01-27",
-    venue: "Cells (MDPI, OA)",
+    venue: "Cells (MDPI, OA, IF 5.1)",
     topics: ["B. 기하 안정화 대응", "P(AN-MA) 합성 섬유", "콜라겐 I 대체", "섬유 지름 340 nm", "TGFβ 반응"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): P(AN-MA)와 풀루란/PVA/PAA 두 종의 합성 전기방사 나노섬유 매트를 만들어 섬유 지름과 다발 밀도를 비교하고, 1차 섬유아세포·각질형성세포를 올려 침투와 층 형성을 평가한 구성입니다.",
@@ -208,7 +208,7 @@ const PAPERS = [
     url: "https://doi.org/10.1021/acsami.5b01953",
     doi: "10.1021/acsami.5b01953",
     date: "2015-05-13",
-    venue: "ACS Applied Materials & Interfaces (ACS)",
+    venue: "ACS Applied Materials & Interfaces (ACS, IF 8.3)",
     topics: ["B. 기하 안정화 대응", "PLGA 나노섬유", "보조 지지체", "부유 배양", "기중 노출"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 전기방사 PLGA 나노섬유 집합체를 폴리프로필렌 보조 지지체로 붙잡아 치수 수축 없이 배지 위에 띄우고, 그 위 각질형성세포를 공기에 노출시키는 배양 구성입니다.",
@@ -224,7 +224,7 @@ const PAPERS = [
     url: "https://doi.org/10.3390/biomimetics9040228",
     doi: "10.3390/biomimetics9040228",
     date: "2024-04-10",
-    venue: "Biomimetics (MDPI, OA)",
+    venue: "Biomimetics (MDPI, OA, IF 3.4)",
     topics: ["B. 기하 안정화 대응", "thiol-ene 광클릭", "메타크릴화 펙틴", "접착 리간드 제시", "강성별 세포 형태"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 메타크릴화 펙틴을 사슬성장 또는 단계성장 광중합으로 이중 가교해, 유변 물성·기계 강성·접착 리간드 제시를 서로 독립적으로 조절하면서 이중층 피부 모델을 압출 바이오프린팅하는 설계입니다.",
@@ -240,7 +240,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.jmbbm.2021.104499",
     doi: "10.1016/j.jmbbm.2021.104499",
     date: "2021-04-08",
-    venue: "J Mech Behav Biomed Mater (Elsevier)",
+    venue: "J Mech Behav Biomed Mater (Elsevier, IF 3.3)",
     topics: ["B. 기하 안정화 대응", "습식 전기방사 PCL 실", "변형 경화", "탄성계수 2.1~18 MPa", "세포 배열"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 습식 전기방사로 뽑은 PCL 실을 뜨개질해 직물을 만들고, 그 직물을 전기방사 매트 두 장 사이에 끼워 샌드위치 구조로 만든 스캐폴드의 제작 흐름입니다.",
@@ -256,7 +256,7 @@ const PAPERS = [
     url: "https://doi.org/10.3390/polym12091930",
     doi: "10.3390/polym12091930",
     date: "2020-08-26",
-    venue: "Polymers (MDPI, OA)",
+    venue: "Polymers (MDPI, OA, IF 4.7)",
     topics: ["B. 기하 안정화 대응", "GelMA 5·10·15%", "RGD 모티프 보존", "기질 리모델링", "인쇄 조건"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): GelMA 농도를 5%·10%·15%로 바꿔 광경화한 하이드로겔에 인체 진피 섬유아세포를 넣고, 강성·팽윤·분해와 세포 퍼짐·증식·기질 리모델링을 농도별로 비교한 구성입니다.",
@@ -272,7 +272,7 @@ const PAPERS = [
     url: "https://doi.org/10.3389/fbioe.2023.1200618",
     doi: "10.3389/fbioe.2023.1200618",
     date: "2023-06-23",
-    venue: "Frontiers in Bioengineering and Biotechnology (OA)",
+    venue: "Frontiers in Bioengineering and Biotechnology (OA, IF 4.3)",
     topics: ["B. 기하 안정화 대응", "젤라틴 3~10%", "제니핀 0.1% 가교", "음성 결과", "이중층 실패"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 젤라틴 농도를 3·5·8·10%로 바꾸고 제니핀 0.1%로 가교하거나 가교하지 않은 조건을 만들어, 물성과 세포 부착·생존·이주를 비교한 뒤 이중층 피부 모델 제작을 시도한 구성입니다.",

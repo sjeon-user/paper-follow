@@ -91,7 +91,7 @@
   </header>
   <main id="papers"></main>
   <nav id="archive" class="archive"></nav>
-  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음</footer>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
 </div>
 
 <script>
@@ -110,7 +110,7 @@ const ARCHIVE = [{d:"2026-11-05c", t:"특집 ⑥ 전기방사 섬유 형상"}, {
      url:      "https://doi.org/...",
      doi:      "10.1016/j.xxx",
      date:     "2025-03",              // 출판 연-월
-     venue:    "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
      topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
      image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
      figcap:   "Figure 1. ...",
@@ -128,7 +128,7 @@ const PAPERS = [
     url: "https://doi.org/10.1021/acsbiomaterials.0c01775",
     doi: "10.1021/acsbiomaterials.0c01775",
     date: "2021-04-27",
-    venue: "ACS Biomaterials Science & Engineering (ACS)",
+    venue: "ACS Biomaterials Science & Engineering (ACS, IF 5.4)",
     topics: ["B. 기하 안정화 대응", "전기방사 막 패턴", "합성 레테 능선", "콜라겐 IV", "인테그린 β1"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 전기방사 막에 레테 능선 모양의 미세 지형 세 가지 패턴(A·B·C)을 넣어 각각 특성을 비교하고, 3D 피부 모델로 올려 상피 표지 발현을 확인한 구성입니다.",
@@ -144,7 +144,7 @@ const PAPERS = [
     url: "https://doi.org/10.3390/ma18143224",
     doi: "10.3390/ma18143224",
     date: "2025-07-08",
-    venue: "Materials (MDPI, OA)",
+    venue: "Materials (MDPI, OA, IF 3.1)",
     topics: ["B. 기하 안정화 대응", "섬유 간격 30~60 µm", "교차점 100 µm", "교차 부착", "이주 의사결정"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 평행 섬유와 교차 섬유를 전기방사로 만들고 간격을 바꿔 가며, 인체 피부 섬유아세포가 섬유에 붙고 건너뛰고 방향을 바꾸는 양상을 간격의 함수로 측정한 구성입니다.",
@@ -160,7 +160,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.colsurfb.2023.113674",
     doi: "10.1016/j.colsurfb.2023.113674",
     date: "2023-11-27",
-    venue: "Colloids and Surfaces B (Elsevier)",
+    venue: "Colloids and Surfaces B (Elsevier, IF 5.4)",
     topics: ["B. 기하 안정화 대응", "섬유 지름 700~3000 nm", "접착 단백질 흡착", "비표면적", "이주 속도"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 정렬 전기방사 섬유를 700 nm·2000 nm·3000 nm 세 가지 지름으로 만들어, 인체 피부 섬유아세포의 증식·이주·기능 발현을 지름의 함수로 비교한 구성입니다.",
@@ -176,7 +176,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.ijbiomac.2017.05.004",
     doi: "10.1016/j.ijbiomac.2017.05.004",
     date: "2017-05-06",
-    venue: "International Journal of Biological Macromolecules (Elsevier)",
+    venue: "International Journal of Biological Macromolecules (Elsevier, IF 7.7)",
     topics: ["B. 기하 안정화 대응", "CS/PCL/GEL 블렌드", "부착률 100%~50%", "탄성계수 48 MPa", "치수 안정성"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 폴리카프로락톤(PCL)·키토산(CS)·젤라틴(GEL)을 여러 비율로 섞어 전기방사하고, 글루타르알데히드 증기로 가교한 뒤 물에 담가 치수 안정성과 세포 부착률을 블렌드별로 비교한 구성입니다.",
@@ -192,7 +192,7 @@ const PAPERS = [
     url: "https://doi.org/10.1002/jbm.a.37174",
     doi: "10.1002/jbm.a.37174",
     date: "2021-03-25",
-    venue: "J Biomed Mater Res A (Wiley)",
+    venue: "J Biomed Mater Res A (Wiley, IF 3.9)",
     topics: ["B. 기하 안정화 대응", "3층 나노섬유", "PVA·키토산·PEO", "글루타르알데히드 가교", "수중 안정성"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 바깥 두 층은 PVA·키토산·가용성 난각막 단백질로, 가운데 층은 폴리에틸렌옥사이드·젤라틴·산화아연 나노입자로 전기방사해 3층 복합 구조를 만들고 글루타르알데히드 증기로 가교한 구성입니다.",
@@ -208,7 +208,7 @@ const PAPERS = [
     url: "https://doi.org/10.1007/s40204-018-0094-1",
     doi: "10.1007/s40204-018-0094-1",
     date: "2018-08-23",
-    venue: "Progress in Biomaterials (Springer, OA)",
+    venue: "Progress in Biomaterials (Springer, OA, IF 미확인)",
     topics: ["B. 기하 안정화 대응", "젤라틴/키토산", "키토산 30% 최적", "7일 형태 유지", "MTS 정량"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 젤라틴과 키토산의 블렌드 비율을 바꿔 전기방사한 나노섬유 스캐폴드에 인체 진피 섬유아세포를 배양하고, 부착 형태와 증식을 비율별로 비교한 구성입니다.",
@@ -224,7 +224,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.ijbiomac.2019.03.208",
     doi: "10.1016/j.ijbiomac.2019.03.208",
     date: "2019-03-27",
-    venue: "International Journal of Biological Macromolecules (Elsevier)",
+    venue: "International Journal of Biological Macromolecules (Elsevier, IF 7.7)",
     topics: ["B. 기하 안정화 대응", "GEL/PVA/CS", "반응표면법 최적화", "습윤 신장 200%", "21일 형태 유지"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 젤라틴·폴리비닐알코올·콘드로이틴황산을 아세트산/물 용매계로 전기방사하고, 반응표면법으로 조건을 최적화해 건조·습윤 상태의 기계 물성과 세포 부착을 비교한 구성입니다.",
@@ -240,7 +240,7 @@ const PAPERS = [
     url: "https://doi.org/10.1166/jbn.2013.1618",
     doi: "10.1166/jbn.2013.1618",
     date: "2013-08-01",
-    venue: "Journal of Biomedical Nanotechnology",
+    venue: "Journal of Biomedical Nanotechnology (IF 없음·폐간)",
     topics: ["C. 분화·장벽 결과", "PHBV 나노섬유", "섬유 지름 583 nm", "로리크린·케라틴1", "림프구 비활성"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 전기방사로 결함 없는 PHBV 나노섬유를 얻어 평균 지름을 측정하고, HaCaT 각질형성세포의 부착·증식과 분화 유전자 발현, 그리고 림프구 활성화 유전자를 함께 평가한 구성입니다.",
@@ -256,7 +256,7 @@ const PAPERS = [
     url: "https://doi.org/10.1007/s10439-014-1124-3",
     doi: "10.1007/s10439-014-1124-3",
     date: "2014-09-25",
-    venue: "Annals of Biomedical Engineering (Springer)",
+    venue: "Annals of Biomedical Engineering (Springer, IF 3.0)",
     topics: ["C. 분화·장벽 결과", "PHBV 나노섬유", "골수 중간엽 줄기세포", "케라틴→필라그린→인볼루크린", "형태 전환"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 전기방사 PHBV 나노섬유 위에 골수 유래 중간엽 줄기세포를 올리고 표피 분화 배지로 자극해, 부착·증식과 단계별 분화 유전자 발현을 조직배양 폴리스티렌과 비교한 구성입니다.",
@@ -272,7 +272,7 @@ const PAPERS = [
     url: "https://doi.org/10.23736/s0392-0488.17.05472-4",
     doi: "10.23736/s0392-0488.17.05472-4",
     date: "2017-05-16",
-    venue: "Giornale Italiano di Dermatologia e Venereologia",
+    venue: "Giornale Italiano di Dermatologia e Venereologia (IF 미확인)",
     topics: ["B. 기하 안정화 대응", "PCL 섬유 필름", "기중 배양", "각질형성세포·멜라닌세포", "전자현미경"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 두피 피부에서 얻은 멜라닌세포와 각질형성세포를 PCL 섬유 필름에 심어 2주간 기중(air-liquid) 공배양하고, 염색과 투과전자현미경으로 층 구조와 각질화를 확인한 구성입니다.",

@@ -45,6 +45,18 @@ arXiv·RSS 브리핑과 달리 이 브리핑은 **그림 대신 Figure 1 설명�
 - 추가 규칙: **이 회차 문제 진술과의 관련성**을 `solution` 마지막 문장에 한 줄로 적습니다
   (예: "수축률을 직접 보고했지만 장벽 기능 측정은 없어 C 계층 근거는 비어 있습니다").
 
+## 6-1. 저널 임팩트 팩터 (IF) 표기
+`venue` 끝에 **JCR 2024 Journal Impact Factor**를 괄호로 붙입니다 (예: `Biofabrication (IOP, IF 8.2)`).
+
+- 표기용일 뿐이며 **선별에는 쓰지 않습니다.** 2번 규칙대로 저널·IF·출판사로 거르지 않습니다.
+- `scripts/add_if.py`의 `IF` 표에서 가져옵니다. 새 저널이 나오면 이 표에 추가한 뒤 재실행합니다.
+  - `python scripts/add_if.py` → 변경 미리보기 (UNMAPPED 목록 확인)
+  - `python scripts/add_if.py --apply` → 모든 `skin-brief*.html`에 반영
+- JCR에 없거나 집계처마다 값이 크게 엇갈리는 저널은 **숫자를 적지 않습니다.**
+  `IF 미수재`(JCR 비수록) / `IF 미확인`(출처 불일치) / `IF 없음·폐간` / `IF 없음·개명` /
+  `IF 없음·단행본` / `IF 없음·프리프린트` 중 하나를 씁니다. **추정치를 지어내지 않습니다.**
+- 페이지 하단 각주에 이 기준과 "공식 인용 시 Clarivate JCR 원본 확인" 문구를 남깁니다.
+
 ## 7. 출력 (Output)
 - `skin-brief.html` — `BRIEF_DATE`, `BRIEF_THEME`, `ARCHIVE`, `PAPERS`만 갱신 (HTML/CSS/렌더 스크립트는 그대로)
   - PAPERS 필드: title, authors, paper_id, url, doi, date, venue, topics[], image, figcap,

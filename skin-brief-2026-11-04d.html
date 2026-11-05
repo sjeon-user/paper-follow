@@ -91,7 +91,7 @@
   </header>
   <main id="papers"></main>
   <nav id="archive" class="archive"></nav>
-  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음</footer>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
 </div>
 
 <script>
@@ -110,7 +110,7 @@ const ARCHIVE = [{d:"2026-11-04d", t:"특집 ③ throughput·생산 효율"}, {d
      url:      "https://doi.org/...",
      doi:      "10.1016/j.xxx",
      date:     "2025-03",              // 출판 연-월
-     venue:    "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
      topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
      image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
      figcap:   "Figure 1. ...",
@@ -128,7 +128,7 @@ const PAPERS = [
     url: "https://doi.org/10.1002/adhm.202503250",
     doi: "10.1002/adhm.202503250",
     date: "2025-12",
-    venue: "Advanced Healthcare Materials · 2025 (OA)",
+    venue: "Advanced Healthcare Materials · 2025 (OA, IF 10.0)",
     topics: ["E. 인접 주제", "코어-셸 구형 모델 · 150 µm 콜라겐 미세담체", "액적 미세유체로 빠르고 재현성 있는 비드 생산", "4 kDa 이상 덱스트란 배제 · 로리크린·인볼루크린·K1/K10·COL VII"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 사람 섬유아세포를 150 µm 콜라겐 미세담체에 넣어 진피 코어를 만들고 그 바깥을 각질형성세포 층으로 감싼 코어-셸 구형 피부 모델. 콜라겐 비드는 액적 미세유체로 생산",
@@ -144,7 +144,7 @@ const PAPERS = [
     url: "https://doi.org/10.1039/d6lc00134c",
     doi: "10.1039/d6lc00134c",
     date: "2026-08",
-    venue: "Lab on a Chip · 2026",
+    venue: "Lab on a Chip · 2026 (IF 6.1)",
     topics: ["E. 인접 주제", "자동화 워크스테이션(ProMEPS) 연동", "8-유닛 포맷 칩 · 미세다공성 막 양면 배양", "재현성·처리량 요구에 대응"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 미세다공성 막 양면에 사람 각질형성세포와 진피 섬유아세포를 배양하는 8-유닛 포맷 칩을 자동화 워크스테이션과 연결해, UVB 손상 모델링과 광보호·재생 물질 평가를 수행",
@@ -160,7 +160,7 @@ const PAPERS = [
     url: "https://doi.org/10.1039/d1lc00099c",
     doi: "10.1039/d1lc00099c",
     date: "2021-09",
-    venue: "Lab on a Chip · 2021",
+    venue: "Lab on a Chip · 2021 (IF 6.1)",
     topics: ["D. 규제 적합성", "다중 배양 유닛 통합 · 기포 제거 구조", "TEER 전극 내장으로 in situ 장벽 측정", "14일 기중 배양 후 정상 표피 유사 층 구조"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 다중 배양 유닛과 기포 제거 구조, 장벽 기능 측정을 위한 TEER 전극을 통합한 표피-온-칩(iEOC). 미세유체 칩 안에서 사람 각질형성세포를 14일간 기중 배양해 표피를 형성",
@@ -176,7 +176,7 @@ const PAPERS = [
     url: "https://doi.org/10.1002/term.3071",
     doi: "10.1002/term.3071",
     date: "2020-06",
-    venue: "Journal of Tissue Engineering and Regenerative Medicine · 2020",
+    venue: "Journal of Tissue Engineering and Regenerative Medicine · 2020 (IF 3.1)",
     topics: ["E. 인접 주제", "섬유아세포가 스스로 만든 내인성 ECM", "24-웰 포맷으로 소형화", "말초혈 단핵구를 대식세포로 편입"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 성인·신생아 섬유아세포가 스스로 침착한 내인성 세포외기질을 기질로 삼아 전층 상피 조직을 형성하고, 24-웰 포맷으로 소형화하며 말초혈 단핵구 유래 대식세포를 추가로 편입",
@@ -192,7 +192,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.bioadv.2024.213780",
     doi: "10.1016/j.bioadv.2024.213780",
     date: "2024-01",
-    venue: "Biomaterials Advances · 2024",
+    venue: "Biomaterials Advances · 2024 (IF 5.8)",
     topics: ["E. 인접 주제", "틸라피아 어류 콜라겐 + 피브린 강화(FFC)", "수축이 제한된 재현성 있는 전층 제작", "시판 모델과 형태·TEER 비교 · HTS 플랫폼 탐색"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 어류 가공 부산물에서 얻은 틸라피아 1형 콜라겐을 피브린으로 강화한 배합(FFC)으로 전층 인체 피부 등가물을 재현성 있게 제작하고, 시판 피부 모델과 형태·장벽 기능을 비교",
@@ -208,7 +208,7 @@ const PAPERS = [
     url: "https://doi.org/10.3791/52576",
     doi: "10.3791/52576",
     date: "2015-02",
-    venue: "Journal of Visualized Experiments · 2015",
+    venue: "Journal of Visualized Experiments · 2015 (IF 1.2)",
     topics: ["E. 인접 주제", "자동 상처 생성 장치", "무균 환경에서 표준화된 상처", "쥐꼬리 1형 콜라겐 진피 + 기중 배양"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 사람 진피 섬유아세포를 쥐꼬리 1형 콜라겐 하이드로겔에 넣어 진피를 만들고 각질형성세포를 올려 기중 배양한 전층 피부 등가물, 그리고 무균 상태에서 표준화된 상처를 내는 자동 상처 생성 장치",
@@ -224,7 +224,7 @@ const PAPERS = [
     url: "https://doi.org/10.3389/fbioe.2026.1887652",
     doi: "10.3389/fbioe.2026.1887652",
     date: "2026-09",
-    venue: "Frontiers in Bioengineering and Biotechnology · 2026 (OA)",
+    venue: "Frontiers in Bioengineering and Biotechnology · 2026 (OA, IF 4.3)",
     topics: ["E. 인접 주제", "진피-표피 스페로이드 모델", "딥러닝 분할로 단일세포 수준 마커 분석", "Lucifer Yellow 확산 라이브 이미징"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 섬유아세포/각질형성세포 공배양 스페로이드 세 종류를 전층 피부 모델과 함께 만들고, 딥러닝 분할 기반 파이프라인으로 핵 형태·위치와 마커 발현을 단일세포 수준에서 분석하며 Lucifer Yellow 확산 라이브 이미징으로 장벽 형성을 평가",
@@ -240,7 +240,7 @@ const PAPERS = [
     url: "https://doi.org/10.1007/164_2020_417",
     doi: "10.1007/164_2020_417",
     date: "2021-01",
-    venue: "Handbook of Experimental Pharmacology · 2021",
+    venue: "Handbook of Experimental Pharmacology · 2021 (IF 없음·단행본)",
     topics: ["D. 규제 적합성", "review", "GMP 공정 + ISO 9001 문서화로 재현성 관리", "장벽·조직학·지질 프로파일·생존율 관리 항목"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 상용 재구성 인체 피부(RhS) 모델의 표준화된 산업 생산 공정과, 규제 시험을 위해 관리하는 생물학적·기능적 성능 항목을 정리",
@@ -256,7 +256,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.ajpath.2021.12.007",
     doi: "10.1016/j.ajpath.2021.12.007",
     date: "2022-01",
-    venue: "The American Journal of Pathology · 2022",
+    venue: "The American Journal of Pathology · 2022 (IF 4.7)",
     topics: ["D. 규제 적합성", "딥러닝으로 생존 표피 두께 자동 측정", "병리학자 반정량 평가와 유의한 상관", "다수 연구 간 비교 가능성 확보"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 3차원 재구성 인체 표피 조직 이미지에서 딥러닝·영상처리 알고리즘으로 생존 표피 두께를 자동 측정하고, 병리학자의 반정량 평가 및 정량 측정과 비교",
@@ -272,7 +272,7 @@ const PAPERS = [
     url: "https://doi.org/10.1088/1758-5090/ad5d1a",
     doi: "10.1088/1758-5090/ad5d1a",
     date: "2024-07",
-    venue: "Biofabrication · 2024 (OA)",
+    venue: "Biofabrication · 2024 (OA, IF 8.2)",
     topics: ["E. 인접 주제", "6 mm 펀치 생검 크기로 소형화", "DLP 바이오프린팅 · 관류 가능 혈관망", "면역세포 테더링·롤링·혈관외유출 실시간 관찰"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 디지털광처리(DLP) 바이오프린팅으로 6 mm 펀치 생검 크기로 만든 3D skin-on-a-chip. 피부 표재 혈관총을 닮은 관류 가능 혈관망이 생체공학적으로 만든 모낭을 가깝게 둘러쌈",

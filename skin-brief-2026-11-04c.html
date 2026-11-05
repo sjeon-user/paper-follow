@@ -91,7 +91,7 @@
   </header>
   <main id="papers"></main>
   <nav id="archive" class="archive"></nav>
-  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음</footer>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
 </div>
 
 <script>
@@ -110,7 +110,7 @@ const ARCHIVE = [{d:"2026-11-04c", t:"특집 ② 부착성 재료 코팅"}, {d:"
      url:      "https://doi.org/...",
      doi:      "10.1016/j.xxx",
      date:     "2025-03",              // 출판 연-월
-     venue:    "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
      topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
      image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
      figcap:   "Figure 1. ...",
@@ -128,7 +128,7 @@ const PAPERS = [
     url: "https://doi.org/10.1002/bit.28690",
     doi: "10.1002/bit.28690",
     date: "2024-03",
-    venue: "Biotechnology and Bioengineering · 2024",
+    venue: "Biotechnology and Bioengineering · 2024 (IF 3.5)",
     topics: ["B. 기하 안정화 대응", "배양면 플라즈마 처리", "피브로넥틴 코팅 대비 수축 억제 우위", "TEER 유의하게 높음 · K10·로리크린·클라우딘-1·COL IV"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 배양 표면을 플라즈마 처리한 조건과 피브로넥틴 코팅 조건에서 3차원 인체 피부 등가물을 만들어, 진피층 수축 여부·경상피 전기저항·분화 마커를 비교",
@@ -144,7 +144,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.mtbio.2026.103692",
     doi: "10.1016/j.mtbio.2026.103692",
     date: "2026-09",
-    venue: "Materials Today Bio · 2026 (OA)",
+    venue: "Materials Today Bio · 2026 (OA, IF 8.7)",
     topics: ["B. 기하 안정화 대응", "폴리도파민 코팅으로 조직-인서트 앵커 강화", "섬유아세포/콜라겐 임계비가 탈착·수축 지배", "Matrigel/COL1 → Ki67·로리크린 분리 · OECD 호환 장벽 평가"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 진피·표피 설계 원칙을 함께 정의한 전층 피부 모델 구축 전략. 섬유아세포/콜라겐 임계비로 구조 완결성을 유지하고, 폴리도파민 코팅으로 조직과 인서트의 결합을 강화해 탈착·기하 변형을 억제하며, Matrigel/COL1 진피 기질로 표피 층화와 장벽을 개선",
@@ -160,7 +160,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.reth.2024.08.014",
     doi: "10.1016/j.reth.2024.08.014",
     date: "2024-06",
-    venue: "Regenerative Therapy · 2024 (OA)",
+    venue: "Regenerative Therapy · 2024 (OA, IF 3.6)",
     topics: ["B. 기하 안정화 대응", "라미닌511 E8 단편(인테그린 결합부)", "기저막 유사 구조 형성 촉진", "겔-세포층 경계 BM 성분 축적"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 섬유아세포가 든 수축된 1형 콜라겐 겔 위에 사람 포피 각질형성세포를 기중 배양해 피부 등가물을 만들고, 라미닌511 E8 단편을 넣은 조건과 넣지 않은 조건의 기저막 유사 구조 형성을 비교",
@@ -176,7 +176,7 @@ const PAPERS = [
     url: "https://doi.org/10.1038/s41598-022-04856-1",
     doi: "10.1038/s41598-022-04856-1",
     date: "2022-01",
-    venue: "Scientific Reports · 2022 (OA)",
+    venue: "Scientific Reports · 2022 (OA, IF 3.9)",
     topics: ["B. 기하 안정화 대응", "MMP·헤파리나제 억제로 BM 재건", "PDGF-BB 매개 COL5A1·COL1A1 증가", "유두진피 두께·탄력 개선"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 기질금속단백분해효소·헤파리나제 억제제로 진피-표피 접합부의 기저막을 재건한 기관형 인체 피부 배양에서 유두진피 콜라겐 원섬유 증가를 관찰하고, 그 기전으로 표피의 PDGF-BB 발현 증가를 확인",
@@ -192,7 +192,7 @@ const PAPERS = [
     url: "https://doi.org/10.1088/1758-5090/ad2536",
     doi: "10.1088/1758-5090/ad2536",
     date: "2024-02",
-    venue: "Biofabrication · 2024",
+    venue: "Biofabrication · 2024 (IF 8.2)",
     topics: ["B. 기하 안정화 대응", "전기방사 + 3D 프린팅 + 젤라틴 기능성 코팅", "레테 능선(rete ridge) 미세요철 재현", "PCL 나노섬유가 세포 접착 담당"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — PCL 나노섬유를 전기방사해 세포 접착을 담당하는 세포외기질 유사 환경을 만들고, 그 위에 PCL 마이크로섬유를 3D 프린팅해 요철 미세구조를 빠르게 형성한 뒤, 전체 구조를 젤라틴 하이드로겔로 딥 코팅해 기능성 코팅층을 형성",
@@ -208,7 +208,7 @@ const PAPERS = [
     url: "https://doi.org/10.1088/1758-5090/acfc29",
     doi: "10.1088/1758-5090/acfc29",
     date: "2023-10",
-    venue: "Biofabrication · 2023",
+    venue: "Biofabrication · 2023 (IF 8.2)",
     topics: ["B. 기하 안정화 대응", "마이크로 스탬핑으로 레테 능선 패턴", "텔로콜라겐-피브린 + 가교로 패턴 유지", "SDS 자극시험 · 두 공여자 각질형성세포"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 마이크로 스탬핑으로 기하가 제어된 레테 능선 패턴을 만든 인체 피부 모델. 각질형성세포가 유발하는 기질 분해를 완화하기 위해 가교 유무를 달리한 텔로콜라겐-피브린 기질을 써서 장기 배양 중 패턴이 유지되게 함",
@@ -224,7 +224,7 @@ const PAPERS = [
     url: "https://doi.org/10.3390/jfb15040102",
     doi: "10.3390/jfb15040102",
     date: "2024-04",
-    venue: "Journal of Functional Biomaterials · 2024 (OA)",
+    venue: "Journal of Functional Biomaterials · 2024 (OA, IF 4.8)",
     topics: ["B. 기하 안정화 대응", "복합 몰딩 공정 · PLGA/PCL 나노섬유막", "15%PLGA+5%PCL이 치수 안정성·친수성 균형", "3D 프린팅 어레이 미세구조 모델"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 전기방사로 만든 PLGA/PCL 나노섬유막에 3D 프린팅으로 제작한 어레이형 미세구조 모델을 눌러 진피-표피 접합부의 물결 구조를 성형하는 복합 몰딩 공정",
@@ -240,7 +240,7 @@ const PAPERS = [
     url: "https://doi.org/10.3390/gels9080656",
     doi: "10.3390/gels9080656",
     date: "2023-08",
-    venue: "Gels · 2023 (OA)",
+    venue: "Gels · 2023 (OA, IF 4.6)",
     topics: ["B. 기하 안정화 대응", "독성 가교제 없는 폴리도파민 기능화", "박테리아 셀룰로스 나노섬유 77.8±20.3 nm", "친수성·접착성·세포적합성 복합재"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 정치 배양으로 생산한 박테리아 셀룰로스 하이드로겔을 독성 가교제 없이 폴리도파민으로 기능화하고, FTIR·XRD·FE-SEM·라만 분광으로 나노섬유 위 폴리도파민 형성을 확인",
@@ -256,7 +256,7 @@ const PAPERS = [
     url: "https://doi.org/10.3390/jfb15110326",
     doi: "10.3390/jfb15110326",
     date: "2024-11",
-    venue: "Journal of Functional Biomaterials · 2024 (OA)",
+    venue: "Journal of Functional Biomaterials · 2024 (OA, IF 4.8)",
     topics: ["B. 기하 안정화 대응", "탄닌산 가교 젤라틴 나노섬유", "He·N2 플라즈마로 친수성 향상", "접촉각 5.1°·15.6° 감소 + DFT 해석"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 전기방사로 만든 탄닌산 가교 젤라틴 나노섬유를 헬륨·질소 플라즈마로 처리하고, SEM·AFM·ATR-FTIR·XRD·물 접촉각으로 처리 전후를 비교",
@@ -272,7 +272,7 @@ const PAPERS = [
     url: "https://doi.org/10.3390/bioengineering8110148",
     doi: "10.3390/bioengineering8110148",
     date: "2021-10",
-    venue: "Bioengineering · 2021 (OA)",
+    venue: "Bioengineering · 2021 (OA, IF 3.8)",
     topics: ["B. 기하 안정화 대응", "review", "DEJ = 층간 접착·물리적 맞물림", "현행 피부 TE 등가물은 DEJ 구조 미재현"],
     image: "",
     figcap: "그림 설명(초록 기반 요약) — 진피와 표피 사이 기저막이 만드는 진피-표피 접합부(DEJ)의 물결 구조와 그 역할을 정리하고, 이를 모사한 패턴 기질 연구들을 검토",

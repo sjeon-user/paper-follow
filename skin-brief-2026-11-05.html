@@ -91,7 +91,7 @@
   </header>
   <main id="papers"></main>
   <nav id="archive" class="archive"></nav>
-  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음</footer>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
 </div>
 
 <script>
@@ -110,7 +110,7 @@ const ARCHIVE = [{d:"2026-11-05", t:"특집 ④ 합성 biomaterial 부착성"}, 
      url:      "https://doi.org/...",
      doi:      "10.1016/j.xxx",
      date:     "2025-03",              // 출판 연-월
-     venue:    "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
      topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
      image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
      figcap:   "Figure 1. ...",
@@ -128,7 +128,7 @@ const PAPERS = [
     url: "https://doi.org/10.1088/1758-5090/ad905e",
     doi: "10.1088/1758-5090/ad905e",
     date: "2024-11-08",
-    venue: "Biofabrication (IOP)",
+    venue: "Biofabrication (IOP, IF 8.2)",
     topics: ["B. 기하 안정화 대응", "GelMA+HAMA+Col I", "탄성계수 2.27 kPa", "28일 유지", "투과도 비교"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 광가교(GelMA·HAMA)와 열가교(Col I)를 함께 쓴 복합 하이드로겔로 진피를 만들고, 그 위에 각질형성세포를 올려 기중 배양한 전층 모델의 제작 흐름과 28일간의 형태 유지 결과입니다.",
@@ -144,7 +144,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.msec.2021.112352",
     doi: "10.1016/j.msec.2021.112352",
     date: "2021-07-31",
-    venue: "Materials Science & Engineering C (Elsevier)",
+    venue: "Materials Science & Engineering C (Elsevier, IF 없음·개명)",
     topics: ["B. 기하 안정화 대응", "HA-SH/PEGDA 이중망", "수축 5~25% 감소", "두께 3배", "K10·필라그린 개선"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 혈장 유래 피브린 그물에 티올화 히알루론산을 PEGDA로 가교한 두 번째 합성 그물을 겹쳐 넣고, 가교비(2:1~14:1)와 HA 함량(0.05~0.2%)에 따라 수축과 탄성률이 어떻게 달라지는지 비교한 설계입니다.",
@@ -160,7 +160,7 @@ const PAPERS = [
     url: "https://doi.org/10.1096/fba.2022-00026",
     doi: "10.1096/fba.2022-00026",
     date: "2022-06-24",
-    venue: "FASEB BioAdvances (Wiley, OA)",
+    venue: "FASEB BioAdvances (Wiley, OA, IF 미확인)",
     topics: ["B. 기하 안정화 대응", "자가조립 펩타이드", "xeno-free", "기저막 형성", "TEER"],
     image: "",
     figcap: "(A) Organotypic culture on peptide-based vs. collagen-based matrix. Human dermal primary fibroblasts are encapsulated within the hydrogel (peptide or collagen). After approximately 15 min of gelation, human primary keratinocytes are seeded on top of the hydrogel. After 7 days of submerged culture, …",
@@ -176,7 +176,7 @@ const PAPERS = [
     url: "https://doi.org/10.1002/adbi.201900022",
     doi: "10.1002/adbi.201900022",
     date: "2019-08-23",
-    venue: "Advanced Biosystems (Wiley)",
+    venue: "Advanced Biosystems (Wiley, IF 없음·폐간)",
     topics: ["B. 기하 안정화 대응", "PEG 하이드로겔", "RGDS·YIGSR·HepIII", "β1 인테그린", "E=20.9 kPa"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 탄성계수를 20.9 kPa로 맞춘 PEG 하이드로겔에 피브로넥틴(RGDS)·라미닌(YIGSR)·IV형 콜라겐(HepIII) 유래 접착 펩타이드를 농도별로 조합해 넣고, 각질형성세포의 줄기성과 β1 인테그린 발현을 실험계획법으로 비교한 구성입니다.",
@@ -192,7 +192,7 @@ const PAPERS = [
     url: "https://doi.org/10.1002/jbm.a.36519",
     doi: "10.1002/jbm.a.36519",
     date: "2018-09-12",
-    venue: "J Biomed Mater Res A (Wiley, OA)",
+    venue: "J Biomed Mater Res A (Wiley, OA, IF 3.9)",
     topics: ["C. 분화·장벽 결과", "PEG 슬래브", "접착 강도 정량", "항복응력 0.268 kPa", "RDEB 대조"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): PEG 기반 슬래브 위에 진피–표피 접합부(DEJ)의 세포외기질 단백질을 고정한 복합체에 각질형성세포와 섬유아세포를 올리고, 두 층이 떨어질 때의 항복응력을 측정하는 시험 구성입니다.",
@@ -208,7 +208,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.actbio.2023.07.037",
     doi: "10.1016/j.actbio.2023.07.037",
     date: "2023-07-28",
-    venue: "Acta Biomaterialia (Elsevier)",
+    venue: "Acta Biomaterialia (Elsevier, IF 9.7)",
     topics: ["B. 기하 안정화 대응", "GelMA-PEGDA", "아크릴화 RGD 그래프팅", "레테 능선", "RNA-seq"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 몰딩으로 레테 능선 형태를 새긴 GelMA-PEGDA 복합 하이드로겔 표면에 아크릴화 RGD 펩타이드를 그래프팅하고, 각질형성세포를 올려 부착·융합과 표피 줄기세포 표지를 비교한 구성입니다.",
@@ -224,7 +224,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.mtbio.2025.101593",
     doi: "10.1016/j.mtbio.2025.101593",
     date: "2025-02-19",
-    venue: "Materials Today Bio (Elsevier, OA)",
+    venue: "Materials Today Bio (Elsevier, OA, IF 8.7)",
     topics: ["B. 기하 안정화 대응", "MEW PCL 보강", "GelMA 진피", "2층 설계", "혈관 구조"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 용융 전기방사(MEW)로 만든 PCL 다공 스캐폴드를 랜덤 섬유층(표피용)과 정렬 섬유층(진피용) 두 겹으로 쌓고, 정렬층을 섬유아세포가 든 GelMA로 채워 전층 구조를 만드는 모식도입니다.",
@@ -240,7 +240,7 @@ const PAPERS = [
     url: "https://doi.org/10.1021/acsabm.4c01541",
     doi: "10.1021/acsabm.4c01541",
     date: "2025-03-25",
-    venue: "ACS Applied Bio Materials (ACS, OA)",
+    venue: "ACS Applied Bio Materials (ACS, OA, IF 4.6)",
     topics: ["B. 기하 안정화 대응", "MEW PCL 기하 비교", "허니컴 구조", "생존율 90% 이상", "CD31 상승"],
     image: "",
     figcap: "(A) Schematic representation for the melt electrowriting process. Air pressure is applied to the molten PCL, and with the aid of CAD design, micron-size filaments formed under high voltage are deposited onto a grounded collector in 0–90° mesh, 60–120° mesh, and honeycomb geometries.",
@@ -256,7 +256,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.bbiosy.2026.100143",
     doi: "10.1016/j.bbiosy.2026.100143",
     date: "2026-07-23",
-    venue: "Biomaterials and Biosystems (Elsevier, OA)",
+    venue: "Biomaterials and Biosystems (Elsevier, OA, IF 미수재)",
     topics: ["B. 기하 안정화 대응", "2광자 중합", "DEJ 지형 템플릿", "GelMA 진피", "14일 치수 유지"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 2광자 중합(2PP)으로 진피–표피 접합부의 함입 지형을 새긴 템플릿을 찍고, 이를 GelMA 진피 등가물로 전사한 뒤 N/TERT-1 각질형성세포를 올려 부착·증식을 확인하는 제작 흐름입니다.",
@@ -272,7 +272,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.colsurfb.2022.112724",
     doi: "10.1016/j.colsurfb.2022.112724",
     date: "2022-07-26",
-    venue: "Colloids and Surfaces B (Elsevier)",
+    venue: "Colloids and Surfaces B (Elsevier, IF 5.4)",
     topics: ["B. 기하 안정화 대응", "전기방사 PCL", "NIPS·VIPS 상분리", "주름 표면 최적", "섬유아세포·각질형성세포"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 전기방사로 뽑은 PCL 섬유에 비용매 유도(NIPS)·증기 유도(VIPS) 상분리를 적용해 다공·주름·홈·분화구 모양의 표면을 만들고, 섬유 배향과 표면 질감을 나눠 세포 부착을 비교한 구성입니다.",

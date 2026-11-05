@@ -91,7 +91,7 @@
   </header>
   <main id="papers"></main>
   <nav id="archive" class="archive"></nav>
-  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음</footer>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
 </div>
 
 <script>
@@ -110,7 +110,7 @@ const ARCHIVE = [{d:"2026-11-05d", t:"특집 ⑦ 표면화학·리간드·패턴
      url:      "https://doi.org/...",
      doi:      "10.1016/j.xxx",
      date:     "2025-03",              // 출판 연-월
-     venue:    "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
      topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
      image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
      figcap:   "Figure 1. ...",
@@ -128,7 +128,7 @@ const PAPERS = [
     url: "https://doi.org/10.1089/ten.tea.2013.0784",
     doi: "10.1089/ten.tea.2013.0784",
     date: "2014-10-09",
-    venue: "Tissue Engineering Part A (Mary Ann Liebert)",
+    venue: "Tissue Engineering Part A (Mary Ann Liebert, IF 3.6)",
     topics: ["C. 분화·장벽 결과", "거대분자 혼잡화", "VII형 콜라겐", "라미닌 332", "섬유아세포 기여"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 각질형성세포와 섬유아세포를 단독·공배양하면서 혼합 거대분자 혼잡화(mMMC)를 적용해 세포외기질 침착을 비교하고, 이어 오가노타이픽 공배양의 침수 단계에 적용해 진피–표피 접합부 형성 속도를 본 구성입니다.",
@@ -144,7 +144,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.jtv.2018.02.001",
     doi: "10.1016/j.jtv.2018.02.001",
     date: "2018-02-07",
-    venue: "Journal of Tissue Viability (Elsevier)",
+    venue: "Journal of Tissue Viability (Elsevier, IF 2.4)",
     topics: ["B. 기하 안정화 대응", "YIGSR 펩타이드", "인테그린 α6", "TGF-β1 감소", "적용법 무관"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 라미닌의 기능 모티프인 오량체 펩타이드 YIGSR을 진피 등가물에 섞거나 배지에 넣는 두 방식으로 적용해, 피부 등가물의 표피 증식과 분화 표지를 비교한 구성입니다.",
@@ -160,7 +160,7 @@ const PAPERS = [
     url: "https://doi.org/10.3390/bioengineering12090929",
     doi: "10.3390/bioengineering12090929",
     date: "2025-08-29",
-    venue: "Bioengineering (MDPI, OA)",
+    venue: "Bioengineering (MDPI, OA, IF 3.8)",
     topics: ["C. 분화·장벽 결과", "미세 계단 패턴", "평탄 상면 형성", "부착연접", "로그형 경사"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 세포 몇 개 높이에 해당하는 미세 계단을 새긴 기판 위에 각질형성세포를 배양해, 아래 지형이 울퉁불퉁해도 세포 시트의 윗면이 평탄해지는 과정을 관찰한 구성입니다.",
@@ -176,7 +176,7 @@ const PAPERS = [
     url: "https://doi.org/10.1002/adhm.202301015",
     doi: "10.1002/adhm.202301015",
     date: "2023-08-03",
-    venue: "Advanced Healthcare Materials (Wiley)",
+    venue: "Advanced Healthcare Materials (Wiley, IF 10.0)",
     topics: ["B. 기하 안정화 대응", "희생 젤라틴 잉크", "젤라틴 4 wt%", "두께 400 µm", "균일 단층"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 각질형성세포를 희생용 젤라틴 바이오잉크에 담아 인쇄한 뒤 젤라틴을 녹여 없애, 공기에 노출된 균일한 기저 단층을 만드는 공정과 수동 파종 결과를 비교한 구성입니다.",
@@ -192,7 +192,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.msec.2016.04.073",
     doi: "10.1016/j.msec.2016.04.073",
     date: "2016-04-23",
-    venue: "Materials Science & Engineering C (Elsevier)",
+    venue: "Materials Science & Engineering C (Elsevier, IF 없음·개명)",
     topics: ["B. 기하 안정화 대응", "NaOH 가수분해", "EDC/NHS 활성화", "콜라겐 공유결합", "접촉각 변화"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 전기방사 PLGA 섬유를 농도별 NaOH로 가수분해해 표면에 카복실·하이드록실기를 만들고, EDC/NHS로 활성화한 뒤 콜라겐을 공유결합으로 고정하는 표면 개질 공정입니다.",
@@ -208,7 +208,7 @@ const PAPERS = [
     url: "https://doi.org/10.1002/jbm.a.35178",
     doi: "10.1002/jbm.a.35178",
     date: "2014-04-03",
-    venue: "J Biomed Mater Res A (Wiley)",
+    venue: "J Biomed Mater Res A (Wiley, IF 3.9)",
     topics: ["B. 기하 안정화 대응", "분무식 LbL", "HA/폴리-L-라이신", "다층 박막", "층 분리 유지"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 다공성 히알루론산 스캐폴드(진피 역할) 위에 히알루론산과 폴리-L-라이신으로 구성된 고분자전해질 다층막을 분무식 층상 조립으로 빠르게 쌓아 표피 쪽 면을 만드는 공정입니다.",
@@ -224,7 +224,7 @@ const PAPERS = [
     url: "https://doi.org/10.1002/jbm.b.33966",
     doi: "10.1002/jbm.b.33966",
     date: "2017-08-09",
-    venue: "J Biomed Mater Res B Appl Biomater (Wiley)",
+    venue: "J Biomed Mater Res B Appl Biomater (Wiley, IF 3.4)",
     topics: ["B. 기하 안정화 대응", "플라즈마 처리", "콜라겐 그래프팅", "젖음성 향상", "부착률 비교"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 전기방사 PCL 스캐폴드를 플라즈마 처리한 뒤 콜라겐을 그래프팅하고, 처리하지 않은 PCL과 나란히 놓아 자궁내막 유래 줄기세포의 부착·증식·분화를 비교한 구성입니다.",
@@ -240,7 +240,7 @@ const PAPERS = [
     url: "https://doi.org/10.1016/j.msec.2020.111580",
     doi: "10.1016/j.msec.2020.111580",
     date: "2020-10-01",
-    venue: "Materials Science & Engineering C (Elsevier)",
+    venue: "Materials Science & Engineering C (Elsevier, IF 없음·개명)",
     topics: ["B. 기하 안정화 대응", "κ-카라기난 코팅", "GAG 모사", "나노 지형 유지", "콜라겐 분비 증가"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): 전기방사 나노섬유에 해조류 유래 황산화 다당인 κ-카라기난을 코팅해, 코팅 후에도 나노 지형이 유지되는지 확인하고 섬유아세포의 부착·침투·기질 생산을 비교한 구성입니다.",
@@ -256,7 +256,7 @@ const PAPERS = [
     url: "https://doi.org/10.1021/acsomega.8b01219",
     doi: "10.1021/acsomega.8b01219",
     date: "2018-08-02",
-    venue: "ACS Omega (ACS, OA)",
+    venue: "ACS Omega (ACS, OA, IF 3.7)",
     topics: ["B. 기하 안정화 대응", "PCL·PLLA·콜라겐", "동결건조", "기공 400 nm", "역할 분담"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): PCL, PCL-콜라겐, PCL-PLLA, PCL-PLLA-콜라겐 네 가지 3D 다공성 스캐폴드를 동결건조로 만들어 기공 구조를 비교하고, 지방 유래 중간엽 줄기세포의 생존·증식·부착을 평가한 구성입니다.",
@@ -272,7 +272,7 @@ const PAPERS = [
     url: "https://doi.org/10.2478/s11658-014-0197-1",
     doi: "10.2478/s11658-014-0197-1",
     date: "2014-05-13",
-    venue: "Cellular & Molecular Biology Letters (OA)",
+    venue: "Cellular & Molecular Biology Letters (OA, IF 9.2)",
     topics: ["B. 기하 안정화 대응", "PLGA 박막", "초점 접착", "빈큘린 발현", "차이 없음(음성)"],
     image: "",
     figcap: "그림 설명(초록 기반 요약): PLGA 박막 위에 1차 인체 각질형성세포와 섬유아세포를 배양해, 조직배양 폴리스티렌 대조군과 형태·초점 접착·액틴 세포골격·증식·이동·분화·빈큘린 발현을 하나씩 비교한 구성입니다.",
