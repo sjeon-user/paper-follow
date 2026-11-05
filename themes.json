@@ -612,6 +612,23 @@
         "collagen VII"
       ],
       "note": "특집 ④의 연장입니다. Europe PMC에 합성 고분자 계열(PCL·PLGA·PU·PDMS·PEG·PVA·PET·전도성 고분자), 합성 화학(GelMA·thiol-ene·click·제니핀·EDC·글루타르알데히드), 접착 펩타이드(RGD·IKVAV·YIGSR 등), 공정(전기방사·MEW·미세패턴·2PP·플라즈마·polymer brush·LbL), 정의된 기질(xeno-free·chemically defined), 강성 변수까지 21개 질의를 던져 최근 15년 1,280편을 모았습니다. 거기서 상처 드레싱·생체 내 치유·항균·약물전달을 제외하고 in vitro 피부 모델 맥락 + 부착/수축 맥락 + 합성 재료 요소가 모두 있는 89편을 남긴 뒤, 기소개 45편을 빼고 주제별로 나눴습니다. 이 회차는 재료를 바꾸는 대신 표면 화학·리간드·배치 방식으로 부착을 설계한 논문입니다. 10.1089/ten.tea.2013.0784은 재료가 아니라 배양액의 거대분자 혼잡화로 VII형 콜라겐 침착을 앞당긴 유일한 접근이고, 10.3390/bioengineering12090929는 세포–기질이 아닌 세포–세포 부착이 표피 기하를 결정한다는 반대 방향의 근거입니다. 10.2478/s11658-014-0197-1은 합성 표면이 부착을 올리지도 해치지도 않은 음성 결과로, 개선 주장들의 기준선으로 실었습니다."
+    },
+    "2026-11-05e": {
+      "label": "특집 ⑧ AI 개발·응용",
+      "title": "FT 피부 모델 제작·판독에 인공지능을 개발하거나 응용한 10편",
+      "keywords": [
+        "deep learning segmentation",
+        "convolutional neural network",
+        "XGBoost",
+        "random forest",
+        "imaging flow cytometry",
+        "machine learning texture analysis",
+        "optical flow",
+        "agent-based model",
+        "in silico epidermis",
+        "label-free imaging"
+      ],
+      "note": "Europe PMC에 AI 어휘(machine/deep learning·neural network·CNN·U-Net·transformer·random forest·computer vision·generative·digital twin·Bayesian optimization·agent-based model 등)를 피부 모델/바이오프린팅/규제시험/판독 맥락과 교차시켜 17개 질의로 988편을 모았습니다. 거기서 임상 피부과 AI(흑색종·더모스코피·병변 분류), 웨어러블, 화장품 추천, 순수 QSAR을 제외하고 in vitro 3D 피부 구조체 맥락이 있는 것만 남겨 10편을 골랐습니다.\n중요한 한계: 이 분야는 아직 얇습니다. 10편 중 8편이 '판독·정량' 자동화이고, 재료나 공정 자체를 AI로 탐색한 것은 2편(10.1098/rsos.201293 랜덤 포레스트 정확도 62.74%, 10.1016/j.bioadv.2026.215193 신경망+랜덤 포레스트 겔화 최적화)뿐입니다. FT 피부 등가물의 '제작 공정'을 AI로 설계한 논문은 검색 범위 안에서 찾지 못했습니다. 또 4편이 프리프린트이고, 피부가 아닌 조직(자궁경부 raft, 섬유아세포 마이크로조직)으로 같은 방법을 보인 것도 2편 포함했습니다. 특집 ③에서 이미 다룬 딥러닝 2편(10.3389/fbioe.2026.1887652, 10.1016/j.ajpath.2021.12.007)은 중복 제외됐습니다."
     }
   }
 }

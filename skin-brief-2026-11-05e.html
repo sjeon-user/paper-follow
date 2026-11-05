@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FT 피부 모델 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .capbox{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 13px;color:var(--muted);font-size:.82rem;line-height:1.65;background:var(--bg)}
+  .capbox .caplabel{display:block;font-weight:700;color:var(--text);font-size:.72rem;margin-bottom:4px}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .meta a{color:var(--accent);text-decoration:none}
+  .meta a:hover{text-decoration:underline}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>FT 피부 모델 논문 팔로우업</h1>
+    <div class="sub">FT(전층) 인체 피부 모델의 기하 불안정 → 분화·장벽 → OECD TG 431/439 규제 적합성 · 하루 1키워드 최대 5편 · 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="paper-brief.html">← arXiv 브리핑</a> <a href="rss-brief.html">🏛 RSS 학회</a> <a href="keep.html">⭐ 보관함</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-05e";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "FT 피부 모델 제작·판독에 인공지능을 개발하거나 응용한 10편", "keywords": ["deep learning segmentation", "convolutional neural network", "XGBoost", "random forest", "imaging flow cytometry", "machine learning texture analysis", "optical flow", "agent-based model", "in silico epidermis", "label-free imaging"], "note": "Europe PMC에 AI 어휘(machine/deep learning·neural network·CNN·U-Net·transformer·random forest·computer vision·generative·digital twin·Bayesian optimization·agent-based model 등)를 피부 모델/바이오프린팅/규제시험/판독 맥락과 교차시켜 17개 질의로 988편을 모았습니다. 거기서 임상 피부과 AI(흑색종·더모스코피·병변 분류), 웨어러블, 화장품 추천, 순수 QSAR을 제외하고 in vitro 3D 피부 구조체 맥락이 있는 것만 남겨 10편을 골랐습니다.\n중요한 한계: 이 분야는 아직 얇습니다. 10편 중 8편이 '판독·정량' 자동화이고, 재료나 공정 자체를 AI로 탐색한 것은 2편(10.1098/rsos.201293 랜덤 포레스트 정확도 62.74%, 10.1016/j.bioadv.2026.215193 신경망+랜덤 포레스트 겔화 최적화)뿐입니다. FT 피부 등가물의 '제작 공정'을 AI로 설계한 논문은 검색 범위 안에서 찾지 못했습니다. 또 4편이 프리프린트이고, 피부가 아닌 조직(자궁경부 raft, 섬유아세포 마이크로조직)으로 같은 방법을 보인 것도 2편 포함했습니다. 특집 ③에서 이미 다룬 딥러닝 2편(10.3389/fbioe.2026.1887652, 10.1016/j.ajpath.2021.12.007)은 중복 제외됐습니다."};
+/* 보관된 FT 피부 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 skin-brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-05e", t:"특집 ⑧ AI 개발·응용"}, {d:"2026-11-05d", t:"특집 ⑦ 표면화학·리간드·패턴"}, {d:"2026-11-05c", t:"특집 ⑥ 전기방사 섬유 형상"}, {d:"2026-11-05b", t:"특집 ⑤ 수축 억제 합성·가교"}, {d:"2026-11-05", t:"특집 ④ 합성 biomaterial 부착성"}, {d:"2026-11-04d", t:"특집 ③ throughput·생산 효율"}, {d:"2026-11-04c", t:"특집 ② 부착성 재료 코팅"}, {d:"2026-11-04b", t:"특집 ① 장치적 접근"}, {d:"2026-11-04", t:"① 섬유아세포 콜라겐 수축"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     paper_id: "10.1016/j.xxx",        // DOI 우선, 없으면 "PMID:12345678" (skin-seen.json 중복 방지 키)
+     url:      "https://doi.org/...",
+     doi:      "10.1016/j.xxx",
+     date:     "2025-03",              // 출판 연-월
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
+     image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
+     figcap:   "Figure 1. ...",
+     background: "배경·기존 문제 2~3문장",
+     solution:   "해결·방법과 결과 2~3문장 + 마지막에 이 회차 문제 진술과의 관련성 한 줄",
+     rating:     4.0,
+     rating_reason: "근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "Advanced 3D spheroid-based skin models and deep-learning based image analysis enable in-depth investigation of keratinocyte differentiation and barrier function",
+    authors: "Cesetti T 외 10명",
+    paper_id: "10.64898_2026.01.21.700040",
+    url: "https://doi.org/10.64898/2026.01.21.700040",
+    doi: "10.64898/2026.01.21.700040",
+    date: "2026-01-23",
+    venue: "bioRxiv (preprint) · 2026-01 (IF 없음·프리프린트)",
+    topics: ["C. 분화·장벽 결과", "딥러닝 분할 파이프라인", "단일세포 정밀도", "세포주 3종 비교", "Lucifer yellow 장벽"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 진피–표피 스페로이드와 대응하는 전층 피부 모델을 같이 만들고, 딥러닝 분할 파이프라인으로 핵 형태·위치와 마커 발현을 단일세포 수준에서 읽어 세포주별 분화 정도를 비교한 구성입니다.",
+    background: "오가노타이픽 피부 모델은 전임상 피부과·독성학의 표준이지만 품질 편차가 크고, 성숙에 오래 걸리며 일차 세포가 많이 듭니다. 처리량을 올리려면 더 작은 구조체가 필요한데, 작아질수록 층 구조를 사람 눈으로 판정하기 어려워집니다. 판독 자체를 자동화하지 않으면 소형화의 이점이 사라집니다.",
+    solution: "섬유아세포–각질형성세포 공배양 스페로이드를 전층 모델과 나란히 만들고, HaCaT과 새로 불멸화한 NHK-SV/TERT·NHK-E6/E7 세 가지 각질형성세포를 비교했습니다. 핵 형태·위치와 마커 발현을 단일세포 수준으로 읽는 딥러닝 분할 파이프라인을 직접 개발해 분화를 시공간 해상도로 추적했고, 장벽 형성은 Lucifer yellow 확산을 실시간 촬영해 평가했습니다. 그 결과 NHK-E6/E7이 일차 각질형성세포의 대체로 가장 적합하고 HaCaT이 가장 부적합하다는 순위가 스페로이드와 전층 모델 양쪽에서 같게 나왔으며, NHK 기반 스페로이드는 층 형성·각질화·장벽 형성까지 전층 모델을 가깝게 재현했습니다. 모델 소형화(특집 ③)와 AI 판독을 한 논문에서 묶은 사례로, 이번 회차의 중심입니다.",
+    rating: 4.5,
+    rating_reason: "AI 파이프라인을 세포주 선택이라는 실제 의사결정에 썼고 스페로이드와 전층 모델에서 결론이 일치했습니다. 다만 프리프린트라 동료평가를 거치지 않았습니다."
+  },
+  {
+    title: "3D organotypic skin models recapitulate autoantibody-driven pemphigus pathomechanisms and targeted therapeutic response",
+    authors: "Zhai H, Jin X, Moghaddam AO, Spieker MF, Seiffert-Sinha K, Sinha AA, Yang R, Meng F",
+    paper_id: "10.1126_sciadv.adz5003",
+    url: "https://doi.org/10.1126/sciadv.adz5003",
+    doi: "10.1126/sciadv.adz5003",
+    date: "2026-01-09",
+    venue: "Science Advances (AAAS, OA, IF 11.7)",
+    topics: ["C. 분화·장벽 결과", "3D 바이오프린팅", "ML 이미지 텍스처 분석", "세포간 접합 정량", "혈관화 진피"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 3D 바이오프린팅과 세포 자가조직화를 결합해 혈관이 든 진피 위에 층을 이룬 표피를 올리고, 자가항체가 세포간 접합을 끊는 과정을 기계학습 기반 이미지 텍스처 분석으로 정량하는 구성입니다.",
+    background: "천포창(pemphigus)은 자가항체가 각질형성세포 사이의 접착을 끊어 수포를 만드는 질환입니다. 이 과정을 모사하려면 세포간 접합이 제대로 선 표피와, 항체·약물의 침투를 조절하는 진피가 둘 다 필요합니다. 그리고 접합이 '얼마나' 끊겼는지를 사람 눈이 아니라 수치로 읽어야 약효를 비교할 수 있습니다.",
+    solution: "3D 바이오프린팅과 세포 자가조직화를 결합해, 섬유아세포가 리모델링한 혈관화 진피 위에 층을 이룬 표피를 올린 다층 피부 구조체를 만들었습니다. 밀착 재조립된 각질형성세포가 세포–세포 접착을 형성해, 병원성 항체가 표피 장벽을 무너뜨리는 과정을 재현했고, 안에 심은 혈관과 섬유아세포가 분자 확산을 조절하는 진피 장벽 역할을 했습니다. 개념 검증으로 EGFR 표적 억제제를 평가하면서 개별 세포–세포 접합의 무결성을 측정하고 기계학습 기반 이미지 텍스처 분석을 적용했습니다. 접착(A·C 계층)을 AI로 정량한 드문 사례이며, 지금까지 이 팔로우업에서 접착 강도를 수치로 다룬 두 번째 논문입니다.",
+    rating: 4.5,
+    rating_reason: "제작(바이오프린팅)과 판독(ML 텍스처 분석)을 한 계에서 묶었고 약물 반응으로 검증까지 했습니다. 다만 텍스처 지표와 물리적 접착력의 대응 관계는 제시되지 않았습니다."
+  },
+  {
+    title: "The 3D reconstructed skin micronucleus assay using imaging flow cytometry and deep learning: A proof-of-principle investigation",
+    authors: "Allemang A, Thacker R, DeMarco RA, Rodrigues MA, Pfuhler S",
+    paper_id: "10.1016_j.mrgentox.2021.503314",
+    url: "https://doi.org/10.1016/j.mrgentox.2021.503314",
+    doi: "10.1016/j.mrgentox.2021.503314",
+    date: "2021-01-20",
+    venue: "Mutation Research Genetic Toxicology (Elsevier, IF 미확인)",
+    topics: ["D. 규제 적합성", "RSMN 유전독성 시험", "이미징 플로우 사이토메트리", "정밀도 91%", "계수 3배"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 재구성 피부 미세핵(RSMN) 시험에서 세포를 현탁시켜 이미징 플로우 사이토메트리로 촬영하고, AI 소프트웨어가 이핵세포를 자동 식별해 미세핵을 세는 흐름입니다.",
+    background: "재구성 피부 미세핵(RSMN) 시험은 피부에 바르는 물질의 유전독성을 동물 없이 평가하려고 2006년에 개발됐고, 표준 프로토콜과 광범위한 검증까지 나와 있습니다. 문제는 피부 세포의 형태가 제각각이라 표본 준비와 미세핵 계수가 지루하고 주관적이며 높은 숙련도를 요구한다는 점입니다. 그 결과 처리량이 떨어지고 통계적 견고함도 제한됩니다.",
+    solution: "세포를 현탁 상태로 촬영할 수 있는 이미징 플로우 사이토메트리(ImageStreamX Mk II)를 쓰도록 프로토콜을 고쳐, 마이토마이신 C와 콜히친에 노출된 3D 피부 세포를 자동으로 측정했습니다. Amnis 인공지능(AAI) 소프트웨어가 이핵(BN) 세포를 91% 정밀도로 식별했고, 대조군 기준으로 수동 분석보다 평균 3배 많은 이핵 세포를 평가할 수 있었습니다. 이렇게 잡은 세포에서 미세핵 빈도를 육안으로 확인하자 수동 슬라이드 판독과 잘 일치했고, 통계적으로 유의한 증가를 검출할 수 있음을 보였습니다. 이미 검증된 규제 시험의 '판독 단계'만 AI로 바꿔 처리량과 통계적 견고함을 올린 접근으로, D 계층에 직접 닿습니다.",
+    rating: 4.5,
+    rating_reason: "기존 검증 프로토콜을 바꾸지 않고 판독만 자동화해 수동 결과와 대조한 설계가 규제 맥락에서 적절합니다. 다만 저자들 표현대로 개념 검증 단계입니다."
+  },
+  {
+    title: "Artificial intelligence-based quantification of epidermal proliferation and apoptosis in human skin",
+    authors: "Mei V, Maurer S, Kainz P, Ettner-Sitter A, Bauer T, Aung T, Haerteis S, Rötzer V",
+    paper_id: "10.1016_j.xjidi.2026.100509",
+    url: "https://doi.org/10.1016/j.xjidi.2026.100509",
+    doi: "10.1016/j.xjidi.2026.100509",
+    date: "2026-07-16",
+    venue: "JID Innovations (Elsevier, OA, IF 미확인)",
+    topics: ["C. 분화·장벽 결과", "CNN 세포 검출", "시맨틱 분할", "Ki-67 정확도 95.4%", "cCasp3 97.0%"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): CNN 기반 세포 검출 모델과 표피만 떼어내는 시맨틱 분할 모델을 겹쳐, 전체 슬라이드 영상에서 표피 안쪽 세포만 골라 Ki-67과 절단형 Caspase-3를 세는 2단 워크플로입니다.",
+    background: "표피의 증식과 세포자멸사를 면역조직화학으로 세는 일은 피부 모델 평가의 기본이지만, 사람이 세면 주관이 섞이고 염색 배치마다 기준이 흔들립니다. 더구나 전체 슬라이드에서 진피까지 함께 세면 표피만의 변화를 읽을 수 없습니다. 관심 구조를 먼저 떼어내는 단계가 필요했습니다.",
+    solution: "DAB 면역조직화학으로 Ki-67과 절단형 Caspase-3를 염색한 인체 피부 조직을 대상으로, 직접 학습시킨 CNN 세포 검출 모델과 표피만 분리하는 시맨틱 분할 모델을 결합한 2단 워크플로를 만들었습니다. 두 모델을 겹쳐 표피 안으로 세포 주석과 분류를 제한함으로써 전체 슬라이드 영상에서 표피 한정 정량이 가능해졌고, 수동 계수와 대조한 정확도는 Ki-67 95.43%, 절단형 Caspase-3 97.0%로 염색 배치와 시점에 걸쳐 일관됐습니다. 하이드록시티로솔을 처리한 시험에서는 세포자멸사 없이 증식만 감소하는 결과를 주관적 편향 없이 읽어냈습니다. 학습·주석 비용이 크지 않다는 점을 저자들이 강조해, 개별 연구실에서 따라 하기 쉬운 쪽입니다.",
+    rating: 4.0,
+    rating_reason: "두 모델을 겹쳐 구조를 한정한 설계가 명확하고 수동 계수 대조 정확도도 높습니다. 다만 배양 피부가 아닌 융모요막 배양 조직이라 전층 등가물과는 조건이 다릅니다."
+  },
+  {
+    title: "An organotypic in vitro model of human papillomavirus-associated precancerous lesions allowing automated cell quantification for preclinical drug testing",
+    authors: "Köhler RM, Stark H, Martin I, Altmann J, Kalteis MS, von Knebel Doeberitz M, Prigge E",
+    paper_id: "10.1101_2025.07.01.661539",
+    url: "https://doi.org/10.1101/2025.07.01.661539",
+    doi: "10.1101/2025.07.01.661539",
+    date: "2025-07-04",
+    venue: "bioRxiv (preprint) · 2025-07 (IF 없음·프리프린트)",
+    topics: ["C. 분화·장벽 결과", "오가노타이픽 raft", "XGBoost 세포 분류", "정확도 81.8%", "국소·전신 투여 모사"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 진피 등가물 위에 일차 각질형성세포와 HPV 형질전환 세포를 함께 올린 raft 배양에 약물을 기중 표면 또는 배지로 투여하고, XGBoost 분류기로 종양세포·정상 각질형성세포·손상세포를 자동 계수하는 구성입니다.",
+    background: "전암 병변을 다루는 약물을 시험하려면 종양세포와 주변 정상 상피가 한 조직 안에 섞여 있는 3차원 모델이 필요합니다. 그런데 그렇게 만들면 어느 세포가 어느 쪽인지 사람이 일일이 구분해 세야 해서, 처리 효과를 정량하기가 어렵습니다. 모델과 판독을 함께 만들어야 쓸모가 생깁니다.",
+    solution: "진피 등가물 위에 일차 인체 각질형성세포와 HPV 형질전환 세포주(SiHa·CaSki·HeLa·SW756)를 함께 올린 오가노타이픽 raft 배양을 세우고 배양 변수를 최적화했습니다. 5-플루오로우라실·시네카테킨·시스플라틴을 기중 표면에 바르거나 배지에 넣어 국소 투여와 전신 투여를 각각 모사했습니다. 그리고 처리 효과를 세포 수로 읽기 위해 기계학습 기반 접근을 개발해, 극단 경사부스팅 트리(XGBoost) 분류기가 종양세포·정상 각질형성세포·손상세포를 81.8±8% 정확도로 구분함을 보였습니다(P=2×10⁻⁶). 3차원 조직 안에서 표적 세포와 주변 상피를 나눠 추적할 수 있게 한 점이 핵심입니다. 피부가 아닌 자궁경부 상피 모델이지만 raft 배양 구조와 판독 문제는 FT 피부 모델과 같습니다.",
+    rating: 3.5,
+    rating_reason: "모델 수립과 자동 계수를 함께 보고했고 통계도 제시했습니다. 다만 정확도 81.8%는 편차가 크고(±8%) 자궁경부 모델이라 피부에 그대로 옮기려면 재검증이 필요합니다."
+  },
+  {
+    title: "Label-Free Quantification of Microtissue Growth Dynamics Using Optical Flow and Mitosis Detection",
+    authors: "Fastabend KL, von Trotha T, Wolf K, Chatt R, Benn MC, Vogel V, Kollmannsberger P",
+    paper_id: "10.64898_2026.08.10.743847",
+    url: "https://doi.org/10.64898/2026.08.10.743847",
+    doi: "10.64898/2026.08.10.743847",
+    date: "2026-08-11",
+    venue: "bioRxiv (preprint) · 2026-08 (IF 없음·프리프린트)",
+    topics: ["A. 수축·탈착 원인", "무표지 명시야", "optical flow", "딥러닝 유사분열 검출", "성장 전선 대 내부"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 인체 진피 섬유아세포로 만든 기하 구속 마이크로조직을 무표지 명시야로 연속 촬영하고, optical flow로 다중 스케일 흐름장을, 딥러닝으로 유사분열 사건을 검출해 조직 윤곽에 대한 평행·법선 성분으로 분해하는 구성입니다.",
+    background: "기하 구속이 조직 발달을 좌우한다는 것은 알려져 있지만, 그 결과 생기는 성장 동역학을 정량하는 일은 조직공학의 난제로 남아 있습니다. 기존 방법은 복잡한 형광 표지나 어려운 단일세포 추적에 기대야 해서 다중 스케일 운동을 놓치기 쉽습니다. 표지를 넣으면 그 자체가 조직을 교란하기도 합니다.",
+    solution: "인체 진피 섬유아세포 마이크로조직을 기하적으로 구속한 상태에서 무표지 명시야로 시간 분해 촬영하고, optical flow와 반자동 딥러닝 유사분열 검출을 결합했습니다. 흐름장을 조직 분할과 통합해 조직 윤곽에 대한 평행·법선 성분으로 나눔으로써 방향성 있는 조직 동역학을 정량했고, 정지 상태에 가까운 조직 내부와 전진하는 성장 전선을 대비했습니다. 성장 전선에서는 윤곽 평행 방향 변동이 크고 평균 법선 흐름이 양이며 유사분열 활성이 유의하게 높았습니다. 유사분열 주변의 흐름 발산을 보면 분열 개시와 함께 수축 뒤 팽창이 일어났고, 더 넓은 영역에서는 성장 전선 부근은 팽창·내부는 수축으로 갈렸습니다. 섬유아세포가 만드는 수축을 표지 없이 연속으로 읽는 방법이라, 이 팔로우업의 A 계층(수축 원인)에 직접 쓸 수 있습니다.",
+    rating: 3.5,
+    rating_reason: "무표지 연속 측정으로 수축·팽창을 공간 분해한 점이 이 주제에 유용합니다. 다만 프리프린트이고 피부 모델이 아닌 섬유아세포 마이크로조직 수준입니다."
+  },
+  {
+    title: "Correlating in vitro performance with physico-chemical characteristics of nanofibrous scaffolds for skin tissue engineering using supervised machine learning algorithms",
+    authors: "Sujeeun LY, Goonoo N, Ramphul H, Chummun I, Gimié F, Baichoo S, Bhaw-Luximon A",
+    paper_id: "10.1098_rsos.201293",
+    url: "https://doi.org/10.1098/rsos.201293",
+    doi: "10.1098/rsos.201293",
+    date: "2020-12-23",
+    venue: "Royal Society Open Science (OA, IF 2.9)",
+    topics: ["B. 기하 안정화 대응", "지도학습 6종 비교", "랜덤 포레스트", "정확도 62.74%", "물성→세포반응 예측"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 전기방사 스캐폴드의 섬유 지름·기공 지름·물 접촉각·영률 네 가지 물성을 입력으로, 7일째 섬유아세포 MTT 값을 출력으로 두고 지도학습 알고리즘 여섯 가지를 학습시켜 비교한 구성입니다.",
+    background: "조직공학용 고분자 스캐폴드는 실험 조건이 복잡하게 얽혀 있어, 어떤 물성이 세포 반응을 결정하는지 가려내기 어렵습니다. 그래서 통계적 방법을 물성 데이터에 적용하려는 시도가 이어져 왔습니다. 기계학습으로 이 관계를 직접 모델링할 수 있다면 실험 횟수를 줄일 수 있습니다.",
+    solution: "피부 조직공학용으로 시험한 전기방사 고분자 스캐폴드의 실험 데이터와 물리화학 데이터를 모아, 섬유 지름·기공 지름·물 접촉각·영률 네 변수로 L929 섬유아세포의 7일째 MTT 값을 예측하도록 했습니다. Seaborn/Scikit-learn으로 지도학습 알고리즘 여섯 가지를 학습시키고 초매개변수를 조정한 결과 랜덤 포레스트 회귀가 가장 높은 62.74% 정확도를 냈고, 예측 모형을 생체 내 데이터와도 대조했습니다. 저자들 스스로 나노섬유 스캐폴드의 세포–재료 상호작용 예측에 대한 '첫 예비 연구'라고 적었습니다. 62.74%라는 수치를 숨기지 않고 보고한 점이 이 논문의 미덕이며, 특집 ⑥에서 본 섬유 형상 변수들을 데이터로 다루려는 첫 시도로 읽을 만합니다.",
+    rating: 3.5,
+    rating_reason: "예비 연구임을 명시하고 낮은 정확도를 그대로 보고한 점은 신뢰할 만합니다. 다만 데이터 수가 적고 네 변수만 써서 실제 설계에 바로 쓰기는 어렵습니다."
+  },
+  {
+    title: "Machine learning-assisted optimization of injectable silk fibroin hydrogels functionalized with decellularized extracellular matrix and mesenchymal stromal cell secretome",
+    authors: "Bertania E 외 14명",
+    paper_id: "10.1016_j.bioadv.2026.215193",
+    url: "https://doi.org/10.1016/j.bioadv.2026.215193",
+    doi: "10.1016/j.bioadv.2026.215193",
+    date: "2026-09-21",
+    venue: "Biomaterials Advances (Elsevier, IF 5.8)",
+    topics: ["B. 기하 안정화 대응", "인공신경망+랜덤 포레스트", "요인 설계", "겔화 동역학", "압출력 5 N 미만"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 실크 피브로인 농도·칼륨 농도·초음파 처리 시간 세 변수를 요인 설계로 흩뿌린 뒤, 인공신경망과 랜덤 포레스트로 겔화 동역학과의 비선형 관계를 지도로 그려 완전 겔화 구간을 찾아내는 구성입니다.",
+    background: "실크 피브로인 하이드로겔은 주입형 스캐폴드로 유망하지만, 겔화를 좌우하는 변수가 여럿이고 서로 얽혀 있어 최적 조건을 찾기 어렵습니다. 조성과 공정이 비선형으로 상호작용하면 한 변수씩 바꾸는 전통적 방법으로는 조합 수가 감당되지 않습니다. 탐색 자체를 모델에 맡길 필요가 있었습니다.",
+    solution: "칼륨이 유도하는 β-시트 핵형성과 초음파 처리에 의한 구조 활성화를 결합한 겔화 전략을 세우고, 요인 설계와 기계학습으로 탐색을 안내했습니다. 인공신경망과 랜덤 포레스트가 실크 피브로인 농도·칼륨 농도·초음파 처리 시간과 겔화 동역학 사이의 비선형 관계를 지도로 그렸고, 그 지도에서 완전 또는 거의 완전한 겔화와 양호한 동역학이 겹치는 '실험으로 뒷받침된 작동 영역'을 가려내 후속 특성 평가용 조성을 골랐습니다. 선택된 조성들은 생리적 pH와 5 N 미만의 압출력을 보였고, 초음파 처리 시간으로 치밀한 층상 구조부터 다공성 스펀지형까지 미세구조를 조절할 수 있었습니다. 재료 제작 공정 자체를 AI로 탐색한 사례이며, 이번 회차에서 '판독'이 아니라 '제작'에 AI를 쓴 두 편 중 하나입니다.",
+    rating: 3.5,
+    rating_reason: "탐색 공간을 모델로 좁히고 그 결과를 실험으로 검증한 순서가 적절합니다. 다만 피부 등가물이 아니라 주입형 상처 치유 겔이고, 모델 성능 지표가 제시되지 않았습니다."
+  },
+  {
+    title: "An integrated multiscale, multicellular skin model",
+    authors: "Tasseff R, Aguilar B, Kahan S, Kang S, Bascom CC, Isfort RJ",
+    paper_id: "10.1101_830711",
+    url: "https://doi.org/10.1101/830711",
+    doi: "10.1101/830711",
+    date: "2019-11-04",
+    venue: "bioRxiv (preprint) · 2019-11 (IF 없음·프리프린트)",
+    topics: ["E. 인접 주제", "in silico 피부 모델", "에이전트 기반 모형", "ODE·PDE 결합", "장벽 형성·항상성"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 상미분방정식·편미분방정식·에이전트 기반 모형·이산요소법을 하나로 묶어, 표피 장벽의 형성과 항상성, 그리고 외부 자극에 대한 반응을 시뮬레이션하는 다중스케일 모델의 구조입니다.",
+    background: "피부 장벽을 지키고 개선하는 제품을 만들려면 국소 도포에 장벽이 어떻게 반응하는지 그 기전을 알아야 합니다. 많은 분야에서 컴퓨터 시뮬레이션이 이해를 돕고 혁신을 앞당기고 있는데, 피부는 구조가 잘 알려져 있고 접근도 쉬워 모델링 대상으로 적합합니다. 기전이 검증되면 물리 실험 없이 가상으로 제품을 최적화할 수도 있습니다.",
+    solution: "세포 생물학과 물리적 수송을 함께 담기 위해 기존 문헌의 하위 모델 네 가지를 결합하고, 상미분방정식·편미분방정식·이산 에이전트 기반 모형·이산요소법을 통합했으며 탄성 생체역학도 구현했습니다. 고성능 컴퓨팅 플랫폼 Biocellion에서 돌아가는 이 모델은 장벽 형성과 항상성, 그리고 환경·화학·기계적 교란에 대한 반응을 재현했습니다. 저자들은 동시에 어려움도 분명히 적었습니다. in silico 결과와 in vitro 결과가 어긋날 때 그 원인이 과학 자체인지, 그것을 근사한 수식인지, 그 수식을 구현한 소프트웨어인지 가려내기 어렵다는 것입니다. 물리적 FT 등가물을 '만드는' 연구는 아니지만, 그 등가물이 재현해야 할 장벽 거동을 수치로 정의해 준다는 점에서 함께 둘 만합니다.",
+    rating: 3.5,
+    rating_reason: "여러 모델링 양식을 통합한 공학적 성과가 분명하고 검증의 한계도 스스로 짚었습니다. 다만 프리프린트이고 실험 데이터와의 정량 대조가 약합니다."
+  },
+  {
+    title: "Computational modelling predicts impaired barrier function and higher sensitivity to skin inflammation following pH elevation",
+    authors: "Thibault Greugny E, Bensaci J, Fages F, Stamatas GN",
+    paper_id: "10.1111_exd.14698",
+    url: "https://doi.org/10.1111/exd.14698",
+    doi: "10.1111/exd.14698",
+    date: "2022-11-22",
+    venue: "Experimental Dermatology (Wiley, IF 3.5)",
+    topics: ["E. 인접 주제", "에이전트 기반 표피 모형", "LEKTI-KLK 기전", "수분 손실 예측", "자극물 투과"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 표피를 에이전트 기반으로 모형화해, 피부 표면 pH가 LEKTI-칼리크레인 경로를 통해 코르네오데스모좀 분해를 바꾸고 그 결과 수분 손실과 자극물 투과가 어떻게 달라지는지 계산하는 구성입니다.",
+    background: "피부 표면 pH는 세린 단백분해효소 활성을 통해 표피 항상성을 조절합니다. 칼리크레인(KLK) 같은 효소는 각질세포를 잇는 코르네오데스모좀을 분해하고 LEKTI가 이를 억제하는데, KLK 활성은 생리적 수준보다 pH가 높아지면 올라갑니다. 실제로 아토피피부염처럼 장벽이 손상된 질환에서 표면 pH 상승이 관찰됩니다.",
+    solution: "표피를 에이전트 기반으로 모형화해, LEKTI-KLK 기전을 통해 표면 pH 변화가 표피의 구조적·생리적 성질에 미치는 영향을 계산했습니다. 건강한 피부의 약산성보다 덜 산성인 조건만으로도 표면 수분 손실과 표피를 통과하는 자극물의 양이 유의하게 달라졌고, 이렇게 약해진 장벽은 외부 자극물에 노출됐을 때 더 심한 염증으로 이어졌습니다. 저자들은 이를 표면 pH와 세린 단백분해효소가 장벽 무결성 개선의 치료 표적이 될 수 있다는 근거로 제시했습니다. FT 등가물을 만드는 연구는 아니지만, 배양 조건의 pH가 장벽 평가 결과를 흔들 수 있다는 점을 기전 수준에서 지적한다는 의미가 있습니다.",
+    rating: 3.5,
+    rating_reason: "기전을 특정해 모형화하고 임상 관찰과 방향이 맞습니다. 다만 순수 계산 결과이고 이 팔로우업이 다루는 in vitro 등가물에서의 직접 검증은 없습니다."
+  },
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.venue} · ${p.date}${p.doi ? ' · DOI:' + p.doi : ''}${p.pdf ? ' · <a href="' + p.pdf + '" target="_blank" rel="noopener">PDF</a>' : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      ${p.image
+        ? `<div class="figwrap"><div class="fig"><img src="${p.image}" alt="${p.title}"></div>`
+          + (p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``) + `</div>`
+        : (p.figcap
+            ? `<div class="figwrap"><div class="capbox"><span class="caplabel">Figure 1 설명</span>${p.figcap}</div></div>`
+            : ``)}
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+    el.innerHTML = '<h3>지난 FT 피부 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="skin-brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>
