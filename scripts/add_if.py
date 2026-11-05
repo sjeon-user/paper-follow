@@ -18,6 +18,7 @@ IF = {
  "ACS Applied Materials & Interfaces": 8.3,
  "Biofabrication": 8.2,
  "International Journal of Biological Macromolecules": 7.7,
+ "Stem Cell Research & Therapy": 7.1,
  "Journal of Tissue Engineering": 6.7,
  "International Journal of Nanomedicine": 6.6,
  "Lab on a Chip": 6.1,
@@ -55,6 +56,8 @@ IF = {
 # JIF가 없거나 신뢰할 만한 값을 확인하지 못한 저널 → 사유를 그대로 표기
 NOTE = {
  "Biomaterials and Biosystems": "IF 미수재",
+ "Biomedical Materials": "IF 미확인",
+ "Journal of Burn Care & Research": "IF 미확인",
  "BioMed Research International": "IF 없음·JCR 제외",
  "Mutation Research Genetic Toxicology": "IF 미확인",
  "JID Innovations": "IF 미확인",

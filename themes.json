@@ -646,6 +646,23 @@
         "blood vessel organoid"
       ],
       "note": "Europe PMC에 스페로이드 계열 어휘(spheroid·microtissue·organoid·microsphere·hanging drop·scaffold-free·building block)를 혈관 어휘(prevascularized·endothelialized·HUVEC·capillary·microvascular·CD31)와 피부 맥락에 교차시켜 9개 질의로 최근 15년 808편을 모았고, 종양 스페로이드와 타 장기 오가노이드를 제외해 178편을 거른 뒤 10편을 골랐습니다.\n이 분야가 두 갈래로 갈린다는 점이 이번 회차의 핵심입니다. (1) 이식용 패치 계열 — 사전 혈관화 스페로이드를 상처에 심어 생착과 치유를 보는 연구(10.1002/adhm.71616, 10.1088/1758-5090/ae9598, 10.1002/advs.202517409, 10.1038/s41598-019-44113-6)가 다수이고, 평가 지표가 상처 폐쇄·관류입니다. (2) in vitro 평가용 모델 계열 — 장벽·분화·약물 반응을 읽는 연구는 소수로, 10.1038/s12276-026-01840-x(혈관+면역 통합 어셈블로이드), 10.1126/sciadv.adu1251(코어-셸 다층 스페로이드), 10.1002/advs.202416863(리포터 기반 스크리닝) 셋 정도입니다.\n주의: '혈관 내재'와 '다층 표피'를 동시에 갖춘 스페로이드는 10.1038/s12276-026-01840-x 한 편뿐입니다. 10.1126/sciadv.adu1251은 층 구조는 갖췄으나 내피세포가 없고, 혈관화 계열 다수는 표피 분화를 평가하지 않았습니다. 수축률·TEER 같은 이 팔로우업의 정량 지표를 보고한 논문은 10편 중 0편입니다. 맥락용으로 리뷰 1편(10.1002/adhm.202303351)을 포함했습니다. 특집 ③·⑧에서 이미 다룬 스페로이드 3편(10.1002/adhm.202503250, 10.3389/fbioe.2026.1887652, 10.64898/2026.01.21.700040)은 중복 제외됐습니다."
+    },
+    "2026-11-05g": {
+      "label": "특집 ⑩ 대면적 스케일업",
+      "title": "FT 피부 등가물을 크게 만드는 스케일업 10편",
+      "keywords": [
+        "large-sized skin substitute",
+        "289 cm2",
+        "scale-up bioreactor",
+        "GMP-compatible bioprinting",
+        "batch homogeneity",
+        "serum-free production",
+        "self-lifting dermal equivalent",
+        "large-area cell sheet",
+        "large-scale RhE protocol",
+        "scalable cell-derived ECM"
+      ],
+      "note": "특집 ③(throughput·생산 효율)이 '많이·빨리·작게' 만드는 쪽이었다면, 이 회차는 '한 장을 크게' 만드는 쪽입니다. Europe PMC에 면적·규모 어휘(large-scale·scale-up·upscaling·large-area·clinically relevant size·centimeter-scale·surface area·expansion ratio·diffusion limit·GMP·bioreactor)를 피부 모델 맥락과 교차시켜 9개 질의로 최근 15년 842편을 모았고, 임상 증례·화상 역학·타 장기를 제외해 169편을 거른 뒤 10편을 골랐습니다.\n구성: 면적 확대 5편 / 제조 체계 3편 / 공정 단순화 1편 / 원재료 공급 1편.\n핵심은 10.1088/1748-605x/abbdbe입니다. 임상 시험 중인 35 cm² 자가조립 대체물을 289 cm²로 키우고, 수축 거동·두께·표피 분화를 같은 지표로 비교해 모두 유지됨을 보였습니다. 면적 확대의 동기가 '여러 장을 이어 붙이면 이음매에 자국이 남는다'는 임상 관찰이라는 점도 기록해 둘 만합니다.\n한계: 10편 중 수축률을 지표로 명시한 것은 3편(abbdbe, 10.1093/jbcr/irab034 상처 수축 4.5%, 10.3390/ijms241612537 혈청 유무 동등)뿐이고, 장벽을 정량한 것은 2편(irab034 TEWL 11.9, 10.3791/61802 TEER)입니다. '크게 만들면 가운데가 죽는다'는 확산 한계를 정면으로 다룬 논문은 검색 범위에서 찾지 못했습니다. 또 대부분이 이식용 대체물 연구라, in vitro 평가용 FT 등가물을 대면적으로 만든 사례는 거의 없습니다. 특집 ③에서 이미 다룬 표준화 생산 논문(10.1007/164_2020_417)은 중복 제외됐습니다."
     }
   }
 }

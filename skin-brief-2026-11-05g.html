@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FT 피부 모델 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .capbox{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 13px;color:var(--muted);font-size:.82rem;line-height:1.65;background:var(--bg)}
+  .capbox .caplabel{display:block;font-weight:700;color:var(--text);font-size:.72rem;margin-bottom:4px}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .meta a{color:var(--accent);text-decoration:none}
+  .meta a:hover{text-decoration:underline}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>FT 피부 모델 논문 팔로우업</h1>
+    <div class="sub">FT(전층) 인체 피부 모델의 기하 불안정 → 분화·장벽 → OECD TG 431/439 규제 적합성 · 하루 1키워드 최대 5편 · 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="paper-brief.html">← arXiv 브리핑</a> <a href="rss-brief.html">🏛 RSS 학회</a> <a href="keep.html">⭐ 보관함</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-05g";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "FT 피부 등가물을 크게 만드는 스케일업 10편", "keywords": ["large-sized skin substitute", "289 cm2", "scale-up bioreactor", "GMP-compatible bioprinting", "batch homogeneity", "serum-free production", "self-lifting dermal equivalent", "large-area cell sheet", "large-scale RhE protocol", "scalable cell-derived ECM"], "note": "특집 ③(throughput·생산 효율)이 '많이·빨리·작게' 만드는 쪽이었다면, 이 회차는 '한 장을 크게' 만드는 쪽입니다. Europe PMC에 면적·규모 어휘(large-scale·scale-up·upscaling·large-area·clinically relevant size·centimeter-scale·surface area·expansion ratio·diffusion limit·GMP·bioreactor)를 피부 모델 맥락과 교차시켜 9개 질의로 최근 15년 842편을 모았고, 임상 증례·화상 역학·타 장기를 제외해 169편을 거른 뒤 10편을 골랐습니다.\n구성: 면적 확대 5편 / 제조 체계 3편 / 공정 단순화 1편 / 원재료 공급 1편.\n핵심은 10.1088/1748-605x/abbdbe입니다. 임상 시험 중인 35 cm² 자가조립 대체물을 289 cm²로 키우고, 수축 거동·두께·표피 분화를 같은 지표로 비교해 모두 유지됨을 보였습니다. 면적 확대의 동기가 '여러 장을 이어 붙이면 이음매에 자국이 남는다'는 임상 관찰이라는 점도 기록해 둘 만합니다.\n한계: 10편 중 수축률을 지표로 명시한 것은 3편(abbdbe, 10.1093/jbcr/irab034 상처 수축 4.5%, 10.3390/ijms241612537 혈청 유무 동등)뿐이고, 장벽을 정량한 것은 2편(irab034 TEWL 11.9, 10.3791/61802 TEER)입니다. '크게 만들면 가운데가 죽는다'는 확산 한계를 정면으로 다룬 논문은 검색 범위에서 찾지 못했습니다. 또 대부분이 이식용 대체물 연구라, in vitro 평가용 FT 등가물을 대면적으로 만든 사례는 거의 없습니다. 특집 ③에서 이미 다룬 표준화 생산 논문(10.1007/164_2020_417)은 중복 제외됐습니다."};
+/* 보관된 FT 피부 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 skin-brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-05g", t:"특집 ⑩ 대면적 스케일업"}, {d:"2026-11-05f", t:"특집 ⑨ 혈관 내재형 스페로이드"}, {d:"2026-11-05e", t:"특집 ⑧ AI 개발·응용"}, {d:"2026-11-05d", t:"특집 ⑦ 표면화학·리간드·패턴"}, {d:"2026-11-05c", t:"특집 ⑥ 전기방사 섬유 형상"}, {d:"2026-11-05b", t:"특집 ⑤ 수축 억제 합성·가교"}, {d:"2026-11-05", t:"특집 ④ 합성 biomaterial 부착성"}, {d:"2026-11-04d", t:"특집 ③ throughput·생산 효율"}, {d:"2026-11-04c", t:"특집 ② 부착성 재료 코팅"}, {d:"2026-11-04b", t:"특집 ① 장치적 접근"}, {d:"2026-11-04", t:"① 섬유아세포 콜라겐 수축"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     paper_id: "10.1016/j.xxx",        // DOI 우선, 없으면 "PMID:12345678" (skin-seen.json 중복 방지 키)
+     url:      "https://doi.org/...",
+     doi:      "10.1016/j.xxx",
+     date:     "2025-03",              // 출판 연-월
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
+     image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
+     figcap:   "Figure 1. ...",
+     background: "배경·기존 문제 2~3문장",
+     solution:   "해결·방법과 결과 2~3문장 + 마지막에 이 회차 문제 진술과의 관련성 한 줄",
+     rating:     4.0,
+     rating_reason: "근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "Biofabrication and preclinical evaluation of a large-sized human self-assembled skin substitute",
+    authors: "Kawecki F, Mayrand D, Ayoub A, Attiogbe É, Germain L, Auger FA, Moulin VJ",
+    paper_id: "10.1088_1748-605x_abbdbe",
+    url: "https://doi.org/10.1088/1748-605x/abbdbe",
+    doi: "10.1088/1748-605x/abbdbe",
+    date: "2021-02-25",
+    venue: "Biomedical Materials (IOP, IF 미확인)",
+    topics: ["B. 기하 안정화 대응", "35 cm² → 289 cm²", "무스캐폴드 자가조립", "수축 거동 동일", "이음매 흉터 제거"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 임상 시험 중인 표준 크기(35 cm²) 자가조립 피부 대체물을 289 cm² 대형(L-SASS)으로 키워 제작하고, 한천 표면에서의 수축 거동·두께·표피 분화를 표준 크기와 나란히 비교한 구성입니다.",
+    background: "광범위 화상에서는 공여부가 부족해 자가 피부 이식이 어렵습니다. 저자들의 연구실은 35 cm² 표준 크기의 인체 자가조립 피부 대체물(SASS)을 임상 시험 중인데, 넓은 상처를 덮으려면 여러 장을 이어 붙여야 합니다. 그런데 장기 추적에서 조각과 조각이 만나는 이음매에 자국이 남는 일이 관찰됐습니다. 즉 '여러 장'이 아니라 '한 장을 크게'가 필요한 상황입니다.",
+    solution: "같은 자가조립 방식으로 289 cm² 크기의 대형 피부 대체물(L-SASS)을 만들고 전임상 성능을 평가했습니다. L-SASS와 기존 SASS는 한천 표면에서의 수축 거동이 서로 비슷했고 두께와 in vitro 표피 분화도 유사했습니다. 이식 후 조직학 결과 역시 두 방식으로 만든 대체물이 비슷했습니다. 면적을 8배 이상 키워도 수축과 분화가 유지된다는 점을 같은 지표로 확인한 것이 핵심이며, 스캐폴드를 쓰지 않는 자가조립 방식으로도 대면적 생산이 가능함을 보였습니다. 이번 회차에서 '크게 만들기'를 정면으로 다루면서 수축을 함께 본 유일한 논문으로, 이 팔로우업의 A 계층과 직접 이어집니다.",
+    rating: 4.5,
+    rating_reason: "면적 확대 전후를 수축·두께·분화라는 동일 지표로 비교하고 이식까지 확인했습니다. 다만 수축률의 구체 수치가 초록 수준에서는 제시되지 않습니다."
+  },
+  {
+    title: "Scale-up of a Composite Cultured Skin Using a Novel Bioreactor Device in a Porcine Wound Model",
+    authors: "Dearman BL, Greenwood JE",
+    paper_id: "10.1093_jbcr_irab034",
+    url: "https://doi.org/10.1093/jbcr/irab034",
+    doi: "10.1093/jbcr/irab034",
+    date: "2021-11-01",
+    venue: "Journal of Burn Care & Research (Oxford, IF 미확인)",
+    topics: ["B. 기하 안정화 대응", "전용 바이오리액터 카세트", "24.5 × 12 cm 상처", "수축 평균 4.5%", "TEWL 11.9"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 자가 혈장에 적신 1 mm 두께 생분해성 폴리우레탄 폼을 바이오리액터 카세트에 넣고 섬유아세포를 트롬빈과 함께 심은 뒤 각질형성세포를 올려, 대형 복합 배양 피부(CCS)를 만드는 공정입니다.",
+    background: "광범위 심재성 화상은 두 단계 전략으로 다루면 자가 피부 이식 의존을 줄일 수 있습니다. 먼저 생분해성 폴리우레탄 스캐폴드로 상처를 임시 관리하고, 나중에 자가 복합 배양 피부(CCS)로 최종 폐쇄하는 방식입니다. 그런데 사람에게 쓰려면 크고 여러 장인 CCS를 만들어야 하고, 그러려면 전용 바이오리액터가 필요합니다. 기존 검증은 '작은' 대동물 상처에서만 이루어졌습니다.",
+    solution: "대형 백색종 돼지 3마리에 각각 24.5 cm × 12 cm 상처 두 개를 만들어 생분해성 진피 스캐폴드를 이식하고, 버려지는 조직에서 자가 섬유아세포와 각질형성세포를 얻었습니다. 자가 혈장에 적신 1 mm 폴리우레탄 폼을 바이오리액터 카세트에 넣고 섬유아세포를 트롬빈과 함께 심어 자리 잡게 한 뒤 각질형성세포를 올렸고, 35일째 CCS를 스캐폴드 위에 적용했습니다. 진피 스캐폴드가 통합되는 동안 상처 수축은 평균 4.5%로 미미했고, 이식 11일째 대조 피부 이식편이 생착할 무렵 CCS 2/3에서 상피 섬이 관찰됐습니다. 63일째 완전 상피화가 조직학으로 확인됐고 TEWL은 약 11.9 g/m²h로 정상 피부 수준이었으며, 상처 6개 중 4개가 층을 이룬 견고한 상피로 폐쇄됐습니다. 대형 조각을 실제로 만들어 큰 상처를 덮은 장비 중심 사례입니다.",
+    rating: 4.5,
+    rating_reason: "상처 크기·수축률·TEWL·폐쇄 시점을 모두 수치로 보고하고 대조 이식편을 같은 상처에 두었습니다. 다만 동물 3마리·상처 6개로 표본이 작습니다."
+  },
+  {
+    title: "In vivo efficacy proof of concept of a large-size bioprinted dermo-epidermal substitute for permanent wound coverage",
+    authors: "Abellan Lopez M 외 다수",
+    paper_id: "10.3389_fbioe.2023.1217655",
+    url: "https://doi.org/10.3389/fbioe.2023.1217655",
+    doi: "10.3389/fbioe.2023.1217655",
+    date: "2023-07-25",
+    venue: "Frontiers in Bioengineering and Biotechnology (OA, IF 4.3)",
+    topics: ["D. 규제 적합성", "40 cm² 배치 2개", "GMP 호환 바이오프린팅", "조직학 점수 75±8 / 73±12", "생착률 91.8%"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): GMP 호환 공정으로 40 cm² 크기의 바이오프린팅 진피–표피 대체물(Poieskin) 배치 두 개를 만들어 조직학 점수로 배치 간 균질성을 평가하고, 면역억제 생쥐에서 인체 분층 피부 이식편과 생착률을 비교한 구성입니다.",
+    background: "전층 피부 결손의 표준 치료인 자가 분층 피부 이식에는 전신마취와 공여부 흉터라는 두 가지 단점이 있습니다. 그래서 세포 배양·조직공학·바이오프린팅으로 자가 진피–표피 대체물을 만들려는 시도가 이어져 왔습니다. 다만 임상으로 가려면 '한 번 만들어 봤다'가 아니라 크게, 그리고 매번 같게 만들 수 있어야 합니다.",
+    solution: "GMP 호환 바이오프린팅으로 40 cm² 크기의 인체 진피–표피 대체물 Poieskin 배치 두 개를 생산하고, 제조 신뢰성과 균질성을 조직학 점수로 평가해 각각 75±8%와 73±12%를 얻었습니다. 면역억제 생쥐의 1×1.5 cm 전층 절제 상처에 Poieskin(n=8) 또는 인체 분층 피부 이식편(n=8)을 이식하고 16일째 표준화 사진으로 생착률을 측정한 결과 각각 91.8%와 100%였으며, 레이저 도플러 영상과 PET 영상으로 본 관류·염증과 조직학 점수에서는 두 군 간 차이가 없었습니다. 면적을 키우면서 배치 간 균질성을 수치로 제시한 점이 이 회차에서 드물고, 임상 1상으로 가는 규제 문맥(D 계층)과도 직접 닿습니다.",
+    rating: 4.0,
+    rating_reason: "배치 간 균질성과 생착률을 표준 이식편과 대조해 수치로 보고했습니다. 다만 평가 상처가 1×1.5 cm로 작아 40 cm² 구조체의 대면적 성능 자체를 시험한 것은 아닙니다."
+  },
+  {
+    title: "Bioprinting and plastic compression of large pigmented and vascularized human dermo-epidermal skin substitutes by means of a new robotic platform",
+    authors: "Pontiggia L 외 다수",
+    paper_id: "10.1177_20417314221088513",
+    url: "https://doi.org/10.1177/20417314221088513",
+    doi: "10.1177/20417314221088513",
+    date: "2022-01-01",
+    venue: "Journal of Tissue Engineering (SAGE, OA, IF 6.7)",
+    topics: ["B. 기하 안정화 대응", "SkinFactory 로봇 플랫폼", "소성 압축", "색소+사전 혈관", "5종 세포"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): SkinFactory라 이름 붙인 로봇 유닛으로 섬유아세포·혈관 및 림프 내피세포·각질형성세포·멜라닌세포를 3D 바이오프린팅하고, 소성 압축으로 대형 진피–표피 대체물을 만드는 공정입니다.",
+    background: "광범위 화상 같은 대형 결손을 다루려면 기능과 구조를 갖춘 자가 진피–표피 대체물(DESS)을 충분한 양으로 확보해야 합니다. 저자들의 DESS는 임상 1상을 마쳤지만 색소와 혈관이라는 천연 피부의 두 요소가 빠져 있었습니다. 더 근본적으로는 환자의 피부를 대량으로, 자동화된 방식으로 정확히 재현하는 일이 DESS 생산 규모를 키우는 데 필수적이었습니다.",
+    solution: "SkinFactory라는 새 로봇 유닛을 도입해, 정상 인체 피부 유래 섬유아세포·혈액 내피세포·림프 내피세포·각질형성세포·멜라닌세포 다섯 종을 써서 색소를 갖추고 사전 혈관화된 DESS를 3D 바이오프린팅하고 소성 압축으로 성형했습니다. 인쇄 후 모든 세포의 생존을 in vitro에서 확인했고, 면역결핍 쥐에 이식해 재구성된 모세혈관망의 온전함과 숙주 혈관총과의 문합을 보였습니다. 저자들은 이를 피부 대체 공정 전체를 완전 자동화하는 확장 플랫폼의 개념 검증으로 자리매김했습니다. '크게 만들기'를 재료가 아니라 로봇 자동화로 접근한 사례이며, 특집 ③(throughput)과 이 회차(면적)의 경계에 걸칩니다.",
+    rating: 4.0,
+    rating_reason: "다섯 종 세포를 한 공정에 넣고 생체 내 문합까지 확인한 범위가 넓습니다. 다만 저자들 표현대로 개념 검증이며 실제 생산 면적·소요 시간은 제시되지 않았습니다."
+  },
+  {
+    title: "Autogenous Biofabrication of Nativelike, Scaffold-Free Human Skin Equivalents Using a Smart, Enzyme-Degradable Tissue Templating Coating",
+    authors: "Connon CJ, Gouveia RM",
+    paper_id: "10.1021_acsabm.8b00685",
+    url: "https://doi.org/10.1021/acsabm.8b00685",
+    doi: "10.1021/acsabm.8b00685",
+    date: "2019-01-11",
+    venue: "ACS Applied Bio Materials (ACS, IF 4.6)",
+    topics: ["B. 기하 안정화 대응", "조직 템플릿 코팅", "자가 박리(self-lifting)", "대면적 진피", "수축 저항"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 효소로 분해되는 '조직 템플릿' 코팅 위에서 인체 진피 섬유아세포가 대면적 조직을 만들게 하고, 그 조직이 스스로 표면에서 떨어져 나오도록(self-lifting) 설계한 공정입니다.",
+    background: "무스캐폴드 진피 등가물은 세포와 자기 기질만으로 이루어져 이물 반응과 재료 변수가 없다는 장점이 있습니다. 문제는 면적을 키우면 회수가 어려워진다는 점입니다. 크게 만든 조직을 배양면에서 떼어내는 과정에서 찢어지거나 구겨지기 쉽습니다.",
+    solution: "조직 템플릿 기술로 인체 진피 섬유아세포를 유도해 천연 진피에 가까운 대면적 조직을 만들게 하고, 동시에 그 조직이 템플릿 표면에서 스스로 떨어져 나오도록 해 자립형 무스캐폴드 진피 등가물(SLATE)로 회수할 수 있게 했습니다. SLATE는 인체 세포와 그들이 만든 세포외기질만으로 구성되며, 진피 특유의 탄성 섬유가 엮인 치밀한 콜라겐 기질을 보였습니다. 견고성·탄성계수·수축 저항·효소 분해 저항이 천연 인체 진피에 필적했고, 이 진피 위에 각질형성세포를 올리자 분화 층이 뚜렷한 층상 상피가 자랐습니다. 대면적 제작과 '찢기지 않는 회수'를 한 설계로 푼 점이 이 회차에서 독특하며, 수축 저항을 명시한 몇 안 되는 논문입니다.",
+    rating: 4.0,
+    rating_reason: "회수라는 실제 병목을 설계로 풀고 기계적 성질을 천연 진피와 비교했습니다. 다만 '대면적'의 구체 치수가 제시되지 않았습니다."
+  },
+  {
+    title: "Production of Tissue-Engineered Skin Substitutes for Clinical Applications: Elimination of Serum",
+    authors: "Doucet EJ, Cortez Ghio S, Barbier MA, Savard É, Magne B, Safoine M, Larouche D, Fradette J, Germain L",
+    paper_id: "10.3390_ijms241612537",
+    url: "https://doi.org/10.3390/ijms241612537",
+    doi: "10.3390/ijms241612537",
+    date: "2023-08-08",
+    venue: "International Journal of Molecular Sciences (MDPI, OA, IF 4.9)",
+    topics: ["D. 규제 적합성", "무혈청 배지", "Surge SFM + Prime XV", "수축·인장강도 동등", "6개월 이식"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 각질형성세포용 무혈청 배지(Surge SFM)와 섬유아세포용 상용 무혈청 배지(Prime XV)를 조합해 무혈청 조직공학 피부 대체물을 만들고, 혈청 함유 배지로 만든 것과 조직학·분화 마커·수축·인장강도를 비교한 구성입니다.",
+    background: "중증 화상 치료에 쓰이는 조직공학 피부 대체물(TES)을 만들려면 각질형성세포와 섬유아세포를 모두 배양해야 하는데, 배지에는 여전히 소 혈청이 흔히 쓰입니다. 혈청은 로트 간 편차와 감염·면역 위험, 규제 부담을 함께 안고 옵니다. 생산 규모를 키울수록 이 변수의 비용과 위험이 커집니다.",
+    solution: "앞선 연구에서 개발한 각질형성세포용 무혈청 배지(Surge SFM)에 섬유아세포용 상용 무혈청 배지(Prime XV)를 더해 무혈청 TES를 생산했습니다. 무혈청 TES는 육안·조직학적으로 혈청 함유 배지로 만든 것과 유사했고, 케라틴14·Ki-67·트랜스글루타미네이스1·필라그린·I형 및 IV형 콜라겐·피브로넥틴 발현도 비슷했습니다. 특히 수축과 인장강도 같은 기계적 성질이 혈청 유무에 관계없이 동등했고, 무혈청 TES는 무흉선 생쥐에 6개월간 성공적으로 이식됐습니다. 규모를 키울 때 걸림돌이 되는 원재료 변수를 제거하면서도 수축 거동이 유지됨을 보인 점이 이 회차와 A 계층 양쪽에 닿습니다.",
+    rating: 4.0,
+    rating_reason: "혈청 제거가 분화와 기계적 성질을 해치지 않음을 다지표로 확인하고 6개월 이식으로 뒷받침했습니다. 다만 생산 규모 자체(면적·배치 수)는 다루지 않았습니다."
+  },
+  {
+    title: "Rapid scaffold-free cell sheet formation and their patterning as building blocks of complex 3D tissue constructs",
+    authors: "Khodamoradi M 외 다수",
+    paper_id: "10.1039_d5lc00678c",
+    url: "https://doi.org/10.1039/d5lc00678c",
+    doi: "10.1039/d5lc00678c",
+    date: "2026-01-20",
+    venue: "Lab on a Chip (RSC, IF 6.1)",
+    topics: ["B. 기하 안정화 대응", "미개질 PDMS 몰드", "6시간 자가조립", "대면적·패턴 시트", "E-cadherin 상승"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 표면을 개질하지 않은 PDMS 몰드를 배양 용기로 써서, 임계 세포 밀도 이상으로 심은 부착 세포가 6시간 만에 스스로 평면형 3D 세포시트를 이루게 하고 이를 적층·패턴화하는 구성입니다.",
+    background: "세포시트는 연속된 구조와 대면적 피복, 숙주 조직과의 통합 가능성 덕분에 재생 응용에 적합합니다. 그런데 기존 제작법은 온도나 pH를 바꾸거나 자기장·전기장 같은 외부 자극을 써야 해서, 세포가 손상되거나 시트가 찢어지거나 값비싸고 전용화된 장비가 필요했습니다. 규모를 키우려면 이 장벽부터 낮춰야 합니다.",
+    solution: "표면을 개질하지 않은 PDMS 몰드를 배양 용기로 쓰는 빠른 자가조립 기법을 제시했습니다. 임계 세포 밀도로 심으면 부착 세포가 기질 개질이나 전용 장비 없이 6시간 안에 평면형 3D 세포시트로 스스로 조립됐고, qRT-PCR에서 E-cadherin이 유의하게 올라 시트 형성을 이끄는 것이 세포–기질 고정이 아니라 세포–세포 접착임이 확인됐습니다. 이 기법으로 대면적 시트와 패턴 시트, 적층 다층 구조체, 공배양 구성까지 만들 수 있었고, 섬유아세포 시트는 시간이 지나며 기질을 점차 생산해 조직학에서 콜라겐 침착이 확인됐습니다. 세포 생존과 기능을 지키면서 공정을 단순·저가화해, 대면적 구조체를 '블록'으로 쌓아 올리는 길을 넓혔습니다.",
+    rating: 3.5,
+    rating_reason: "형성 기전을 E-cadherin으로 특정하고 적층·패턴까지 시연했습니다. 다만 피부 전층 모델로 올려 분화·장벽을 평가한 단계는 아닙니다."
+  },
+  {
+    title: "Cultivating a Three-dimensional Reconstructed Human Epidermis at a Large Scale",
+    authors: "Dijkhoff IM, Petracca B, Prieux R, Valacchi G, Rothen-Rutishauser B, Eeman M",
+    paper_id: "10.3791_61802",
+    url: "https://doi.org/10.3791/61802",
+    doi: "10.3791/61802",
+    date: "2021-05-28",
+    venue: "Journal of Visualized Experiments (JoVE, IF 1.2)",
+    topics: ["C. 분화·장벽 결과", "대규모 RhE 배양 프로토콜", "폴리카보네이트 인서트", "14일 완전 분화", "TEER·데스모글레인1"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 신생아 일차 각질형성세포를 투과성 폴리카보네이트 인서트에 침수 배양한 뒤 3일째 기중 계면으로 올리고, 고칼슘 배지에서 14일간 성장인자와 아스코르브산으로 자극해 완전 분화된 표피를 얻는 프로토콜입니다.",
+    background: "재구성 인체 표피(RhE)는 환경 영향 평가부터 규제 시험까지 폭넓게 쓰이지만, 연구실마다 제작 조건이 달라 결과를 비교하기 어렵습니다. 규모를 키우면 조건의 미세한 차이가 더 크게 벌어집니다. 대규모로, 재현 가능하게 배양하는 절차 자체를 공개하는 일이 필요했습니다.",
+    solution: "신생아 일차 각질형성세포를 투과성 폴리카보네이트 인서트에 침수 배양하고 파종 3일 후 기중 계면으로 올린 뒤, 고칼슘 배지에서 정해진 성장인자와 아스코르브산으로 14일간 자극해 완전히 분화시키는 절차를 영상과 함께 제시했습니다. 조직학에서 천연 인체 피부의 형태를 닮은 완전한 층상 표피가 확인됐고, 면역형광으로 초기 분화(케라틴10), 후기 분화(인볼루크린·로리크린·필라그린), 조직 접착(데스모글레인1) 단백질의 양과 위치를 평가했습니다. 장벽 무결성은 경상피 전기저항(TEER)으로 측정했으며, 지질다당류와 TNF-α 같은 전염증 자극에 반응해 IL-1α와 IL-8 분비가 늘었습니다. 대규모 배양을 전제로 절차를 통째로 공개한 점이 재현성 확보의 출발점입니다.",
+    rating: 3.5,
+    rating_reason: "분화 마커·TEER·염증 반응까지 포함한 절차 공개가 재현성에 기여합니다. 다만 '대규모'의 정량(배치 수·면적)이 제시되지 않고 RhE라 전층 모델은 아닙니다."
+  },
+  {
+    title: "Quality management overview for the production of a tissue-engineered human skin substitute in Malaysia",
+    authors: "Seet WT, Mat Afandi MA, Ishak MF, Hassan MNF, Ahmat N, Ng MH, Maarof M",
+    paper_id: "10.1186_s13287-023-03536-9",
+    url: "https://doi.org/10.1186/s13287-023-03536-9",
+    doi: "10.1186/s13287-023-03536-9",
+    date: "2023-10-20",
+    venue: "Stem Cell Research & Therapy (BMC, OA, IF 7.1)",
+    topics: ["D. 규제 적합성", "MyDerm® 자가 이중층", "GMP QA/QC 체계", "개방 조작 공정", "일탈 보고 절차"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 자가 이중층 인체 피부 대체물 MyDerm®의 제조 흐름을 따라, 원재료 검증부터 세포 확장·구조체 형성·최종 품질검사·환경 모니터링·일탈 보고까지 품질 체계를 정리한 구성입니다.",
+    background: "조직공학 피부를 실제로 공급하려면 실험실 수준의 '만들 수 있다'와 별개로 매번 같게 만들 수 있다를 증명해야 합니다. MyDerm® 제조는 조직 처리·세포 확장·구조체 형성처럼 개방 조작이 많아 위험이 큰 단계를 여럿 거칩니다. 규모를 키울수록 이 단계들의 변동이 누적됩니다.",
+    solution: "GMP 시설에서 자가 이중층 인체 피부 대체물을 만들면서 적용한 품질보증·품질관리 체계를 단계별로 정리했습니다. 공정의 일관성을 위해 표준작업절차(SOP)를 세우고, 조직 검체·배양 배지·시약·소모품 등 모든 출발 물질을 안전성·역가·무균성 기준으로 검증했으며, 최종 제품도 일련의 품질검사를 거치게 했습니다. 청정실 작업자의 무균 조작과 환경 조건이 제품 품질에 직접 영향을 주므로 인력 교육과 환경 모니터링을 필수로 두었고, 위험 수준을 식별·평가하는 위험 관리와 제조 중 발생한 일탈을 식별·조사·시정하는 보고 절차도 마련했습니다. 특집 ③의 표준화 생산 논문과 같은 계열이되, 개방 조작이 많은 공정이라는 조건에서의 구체적 관리 항목을 제시합니다.",
+    rating: 3.5,
+    rating_reason: "실제 GMP 시설 운영 경험을 항목별로 정리해 실무에 쓸 만합니다. 다만 총론이라 수율·면적·배치 간 편차 같은 정량 자료는 없습니다."
+  },
+  {
+    title: "An engineered and scalable human cell-derived extracellular matrix demonstrates advantages over recombinant collagen in biomimicry and wound healing",
+    authors: "Guo X, Ran X, Zhang Y, Liu B, Wen Z, Liu Y, Zhou M, Zang M, Wang J, Xu T",
+    paper_id: "10.3389_fbioe.2026.1892416",
+    url: "https://doi.org/10.3389/fbioe.2026.1892416",
+    doi: "10.3389/fbioe.2026.1892416",
+    date: "2026-07-29",
+    venue: "Frontiers in Bioengineering and Biotechnology (OA, IF 4.3)",
+    topics: ["B. 기하 안정화 대응", "세포 유래 기질(HE-ECM)", "공여자 비의존", "재조합 콜라겐 비교", "삼중나선 보존"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 인체 섬유아세포가 만든 세포외기질을 확장 가능한 방식으로 가공해 HE-ECM을 얻고, 상용 재조합 콜라겐과 다공 구조·콜라겐 삼중나선 보존·열 안정성·단백질 조성을 나란히 비교한 구성입니다.",
+    background: "피부 재생용 생체재료는 콜라겐이 풍부한 구조망, 즉 인체 세포외기질 환경을 재현해야 합니다. 현재는 유전자 재조합 콜라겐과 인체 세포가 직접 만든 기질 두 갈래가 있는데, 재조합 콜라겐은 천연 인체 콜라겐의 단순화된 대용품이고 완전히 성숙한 인체 콜라겐의 생합성은 여전히 기술적으로 어렵습니다. 재료를 얼마나 안정적으로 많이 확보하느냐가 구조체 규모의 상한을 정합니다.",
+    solution: "인체 섬유아세포로부터 공학적이고 확장 가능한 방식으로 세포 유래 세포외기질(HE-ECM)을 제작하고 상용 재조합 콜라겐과 체계적으로 비교했습니다. 물리화학 분석에서 HE-ECM은 천연에 가까운 다공성 기질 구조와 콜라겐 삼중나선의 온전함, 향상된 열 안정성, 더 복잡한 단백질 조성을 보존했습니다. 이 기질은 in vitro에서 섬유아세포의 생존·증식·이주를 유의하게 높였고, 쥐 전층 피부 결손 모델에서 상처 폐쇄를 앞당기고 조직 구성을 개선했습니다. 저자들은 이를 공여자에 의존하지 않으면서 제어 가능한 제작 전략으로 제시했습니다. 구조체를 크게 만들려면 그만큼의 기질이 필요하다는, 스케일업의 원재료 측면을 다룬 사례입니다.",
+    rating: 3.5,
+    rating_reason: "재조합 콜라겐과 직접 비교해 우위 항목을 분리했습니다. 다만 '확장 가능'의 생산량 수치가 없고 전층 피부 등가물 제작에 적용한 단계는 아닙니다."
+  },
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.venue} · ${p.date}${p.doi ? ' · DOI:' + p.doi : ''}${p.pdf ? ' · <a href="' + p.pdf + '" target="_blank" rel="noopener">PDF</a>' : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      ${p.image
+        ? `<div class="figwrap"><div class="fig"><img src="${p.image}" alt="${p.title}"></div>`
+          + (p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``) + `</div>`
+        : (p.figcap
+            ? `<div class="figwrap"><div class="capbox"><span class="caplabel">Figure 1 설명</span>${p.figcap}</div></div>`
+            : ``)}
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+    el.innerHTML = '<h3>지난 FT 피부 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="skin-brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>
