@@ -561,6 +561,57 @@
         "contraction"
       ],
       "note": "특집 ②(천연 유래 코팅)의 짝으로, 합성 고분자·합성 펩타이드·합성 하이드로겔로 부착성과 기하 안정성을 높인 사례만 모았습니다. Europe PMC 12개 질의(합성 고분자 / PCL·PLGA·PEG·PDMS+부착 / RGD·IKVAV·YIGSR 등 접착 펩타이드 / 전기방사·나노섬유 / GelMA·PEGDA·thiol-ene / 정의된 합성 기질 / 2PP·SLA / MEW·보강)로 398+100편을 모은 뒤, 상처 드레싱·생체 내 치유·항균·약물전달 논문을 제외하고 in vitro 피부 모델 맥락 + 부착/수축 맥락이 함께 있는 것만 남겨 10편을 골랐습니다. 주의: GelMA·HAMA는 천연 고분자를 메타크릴화한 반합성 재료이고 2편은 I형 콜라겐·피브린과 혼합계입니다. 순수 합성 재료만으로 전층 모델 전체를 구성한 사례는 자가조립 펩타이드(10.1096/fba.2022-00026) 한 편뿐이었습니다. 또한 10.1002/jbm.a.36519만이 접착 강도를 kPa 단위로 직접 측정했고, 나머지 9편은 부착 개선을 세포 밀도·증식·마커로 간접 평가했습니다."
+    },
+    "2026-11-05b": {
+      "label": "특집 ⑤ 수축 억제 합성·가교",
+      "title": "콜라겐 수축을 정면으로 억제한 합성·가교 전략 10편",
+      "keywords": [
+        "genipin",
+        "EDC crosslinking",
+        "electrospun scaffold",
+        "animal-component-free",
+        "PLLA nanofibrous membrane",
+        "shrinkage-free",
+        "thiol-ene bioink",
+        "P(AN-MA) nanofiber",
+        "GelMA concentration",
+        "strain-stiffening"
+      ],
+      "note": "특집 ④의 연장입니다. Europe PMC에 합성 고분자 계열(PCL·PLGA·PU·PDMS·PEG·PVA·PET·전도성 고분자), 합성 화학(GelMA·thiol-ene·click·제니핀·EDC·글루타르알데히드), 접착 펩타이드(RGD·IKVAV·YIGSR 등), 공정(전기방사·MEW·미세패턴·2PP·플라즈마·polymer brush·LbL), 정의된 기질(xeno-free·chemically defined), 강성 변수까지 21개 질의를 던져 최근 15년 1,280편을 모았습니다. 거기서 상처 드레싱·생체 내 치유·항균·약물전달을 제외하고 in vitro 피부 모델 맥락 + 부착/수축 맥락 + 합성 재료 요소가 모두 있는 89편을 남긴 뒤, 기소개 45편을 빼고 주제별로 나눴습니다. 이 회차는 수축률을 숫자로 보고했거나 콜라겐 자체를 합성 재료로 바꾼 논문만 모았습니다. 제니핀 가교 2편(87%→28%, 59%→24%)이 수치 근거가 가장 뚜렷하고, 10.3389/ftox.2026.1639389는 동물 유래 콜라겐과 FBS·BPE를 모두 빼고 두 실험실 전이성까지 검증해 D 계층에 가장 가깝습니다. 마지막 10.3389/fbioe.2023.1200618은 같은 제니핀 전략이 실패한 음성 결과로, 대조로 함께 실었습니다."
+    },
+    "2026-11-05c": {
+      "label": "특집 ⑥ 전기방사 섬유 형상",
+      "title": "전기방사 섬유의 지름·간격·배향·지형으로 부착을 조절한 10편",
+      "keywords": [
+        "electrospun topography",
+        "fiber diameter",
+        "fiber spacing",
+        "rete ridge pattern",
+        "PHBV nanofiber",
+        "chitosan/gelatin/PCL blend",
+        "glutaraldehyde vapor crosslinking",
+        "cell adhesion ratio",
+        "dimensional stability",
+        "air-liquid interface"
+      ],
+      "note": "특집 ④의 연장입니다. Europe PMC에 합성 고분자 계열(PCL·PLGA·PU·PDMS·PEG·PVA·PET·전도성 고분자), 합성 화학(GelMA·thiol-ene·click·제니핀·EDC·글루타르알데히드), 접착 펩타이드(RGD·IKVAV·YIGSR 등), 공정(전기방사·MEW·미세패턴·2PP·플라즈마·polymer brush·LbL), 정의된 기질(xeno-free·chemically defined), 강성 변수까지 21개 질의를 던져 최근 15년 1,280편을 모았습니다. 거기서 상처 드레싱·생체 내 치유·항균·약물전달을 제외하고 in vitro 피부 모델 맥락 + 부착/수축 맥락 + 합성 재료 요소가 모두 있는 89편을 남긴 뒤, 기소개 45편을 빼고 주제별로 나눴습니다. 이 회차는 재료 조성이 아니라 섬유의 물리적 형상(지름·간격·배향·표면 지형)으로 부착을 바꾼 논문입니다. 주의할 점: 이 계열은 스캐폴드 특성 평가에 머무는 논문이 많아, 전층 피부 모델로 올라가 수축이나 장벽을 측정한 사례가 10편 중 거의 없습니다. 임계 간격(30~60 µm·100 µm)이나 지름별 이주 속도처럼 설계에 바로 쓸 수치를 준 2편과, 치수 안정성이 가장 좋은 조합과 부착이 가장 좋은 조합이 서로 다르다고 보고한 1편이 실질적인 수확입니다."
+    },
+    "2026-11-05d": {
+      "label": "특집 ⑦ 표면화학·리간드·패턴",
+      "title": "표면 화학·접착 리간드·배치 방식으로 부착을 설계한 10편",
+      "keywords": [
+        "macromolecular crowding",
+        "YIGSR",
+        "integrin alpha6",
+        "step pattern substrate",
+        "sacrificial gelatin bioink",
+        "EDC/NHS collagen grafting",
+        "layer-by-layer",
+        "plasma treatment",
+        "kappa-carrageenan coating",
+        "collagen VII"
+      ],
+      "note": "특집 ④의 연장입니다. Europe PMC에 합성 고분자 계열(PCL·PLGA·PU·PDMS·PEG·PVA·PET·전도성 고분자), 합성 화학(GelMA·thiol-ene·click·제니핀·EDC·글루타르알데히드), 접착 펩타이드(RGD·IKVAV·YIGSR 등), 공정(전기방사·MEW·미세패턴·2PP·플라즈마·polymer brush·LbL), 정의된 기질(xeno-free·chemically defined), 강성 변수까지 21개 질의를 던져 최근 15년 1,280편을 모았습니다. 거기서 상처 드레싱·생체 내 치유·항균·약물전달을 제외하고 in vitro 피부 모델 맥락 + 부착/수축 맥락 + 합성 재료 요소가 모두 있는 89편을 남긴 뒤, 기소개 45편을 빼고 주제별로 나눴습니다. 이 회차는 재료를 바꾸는 대신 표면 화학·리간드·배치 방식으로 부착을 설계한 논문입니다. 10.1089/ten.tea.2013.0784은 재료가 아니라 배양액의 거대분자 혼잡화로 VII형 콜라겐 침착을 앞당긴 유일한 접근이고, 10.3390/bioengineering12090929는 세포–기질이 아닌 세포–세포 부착이 표피 기하를 결정한다는 반대 방향의 근거입니다. 10.2478/s11658-014-0197-1은 합성 표면이 부착을 올리지도 해치지도 않은 음성 결과로, 개선 주장들의 기준선으로 실었습니다."
     }
   }
 }

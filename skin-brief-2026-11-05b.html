@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FT 피부 모델 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .capbox{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 13px;color:var(--muted);font-size:.82rem;line-height:1.65;background:var(--bg)}
+  .capbox .caplabel{display:block;font-weight:700;color:var(--text);font-size:.72rem;margin-bottom:4px}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .meta a{color:var(--accent);text-decoration:none}
+  .meta a:hover{text-decoration:underline}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>FT 피부 모델 논문 팔로우업</h1>
+    <div class="sub">FT(전층) 인체 피부 모델의 기하 불안정 → 분화·장벽 → OECD TG 431/439 규제 적합성 · 하루 1키워드 최대 5편 · 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="paper-brief.html">← arXiv 브리핑</a> <a href="rss-brief.html">🏛 RSS 학회</a> <a href="keep.html">⭐ 보관함</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-05b";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "콜라겐 수축을 정면으로 억제한 합성·가교 전략 10편", "keywords": ["genipin", "EDC crosslinking", "electrospun scaffold", "animal-component-free", "PLLA nanofibrous membrane", "shrinkage-free", "thiol-ene bioink", "P(AN-MA) nanofiber", "GelMA concentration", "strain-stiffening"], "note": "특집 ④의 연장입니다. Europe PMC에 합성 고분자 계열(PCL·PLGA·PU·PDMS·PEG·PVA·PET·전도성 고분자), 합성 화학(GelMA·thiol-ene·click·제니핀·EDC·글루타르알데히드), 접착 펩타이드(RGD·IKVAV·YIGSR 등), 공정(전기방사·MEW·미세패턴·2PP·플라즈마·polymer brush·LbL), 정의된 기질(xeno-free·chemically defined), 강성 변수까지 21개 질의를 던져 최근 15년 1,280편을 모았습니다. 거기서 상처 드레싱·생체 내 치유·항균·약물전달을 제외하고 in vitro 피부 모델 맥락 + 부착/수축 맥락 + 합성 재료 요소가 모두 있는 89편을 남긴 뒤, 기소개 45편을 빼고 주제별로 나눴습니다. 이 회차는 수축률을 숫자로 보고했거나 콜라겐 자체를 합성 재료로 바꾼 논문만 모았습니다. 제니핀 가교 2편(87%→28%, 59%→24%)이 수치 근거가 가장 뚜렷하고, 10.3389/ftox.2026.1639389는 동물 유래 콜라겐과 FBS·BPE를 모두 빼고 두 실험실 전이성까지 검증해 D 계층에 가장 가깝습니다. 마지막 10.3389/fbioe.2023.1200618은 같은 제니핀 전략이 실패한 음성 결과로, 대조로 함께 실었습니다."};
+/* 보관된 FT 피부 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 skin-brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-05b", t:"특집 ⑤ 수축 억제 합성·가교"}, {d:"2026-11-05", t:"특집 ④ 합성 biomaterial 부착성"}, {d:"2026-11-04d", t:"특집 ③ throughput·생산 효율"}, {d:"2026-11-04c", t:"특집 ② 부착성 재료 코팅"}, {d:"2026-11-04b", t:"특집 ① 장치적 접근"}, {d:"2026-11-04", t:"① 섬유아세포 콜라겐 수축"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     paper_id: "10.1016/j.xxx",        // DOI 우선, 없으면 "PMID:12345678" (skin-seen.json 중복 방지 키)
+     url:      "https://doi.org/...",
+     doi:      "10.1016/j.xxx",
+     date:     "2025-03",              // 출판 연-월
+     venue:    "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
+     image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
+     figcap:   "Figure 1. ...",
+     background: "배경·기존 문제 2~3문장",
+     solution:   "해결·방법과 결과 2~3문장 + 마지막에 이 회차 문제 진술과의 관련성 한 줄",
+     rating:     4.0,
+     rating_reason: "근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "Construction of low contracted 3D skin equivalents by genipin cross-linking",
+    authors: "Meng Q, Shen C",
+    paper_id: "10.1111_exd.13725",
+    url: "https://doi.org/10.1111/exd.13725",
+    doi: "10.1111/exd.13725",
+    date: "2018-08-20",
+    venue: "Experimental Dermatology (Wiley)",
+    topics: ["B. 기하 안정화 대응", "제니핀 가교", "수축 87%→28%", "EDC 비교", "21일 추적"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 콜라겐 진피에 제니핀과 EDC를 농도별(0.2·0.4 mmol/L)로 가교한 뒤 21일에 걸쳐 피부 등가물의 수축률을 추적하고, 표피 층 형성과 진피–표피 접합부를 비교한 구성입니다.",
+    background: "3D 피부 등가물은 제작 중에도 사용 중에도 계속 수축해 임상·제약 적용이 막혀 있었고, 저자들의 표현대로 그때까지 이 수축을 효과적으로 억제하는 방법이 없었습니다. 가교로 굳히는 접근은 세포 독성이라는 반대편 위험이 있습니다. 그래서 저독성 가교제 두 종을 같은 조건에서 비교했습니다.",
+    solution: "EDC와 제니핀을 0.2·0.4 mmol/L로 써서 콜라겐에 갇힌 섬유아세포에 독성이 없음을 먼저 확인하고, 오히려 가교 콜라겐에서 섬유아세포의 기질 발현이 올라가는 것을 관찰했습니다. 제니핀 0.4 mmol/L에서 21일 수축률이 87%에서 28%로 떨어진 반면(n=9, P<0.05), 같은 농도의 EDC는 64%로 여전히 심한 수축을 보였습니다. 저자들은 겔 강성 증가와 콜라겐 분해 지연을 원인으로 보았고, 제니핀 가교가 표피 층 형성을 해치지 않으면서 진피–표피 접합부를 오히려 개선했다고 보고했습니다. 수축률 억제 폭을 명확한 수치로 제시하고 분화까지 확인한, 가교 전략의 기준 논문입니다.",
+    rating: 4.5,
+    rating_reason: "같은 농도에서 두 가교제를 직접 비교해 87%→28%와 64%라는 분리된 수치를 냈고, 분화·접합부에 해가 없음을 함께 확인했습니다."
+  },
+  {
+    title: "Next-generation full-thickness human skin models produced using 3D electrospun scaffolds and animal-component-free culture media",
+    authors: "Hayden PJ 외 9명",
+    paper_id: "10.3389_ftox.2026.1639389",
+    url: "https://doi.org/10.3389/ftox.2026.1639389",
+    doi: "10.3389/ftox.2026.1639389",
+    date: "2026-05-13",
+    venue: "Frontiers in Toxicology (OA)",
+    topics: ["B. 기하 안정화 대응", "전기방사 스캐폴드", "동물 성분 완전 배제", "2개 실험실 전이성", "장벽 개선"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 동물 유래 콜라겐 대신 전기방사 스캐폴드를 기질 골격으로 쓰고 FBS·BPE가 없는 배지로 전층 피부 모델을 만든 뒤, 두 독립 실험실에서 로트 내·로트 간 재현성을 검증한 구성입니다.",
+    background: "in vitro 전층 인체 피부 모델은 화장품·화학물질 시험과 신약 스크리닝에 쓰이지만, 기질 골격으로 동물 유래 콜라겐을 쓰는 것이 보통입니다. 저자들은 이 콜라겐 구조체가 안정성과 수축 문제를 안고 있어 수명이 짧고 재현성이 떨어진다고 명시했습니다. 배지에도 소 태아 혈청(FBS)과 소 뇌하수체 추출물(BPE) 같은 동물 성분이 남아 있었습니다.",
+    solution: "동물 유래 콜라겐을 쓰지 않고 전기방사 스캐폴드를 기질 구조체의 골격으로 삼았으며, FBS·BPE가 없는 배지 조성을 함께 개발했습니다. 그 결과 수명과 장벽 특성이 개선된 전층 모델이 나왔고, 프로토콜 전이성과 로트 내·로트 간 재현성을 독립된 두 실험실에서 입증했습니다. 저자들은 이 전기방사 기질 공정이 안구·기도·장 등 다른 상피 조직 모델로도 확장될 수 있다고 보았습니다. 수축·안정성(A·B)을 합성 섬유로 풀면서 재현성과 동물 성분 배제(D 계층)까지 한 번에 겨냥한, 이번 세 회차에서 규제 쪽에 가장 가까운 논문입니다.",
+    rating: 4.5,
+    rating_reason: "두 실험실 전이성과 로트 간 재현성을 검증 항목으로 명시한 점이 규제 맥락에서 견고합니다. 다만 수축률·TEER의 구체 수치가 초록 수준에서는 드러나지 않습니다."
+  },
+  {
+    title: "A Simple Method for the Production of Human Skin Equivalent in 3D, Multi-Cell Culture",
+    authors: "Szymański Ł, Jęderka K, Cios A, Ciepelak M, Lewicka A, Stankiewicz W, Lewicki S",
+    paper_id: "10.3390_ijms21134644",
+    url: "https://doi.org/10.3390/ijms21134644",
+    doi: "10.3390/ijms21134644",
+    date: "2020-06-30",
+    venue: "International Journal of Molecular Sciences (MDPI, OA)",
+    topics: ["B. 기하 안정화 대응", "제니핀 20 µM", "수축 59%→24%", "3종 세포", "사이토카인 분비"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 상용 세포주로 각질형성세포·섬유아세포·멜라닌세포를 함께 배양하면서 제니핀 농도를 바꿔 12일째 콜라겐 수축률과 세포 독성을 동시에 비교한 구성입니다.",
+    background: "인체 피부 등가물(HSE) 제작은 여전히 연구실마다 편차가 큰 작업입니다. 저자들은 상용 세포주만으로 재현 가능한 간단한 프로토콜을 세우려 했는데, 그 과정에서 콜라겐 수축이 바로 걸림돌이 됐습니다. 가교로 잡자니 농도에 따라 독성이 생깁니다.",
+    solution: "제니핀을 넣어 콜라겐을 가교하면서 각질형성세포와 섬유아세포에 대한 독성을 농도별로 따로 측정했습니다. 제니핀 20 µM에서 12일째 수축률이 59%에서 24%로 줄었고, 80~200 µM에서는 평균 14%까지 떨어졌습니다. 독성 한계는 각질형성세포 10 µM 이하, 섬유아세포 150 µM 이하로 갈려, 수축 억제와 독성 사이의 타협점이 세포 종류마다 다르다는 점이 드러났습니다. 완성된 모델은 조직학적으로 천연 피부와 같았고 멜라닌세포가 표피와 기저층에 자리했으며, 분화 기간이 길수록 사이토카인 분비가 안정됐습니다. 앞 논문과 같은 제니핀 전략을 다른 수치 체계로 재확인하면서, 가교제 농도의 안전 상한을 함께 제시했습니다.",
+    rating: 4.0,
+    rating_reason: "수축 억제 수치와 세포별 독성 상한을 같이 보고해 실제 적용 가능한 창(窓)을 제시했습니다. 다만 장벽 기능 정량은 없습니다."
+  },
+  {
+    title: "A two-layer skin construct consisting of a collagen hydrogel reinforced by a fibrin-coated polylactide nanofibrous membrane",
+    authors: "Bacakova M 외 10명",
+    paper_id: "10.2147_ijn.s200782",
+    url: "https://doi.org/10.2147/ijn.s200782",
+    doi: "10.2147/ijn.s200782",
+    date: "2019-07-08",
+    venue: "International Journal of Nanomedicine (Dove, OA)",
+    topics: ["B. 기하 안정화 대응", "PLLA 나노섬유 보강", "피브린 메시 코팅", "견인력 저항", "자발적 이주"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 피브린 나노메시를 얇게 코팅한 폴리-L-락타이드(PLLA) 나노섬유막에 섬유아세포를 먼저 올리고, 그 위에 콜라겐 하이드로겔과 각질형성세포를 얹은 2층 구조체의 구성입니다.",
+    background: "콜라겐 하이드로겔은 생물학적으로 뛰어나지만 강성이 부족해, 안에 든 세포의 견인력에 눌려 무너지는 성질이 있습니다. 보강 섬유막을 깔면 형태는 잡히지만 이번엔 섬유아세포가 그 합성 막에 잘 붙지 않습니다. 재료 두 개의 장점을 어떻게 이어 붙이느냐가 문제였습니다.",
+    solution: "PLLA 나노섬유막에 얇은 피브린 나노메시를 코팅해 진피 섬유아세포에 대한 친화성을 높인 뒤, 섬유아세포를 그 위에 먼저 심었습니다. 피브린 메시는 섬유아세포의 부착·증식·이주를 촉진해 세포가 위쪽 콜라겐 하이드로겔로 자발적으로 올라갔고, 이렇게 스스로 이주한 섬유아세포는 견인력으로 하이드로겔을 수축시키는 경향이 더 낮았습니다. 콜라겐 표면에 각질형성세포를 올리자 분열이 활발한 기저층과 상기저층이 형성됐습니다. 합성 섬유막(형태 유지)과 피브린 코팅(부착)을 결합한 사례로, 특집 ④의 '더하는' 계열에 해당하면서 수축까지 함께 줄였습니다.",
+    rating: 4.0,
+    rating_reason: "세포를 직접 섞는 대신 자발적 이주를 유도한 설계가 수축 감소의 기전을 설명합니다. 다만 수축률의 정량 비교가 초록 수준에서 제시되지 않았습니다."
+  },
+  {
+    title: "Acrylonitrile and Pullulan Based Nanofiber Mats as Easily Accessible Scaffolds for 3D Skin Cell Models Containing Primary Cells",
+    authors: "Rimann M 외 10명",
+    paper_id: "10.3390_cells11030445",
+    url: "https://doi.org/10.3390/cells11030445",
+    doi: "10.3390/cells11030445",
+    date: "2022-01-27",
+    venue: "Cells (MDPI, OA)",
+    topics: ["B. 기하 안정화 대응", "P(AN-MA) 합성 섬유", "콜라겐 I 대체", "섬유 지름 340 nm", "TGFβ 반응"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): P(AN-MA)와 풀루란/PVA/PAA 두 종의 합성 전기방사 나노섬유 매트를 만들어 섬유 지름과 다발 밀도를 비교하고, 1차 섬유아세포·각질형성세포를 올려 침투와 층 형성을 평가한 구성입니다.",
+    background: "3D 콜라겐 I 기반 피부 모델은 약물 개발과 물질 시험에 널리 쓰이지만 로트 간 편차와 동물 유래라는 윤리 문제를 안고 있습니다. 전기방사 합성 나노섬유는 굵기와 배향이 천연 콜라겐 원섬유와 비슷해 대안으로 거론돼 왔습니다. 문제는 실제로 1차 세포가 그 안으로 들어가 진피 구조를 만드느냐였습니다.",
+    solution: "폴리(아크릴로니트릴-co-메틸아크릴레이트)(P(AN-MA))와 풀루란/PVA/PAA 블렌드 두 종으로 나노섬유 매트를 만들어 비교했습니다. P(AN-MA) 쪽이 더 느슨하고 섬유가 굵었으며(340±120 nm 대 250±120 nm, P<0.0001), 28일 배양 뒤에는 배지 혈청을 흡착해 지름이 590±290 nm까지 늘었습니다. 두 매트 모두 섬유아세포 생존은 유지됐지만 세포가 안으로 제대로 침투한 것은 P(AN-MA)뿐이었고, 여기서만 섬유아세포가 방추형을 유지하며 진피형 구조를 만들고 TGFβ 자극에 PAI1·COL1A1·αSMA 발현으로 반응했습니다. 위에 올린 각질형성세포는 층을 이룬 표피형 구조를 형성했습니다. 콜라겐 I 자체를 합성 섬유로 바꿔 로트 편차와 수축을 동시에 피하려는 계열의 대표 사례입니다.",
+    rating: 4.0,
+    rating_reason: "두 합성 매트의 차이를 섬유 지름과 침투 여부로 갈라 보여 줬고 TGFβ 반응으로 기능까지 확인했습니다. 다만 개념 검증 단계라 수축률·장벽 수치는 없습니다."
+  },
+  {
+    title: "Suspended, Shrinkage-Free, Electrospun PLGA Nanofibrous Scaffold for Skin Tissue Engineering",
+    authors: "Ru C, Wang F, Pang M, Sun L, Chen R, Sun Y",
+    paper_id: "10.1021_acsami.5b01953",
+    url: "https://doi.org/10.1021/acsami.5b01953",
+    doi: "10.1021/acsami.5b01953",
+    date: "2015-05-13",
+    venue: "ACS Applied Materials & Interfaces (ACS)",
+    topics: ["B. 기하 안정화 대응", "PLGA 나노섬유", "보조 지지체", "부유 배양", "기중 노출"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 전기방사 PLGA 나노섬유 집합체를 폴리프로필렌 보조 지지체로 붙잡아 치수 수축 없이 배지 위에 띄우고, 그 위 각질형성세포를 공기에 노출시키는 배양 구성입니다.",
+    background: "전기방사 매트는 세포외기질과 구조가 비슷하다는 장점이 있지만, 배양 중에 매트 자체가 오그라드는 성질이 있습니다. 저자들은 이 수축이 세포 부착과 이후 성장을 촉발하는 데 불리하다고 지적했습니다. 더구나 피부 조직공학에서는 각질형성세포를 공기에 노출시켜야 하는데, 오그라든 매트로는 그 자세를 유지하기 어렵습니다.",
+    solution: "전기방사 PLGA 나노섬유 집합체로 스캐폴드를 만들고, 폴리프로필렌 보조 지지체를 덧대 장기간 치수 수축 없이 형태를 유지하도록 했습니다. 이 스캐폴드는 배지 위에 떠 있을 수 있어, 위에 심은 각질형성세포가 피부 조직공학에 필요한 대로 공기에 노출된 상태를 유지합니다. 인체 피부 각질형성세포가 이 스캐폴드 위에서 증식하고 안쪽으로 침투하는 것도 확인했습니다. 재료 조성이 아니라 '지지체를 덧대는' 장치적 처방으로 수축을 막은 점에서 특집 ①과 ④ 사이에 걸칩니다.",
+    rating: 3.5,
+    rating_reason: "수축 방지 원리가 단순하고 명확하지만, 수축률·분화·장벽 수치가 없어 근거의 폭이 좁습니다."
+  },
+  {
+    title: "Bioinspired and Photo-Clickable Thiol-Ene Bioinks for the Extrusion Bioprinting of Mechanically Tunable 3D Skin Models",
+    authors: "Bebiano LB, Presa R, Vieira F, Lourenço BN, Pereira RF",
+    paper_id: "10.3390_biomimetics9040228",
+    url: "https://doi.org/10.3390/biomimetics9040228",
+    doi: "10.3390/biomimetics9040228",
+    date: "2024-04-10",
+    venue: "Biomimetics (MDPI, OA)",
+    topics: ["B. 기하 안정화 대응", "thiol-ene 광클릭", "메타크릴화 펙틴", "접착 리간드 제시", "강성별 세포 형태"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 메타크릴화 펙틴을 사슬성장 또는 단계성장 광중합으로 이중 가교해, 유변 물성·기계 강성·접착 리간드 제시를 서로 독립적으로 조절하면서 이중층 피부 모델을 압출 바이오프린팅하는 설계입니다.",
+    background: "피부 바이오프린팅에서 바이오잉크는 인쇄 충실도와 세포 반응을 동시에 좌우하지만, 두 가지를 따로 조절할 수 있는 잉크는 많지 않습니다. 강성을 올리면 접착 리간드 밀도도 함께 바뀌어 버려, 어느 쪽이 세포 거동을 바꿨는지 가리기 어렵습니다. 변수를 분리할 화학이 필요했습니다.",
+    solution: "메타크릴화 펙틴을 기반 재료로 삼아 사슬성장과 단계성장 두 경로의 광중합을 모두 쓸 수 있게 하고, 이를 통해 잉크의 유변 물성과 세포 환경의 기계적·생화학적 단서를 각각 독립적으로 조절했습니다. 진피 세포외기질의 접착 리간드와 단백질분해효소 감수성 도메인을 함께 재현했고, 가교제와 고분자 농도를 바꿔 생리적 범위의 강성대로 진피 구조체를 인쇄하자 섬유아세포의 형태와 퍼짐이 부위별로 뚜렷하게 갈렸습니다. 모양을 달리한 피부 모델에서도 진피와 표피 재구성이 유지됐습니다. 접착 리간드를 '화학적으로 따로 거는' 설계라 특집 ④의 펩타이드 계열과 직접 이어집니다.",
+    rating: 3.5,
+    rating_reason: "변수 분리 설계는 분명하지만, 수축률이나 장벽 기능을 측정하지 않아 이 회차 문제 진술과는 간접적으로 닿습니다."
+  },
+  {
+    title: "Textile-based sandwich scaffold using wet electrospun yarns for skin tissue engineering",
+    authors: "Jiang C, Wang K, Liu Y, Zhang C, Wang B",
+    paper_id: "10.1016_j.jmbbm.2021.104499",
+    url: "https://doi.org/10.1016/j.jmbbm.2021.104499",
+    doi: "10.1016/j.jmbbm.2021.104499",
+    date: "2021-04-08",
+    venue: "J Mech Behav Biomed Mater (Elsevier)",
+    topics: ["B. 기하 안정화 대응", "습식 전기방사 PCL 실", "변형 경화", "탄성계수 2.1~18 MPa", "세포 배열"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 습식 전기방사로 뽑은 PCL 실을 뜨개질해 직물을 만들고, 그 직물을 전기방사 매트 두 장 사이에 끼워 샌드위치 구조로 만든 스캐폴드의 제작 흐름입니다.",
+    background: "인체 조직은 당길수록 단단해지는 변형 경화(strain-stiffening) 성질을 보이는데, 합성 재료는 대개 반대로 물러집니다. 이 차이 때문에 합성 스캐폴드는 조직과 같은 방식으로 힘을 받아내지 못합니다. 세포가 당기는 환경에서 치수를 유지하려면 이 거동부터 맞춰야 합니다.",
+    solution: "습식 전기방사로 PCL 실을 만들고 이를 뜨개질해 직물로 만든 뒤, 전기방사 매트 두 장 사이에 끼워 샌드위치 스캐폴드를 제작했습니다. 이 구조는 합성 재료로서는 드물게 변형 경화 거동을 보였고, 실 제작과 직조 조건을 바꿔 최대 응력 3.74~11.82 MPa, 최대 변형 0.16~2.37, 탄성계수 2.10~18.05 MPa를 모두 인체 피부 범위 안에서 조절할 수 있었습니다. 습식 전기방사 실은 세포의 배열과 신장을 유도했고, 바깥층 두께를 최적화하자 세포 증식과 침투도 유지됐습니다. 재료 조성이 아니라 '직조 구조'로 기계 거동을 맞춘 접근이라 특집 ①의 보강 기하 논문들과 묶입니다.",
+    rating: 3.5,
+    rating_reason: "기계 물성 범위를 인체 피부에 맞춰 조절한 수치가 구체적입니다. 다만 전층 피부 모델로 올려 수축·분화를 본 단계는 아닙니다."
+  },
+  {
+    title: "Effects of Gelatin Methacrylate Bio-ink Concentration on Mechano-Physical Properties and Human Dermal Fibroblast Behavior",
+    authors: "Shie MY, Lee JJ, Ho CC, Yen SY, Ng HY, Chen YW",
+    paper_id: "10.3390_polym12091930",
+    url: "https://doi.org/10.3390/polym12091930",
+    doi: "10.3390/polym12091930",
+    date: "2020-08-26",
+    venue: "Polymers (MDPI, OA)",
+    topics: ["B. 기하 안정화 대응", "GelMA 5·10·15%", "RGD 모티프 보존", "기질 리모델링", "인쇄 조건"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): GelMA 농도를 5%·10%·15%로 바꿔 광경화한 하이드로겔에 인체 진피 섬유아세포를 넣고, 강성·팽윤·분해와 세포 퍼짐·증식·기질 리모델링을 농도별로 비교한 구성입니다.",
+    background: "GelMA는 젤라틴에 메타크릴로일을 붙여 광경화가 가능해진 재료로, 젤라틴이 원래 갖고 있던 RGD 같은 세포 친화 모티프를 그대로 지닙니다. 덕분에 강성은 합성 화학으로, 접착은 천연 모티프로 각각 가져갈 수 있습니다. 다만 농도를 올려 단단하게 만들면 세포 거동이 어떻게 달라지는지는 정리돼 있지 않았습니다.",
+    solution: "같은 광경화 조건에서 GelMA 농도를 5%·10%·15%로 바꿔 강성·팽윤·분해를 비교하고, 각 조건에 진피 섬유아세포를 넣어 퍼짐·증식·기질 리모델링을 평가했습니다. 농도가 낮을수록 기계 물성은 떨어졌지만 리모델링과 증식 표지는 5% 조건에서 오히려 높았고, 생존율은 강성과 무관했습니다. 20×20×3 mm 스캐폴드 인쇄는 10%·15%에서 상온으로 가능했고 5%는 졸-겔 전이 온도가 낮아 저온 인쇄가 필요했습니다. 강성을 올려 수축을 막으려는 전략이 세포의 기질 생산과는 상충할 수 있다는 점을 보여, 앞의 가교 논문들과 함께 읽을 때 균형점을 생각하게 합니다.",
+    rating: 3.0,
+    rating_reason: "농도라는 단일 변수로 물성과 세포 거동의 상충을 보여 준 점이 유용합니다. 다만 전층 모델 수축·분화까지는 가지 않았습니다."
+  },
+  {
+    title: "Human epidermal keratinocytes and human dermal fibroblasts interactions seeded on gelatin hydrogel for future application in skin in vitro 3-dimensional model",
+    authors: "Tahri S, Maarof M, Masri S, Che Man R, Masmoudi H, Fauzi MB",
+    paper_id: "10.3389_fbioe.2023.1200618",
+    url: "https://doi.org/10.3389/fbioe.2023.1200618",
+    doi: "10.3389/fbioe.2023.1200618",
+    date: "2023-06-23",
+    venue: "Frontiers in Bioengineering and Biotechnology (OA)",
+    topics: ["B. 기하 안정화 대응", "젤라틴 3~10%", "제니핀 0.1% 가교", "음성 결과", "이중층 실패"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 젤라틴 농도를 3·5·8·10%로 바꾸고 제니핀 0.1%로 가교하거나 가교하지 않은 조건을 만들어, 물성과 세포 부착·생존·이주를 비교한 뒤 이중층 피부 모델 제작을 시도한 구성입니다.",
+    background: "젤라틴 하이드로겔은 3D 피부 모델 지지체로 널리 쓰이지만 기계 물성이 약하고 빨리 분해돼 3D 배양에는 적합하지 않다는 지적이 있었습니다. 농도를 올리거나 가교로 보강하면 해결될 것이라는 기대가 일반적이었습니다. 저자들은 그 기대를 농도와 가교 두 변수로 직접 시험했습니다.",
+    solution: "젤라틴을 3·5·8·10%로 만들고 제니핀 0.1%로 가교한 조건과 비가교 조건을 비교한 결과, 가교 쪽이 다공성과 친수성에서 더 좋았고 5%·8%는 가교 후에도 물성 변화가 두드러지지 않았습니다. 생체적합성에서는 10% 가교 조건을 제외하면 모두 부착·생존·이주를 지지했습니다. 그런데 5%와 8%를 골라 7·14·21일 이중층 3D 피부 모델을 만들어 보니, 두 조건 모두 모델 제작에는 충분하지 않았다고 저자들이 분명히 적었습니다. 단일 세포 수준의 부착 지표가 좋다고 해서 전층 구조체가 서는 것은 아니라는 점을 보여 주는 음성 결과로, 이번 세 회차의 긍정 결과들을 읽을 때 기준선이 됩니다.",
+    rating: 3.0,
+    rating_reason: "음성 결과를 숨기지 않고 보고한 점은 신뢰할 만하지만, 실패의 원인을 기계적으로 규명하지는 못했습니다."
+  },
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.venue} · ${p.date}${p.doi ? ' · DOI:' + p.doi : ''}${p.pdf ? ' · <a href="' + p.pdf + '" target="_blank" rel="noopener">PDF</a>' : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      ${p.image
+        ? `<div class="figwrap"><div class="fig"><img src="${p.image}" alt="${p.title}"></div>`
+          + (p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``) + `</div>`
+        : (p.figcap
+            ? `<div class="figwrap"><div class="capbox"><span class="caplabel">Figure 1 설명</span>${p.figcap}</div></div>`
+            : ``)}
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+    el.innerHTML = '<h3>지난 FT 피부 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="skin-brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>
