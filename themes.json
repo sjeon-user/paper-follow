@@ -629,6 +629,23 @@
         "label-free imaging"
       ],
       "note": "Europe PMC에 AI 어휘(machine/deep learning·neural network·CNN·U-Net·transformer·random forest·computer vision·generative·digital twin·Bayesian optimization·agent-based model 등)를 피부 모델/바이오프린팅/규제시험/판독 맥락과 교차시켜 17개 질의로 988편을 모았습니다. 거기서 임상 피부과 AI(흑색종·더모스코피·병변 분류), 웨어러블, 화장품 추천, 순수 QSAR을 제외하고 in vitro 3D 피부 구조체 맥락이 있는 것만 남겨 10편을 골랐습니다.\n중요한 한계: 이 분야는 아직 얇습니다. 10편 중 8편이 '판독·정량' 자동화이고, 재료나 공정 자체를 AI로 탐색한 것은 2편(10.1098/rsos.201293 랜덤 포레스트 정확도 62.74%, 10.1016/j.bioadv.2026.215193 신경망+랜덤 포레스트 겔화 최적화)뿐입니다. FT 피부 등가물의 '제작 공정'을 AI로 설계한 논문은 검색 범위 안에서 찾지 못했습니다. 또 4편이 프리프린트이고, 피부가 아닌 조직(자궁경부 raft, 섬유아세포 마이크로조직)으로 같은 방법을 보인 것도 2편 포함했습니다. 특집 ③에서 이미 다룬 딥러닝 2편(10.3389/fbioe.2026.1887652, 10.1016/j.ajpath.2021.12.007)은 중복 제외됐습니다."
+    },
+    "2026-11-05f": {
+      "label": "특집 ⑨ 혈관 내재형 스페로이드",
+      "title": "FT 피부 등가물을 혈관 내재형 스페로이드로 제작한 10편",
+      "keywords": [
+        "prevascularized spheroid",
+        "endothelialized spheroid",
+        "skin assembloid",
+        "core-shell skin organoid",
+        "microsphere skin organoid",
+        "scaffold-free capillary network",
+        "embedded bioprinting",
+        "HUVEC co-culture",
+        "layer-by-layer cell coating",
+        "blood vessel organoid"
+      ],
+      "note": "Europe PMC에 스페로이드 계열 어휘(spheroid·microtissue·organoid·microsphere·hanging drop·scaffold-free·building block)를 혈관 어휘(prevascularized·endothelialized·HUVEC·capillary·microvascular·CD31)와 피부 맥락에 교차시켜 9개 질의로 최근 15년 808편을 모았고, 종양 스페로이드와 타 장기 오가노이드를 제외해 178편을 거른 뒤 10편을 골랐습니다.\n이 분야가 두 갈래로 갈린다는 점이 이번 회차의 핵심입니다. (1) 이식용 패치 계열 — 사전 혈관화 스페로이드를 상처에 심어 생착과 치유를 보는 연구(10.1002/adhm.71616, 10.1088/1758-5090/ae9598, 10.1002/advs.202517409, 10.1038/s41598-019-44113-6)가 다수이고, 평가 지표가 상처 폐쇄·관류입니다. (2) in vitro 평가용 모델 계열 — 장벽·분화·약물 반응을 읽는 연구는 소수로, 10.1038/s12276-026-01840-x(혈관+면역 통합 어셈블로이드), 10.1126/sciadv.adu1251(코어-셸 다층 스페로이드), 10.1002/advs.202416863(리포터 기반 스크리닝) 셋 정도입니다.\n주의: '혈관 내재'와 '다층 표피'를 동시에 갖춘 스페로이드는 10.1038/s12276-026-01840-x 한 편뿐입니다. 10.1126/sciadv.adu1251은 층 구조는 갖췄으나 내피세포가 없고, 혈관화 계열 다수는 표피 분화를 평가하지 않았습니다. 수축률·TEER 같은 이 팔로우업의 정량 지표를 보고한 논문은 10편 중 0편입니다. 맥락용으로 리뷰 1편(10.1002/adhm.202303351)을 포함했습니다. 특집 ③·⑧에서 이미 다룬 스페로이드 3편(10.1002/adhm.202503250, 10.3389/fbioe.2026.1887652, 10.64898/2026.01.21.700040)은 중복 제외됐습니다."
     }
   }
 }

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FT 피부 모델 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .capbox{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 13px;color:var(--muted);font-size:.82rem;line-height:1.65;background:var(--bg)}
+  .capbox .caplabel{display:block;font-weight:700;color:var(--text);font-size:.72rem;margin-bottom:4px}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .meta a{color:var(--accent);text-decoration:none}
+  .meta a:hover{text-decoration:underline}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>FT 피부 모델 논문 팔로우업</h1>
+    <div class="sub">FT(전층) 인체 피부 모델의 기하 불안정 → 분화·장벽 → OECD TG 431/439 규제 적합성 · 하루 1키워드 최대 5편 · 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="paper-brief.html">← arXiv 브리핑</a> <a href="rss-brief.html">🏛 RSS 학회</a> <a href="keep.html">⭐ 보관함</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-05f";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "FT 피부 등가물을 혈관 내재형 스페로이드로 제작한 10편", "keywords": ["prevascularized spheroid", "endothelialized spheroid", "skin assembloid", "core-shell skin organoid", "microsphere skin organoid", "scaffold-free capillary network", "embedded bioprinting", "HUVEC co-culture", "layer-by-layer cell coating", "blood vessel organoid"], "note": "Europe PMC에 스페로이드 계열 어휘(spheroid·microtissue·organoid·microsphere·hanging drop·scaffold-free·building block)를 혈관 어휘(prevascularized·endothelialized·HUVEC·capillary·microvascular·CD31)와 피부 맥락에 교차시켜 9개 질의로 최근 15년 808편을 모았고, 종양 스페로이드와 타 장기 오가노이드를 제외해 178편을 거른 뒤 10편을 골랐습니다.\n이 분야가 두 갈래로 갈린다는 점이 이번 회차의 핵심입니다. (1) 이식용 패치 계열 — 사전 혈관화 스페로이드를 상처에 심어 생착과 치유를 보는 연구(10.1002/adhm.71616, 10.1088/1758-5090/ae9598, 10.1002/advs.202517409, 10.1038/s41598-019-44113-6)가 다수이고, 평가 지표가 상처 폐쇄·관류입니다. (2) in vitro 평가용 모델 계열 — 장벽·분화·약물 반응을 읽는 연구는 소수로, 10.1038/s12276-026-01840-x(혈관+면역 통합 어셈블로이드), 10.1126/sciadv.adu1251(코어-셸 다층 스페로이드), 10.1002/advs.202416863(리포터 기반 스크리닝) 셋 정도입니다.\n주의: '혈관 내재'와 '다층 표피'를 동시에 갖춘 스페로이드는 10.1038/s12276-026-01840-x 한 편뿐입니다. 10.1126/sciadv.adu1251은 층 구조는 갖췄으나 내피세포가 없고, 혈관화 계열 다수는 표피 분화를 평가하지 않았습니다. 수축률·TEER 같은 이 팔로우업의 정량 지표를 보고한 논문은 10편 중 0편입니다. 맥락용으로 리뷰 1편(10.1002/adhm.202303351)을 포함했습니다. 특집 ③·⑧에서 이미 다룬 스페로이드 3편(10.1002/adhm.202503250, 10.3389/fbioe.2026.1887652, 10.64898/2026.01.21.700040)은 중복 제외됐습니다."};
+/* 보관된 FT 피부 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 skin-brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-05f", t:"특집 ⑨ 혈관 내재형 스페로이드"}, {d:"2026-11-05e", t:"특집 ⑧ AI 개발·응용"}, {d:"2026-11-05d", t:"특집 ⑦ 표면화학·리간드·패턴"}, {d:"2026-11-05c", t:"특집 ⑥ 전기방사 섬유 형상"}, {d:"2026-11-05b", t:"특집 ⑤ 수축 억제 합성·가교"}, {d:"2026-11-05", t:"특집 ④ 합성 biomaterial 부착성"}, {d:"2026-11-04d", t:"특집 ③ throughput·생산 효율"}, {d:"2026-11-04c", t:"특집 ② 부착성 재료 코팅"}, {d:"2026-11-04b", t:"특집 ① 장치적 접근"}, {d:"2026-11-04", t:"① 섬유아세포 콜라겐 수축"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     paper_id: "10.1016/j.xxx",        // DOI 우선, 없으면 "PMID:12345678" (skin-seen.json 중복 방지 키)
+     url:      "https://doi.org/...",
+     doi:      "10.1016/j.xxx",
+     date:     "2025-03",              // 출판 연-월
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
+     image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
+     figcap:   "Figure 1. ...",
+     background: "배경·기존 문제 2~3문장",
+     solution:   "해결·방법과 결과 2~3문장 + 마지막에 이 회차 문제 진술과의 관련성 한 줄",
+     rating:     4.0,
+     rating_reason: "근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "Vascularized human skin assembloids model compartmental skin organization and immune responsiveness in vitro",
+    authors: "Kim MJ, Lee S, Kang KS",
+    paper_id: "10.1038_s12276-026-01840-x",
+    url: "https://doi.org/10.1038/s12276-026-01840-x",
+    doi: "10.1038/s12276-026-01840-x",
+    date: "2026-10-01",
+    venue: "Experimental & Molecular Medicine (Nature, IF 9.5)",
+    topics: ["C. 분화·장벽 결과", "혈관 오가노이드 융합", "iPSC 피부 오가노이드", "기중 배양", "장벽 성숙·면역 반응"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): iPSC 유래 피부 오가노이드와 별도로 만든 혈관 오가노이드를 기중(air-liquid) 조건에서 모듈식으로 합쳐, 다층 표피·진피 기질·연결된 혈관망을 갖춘 어셈블로이드를 만드는 구성입니다.",
+    background: "기존 인체 피부 오가노이드는 표피 층 형성은 어느 정도 재현하지만 혈관 성분이 대체로 없습니다. 혈관이 없으면 조직 유지가 어렵고 생리적 타당성도 떨어집니다. 알레르기성 피부질환처럼 장벽·면역·혈관이 함께 얽힌 병태를 보려면 이 세 가지가 한 구조체 안에 있어야 합니다.",
+    solution: "iPSC 유래 피부 오가노이드와 혈관 오가노이드를 기중 조건에서 결합해 혈관화 피부 어셈블로이드(VSA)를 만들었습니다. 이 모듈식 조립으로 다층 표피·정돈된 진피 기질·서로 연결된 혈관형 망이 형성됐고, 장벽 성숙과 진피–혈관 구성이 함께 개선됐습니다. 면역세포를 넣자 알레르겐 유발 염증을 모델링할 수 있는 면역 통합 환경이 만들어졌고, 집먼지진드기 추출물 노출 시 장벽 붕괴·각질형성세포 스트레스·면역세포 침윤과 제2형 매개체(IL-4·IL-13·TSLP·CCL17·CCL26) 유도가 나타났습니다. 임상에서 쓰는 우파다시티닙과 두필루맙을 처리하자 각각의 알려진 기전과 일치하는 방향으로 장벽 지표가 개선됐습니다. 스페로이드형 오가노이드 두 종을 '합쳐서' 혈관을 내재시킨 접근으로, 이번 회차에서 in vitro 평가용으로 가장 완성도가 높습니다.",
+    rating: 4.5,
+    rating_reason: "혈관화가 장벽 성숙으로 이어졌음을 보이고 두 가지 치료제로 역방향 검증까지 했습니다. 다만 혈관망의 관류 여부는 in vitro 수준이라 제한적입니다."
+  },
+  {
+    title: "Hydrodynamically generated multilayer skin spheroids enable in vitro screening of biologically active ingredients and toxicity tests",
+    authors: "Chen Z 외 9명",
+    paper_id: "10.1126_sciadv.adu1251",
+    url: "https://doi.org/10.1126/sciadv.adu1251",
+    doi: "10.1126/sciadv.adu1251",
+    date: "2025-05-07",
+    venue: "Science Advances (AAAS, OA, IF 11.7)",
+    topics: ["C. 분화·장벽 결과", "코어-셸 스페로이드", "유체역학적 대량 생성", "DEJ·표피 마커", "독성 시험 상관"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 유체역학적 방법으로 섬유아세포 스페로이드(진피 코어)를 대량으로 만들고 그 바깥을 각질형성세포층(표피)이 감싸도록 해, 다층 구조를 갖춘 피부 스페로이드 배열을 얻는 공정입니다.",
+    background: "인체 조직은 층마다 다른 일을 하는 다층 구조인데, 이런 목적에 쓰이는 다세포 스페로이드는 대개 뚜렷한 다층 구조가 없습니다. 세포를 섞어 뭉치면 공간 배치를 제어하기 어렵기 때문입니다. 층 구조가 없으면 장벽 기능도, 층별 반응도 읽을 수 없습니다.",
+    solution: "유체역학으로 매개된 방법을 개발해 섬유아세포 스페로이드를 진피 코어로 대량 생성하고, 그 바깥을 각질형성세포 표피층이 감싸도록 만들었습니다. 이 스페로이드들은 표피·진피–표피 접합부·진피의 생체표지를 모두 발현했고 피부와 유사한 장벽 특성을 보였습니다. 비타민과 펩타이드의 단백질 합성 상승효과를 스크리닝하고 화학물질로 피부 독성을 평가한 결과가 임상 결과나 기존 기준과 상관을 보였습니다. 스페로이드 안의 세포 공간 분포를 제어해 다층 구조를 만든 점이 핵심으로, 이번 회차에서 '혈관'보다 '층 구조'에 집중한 사례입니다. 혈관 성분은 포함하지 않아 이 회차의 주제 가운데 반쪽만 채웁니다.",
+    rating: 4.5,
+    rating_reason: "다층 구조를 마커와 장벽으로 입증하고 스크리닝 결과를 기존 기준과 대조했습니다. 다만 내피세포가 없어 혈관 내재형은 아닙니다."
+  },
+  {
+    title: "Spatially Controlled Embedded Bioprinting of Prevascularized Spheroids-Containing Biopatch Enables Functional Skin Regeneration",
+    authors: "Ahn M, Park GT, Lee D, Yoon S, Oh SO, Kim JH, Kim BS",
+    paper_id: "10.1002_adhm.71616",
+    url: "https://doi.org/10.1002/adhm.71616",
+    doi: "10.1002/adhm.71616",
+    date: "2026-08-20",
+    venue: "Advanced Healthcare Materials (Wiley, IF 10.0)",
+    topics: ["B. 기하 안정화 대응", "매립형 바이오프린팅", "스페로이드 지름 700 µm", "간격 1.8 mm", "EC:MSC 1:0.5"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 피부 유래 탈세포 기질(SdECM) 바이오잉크 안에 사전 혈관화한 다세포 스페로이드를 매립형 바이오프린팅으로 정확한 위치에 심어, 스페로이드 지름과 간격을 바꿔 가며 혈관망 형성을 비교한 구성입니다.",
+    background: "전층 피부 결손 재생에서 기능적 혈관화는 여전히 핵심 난제입니다. 사전 혈관화 스페로이드를 쓰더라도 이를 어디에 얼마나 떨어뜨려 놓느냐가 결과를 좌우하는데, 그 설계 기준이 정리돼 있지 않았습니다. 스페로이드를 원하는 위치에 그대로 두려면 잉크의 유변 물성부터 맞춰야 합니다.",
+    solution: "1.0%(w/v) 피부 유래 탈세포 기질(SdECM) 조성이 항복응력·현저한 전단담화·빠른 전단 회복을 보여, 스페로이드를 높은 충실도로 배치하면서 생존율과 구조를 보존함을 유변학으로 확인했습니다. 지름을 바꿔 가며 내피 스페로이드를 만든 결과 중간 크기(약 700 µm)가 과도한 저산소 없이 혈관망 형성·분지 복잡도·혈관신생 유전자 발현에서 가장 좋았습니다. 스페로이드 사이 거리가 1.8 mm 이내일 때 측분비를 통한 섬유아세포 이주가 뚜렷해졌고, 중간엽 줄기세포를 넣어 혈관주위 지지를 주자 미세혈관망이 안정화됐으며 최적 내피세포:MSC 비는 1:0.5였습니다. 전층 상처 모델에서 상처 폐쇄·재상피화·혈관신생·관류가 모두 개선됐습니다. 지름·간격·세포비라는 설계 수치를 한꺼번에 제시한 점에서 이번 회차의 실용적 기준입니다.",
+    rating: 4.5,
+    rating_reason: "크기·간격·세포비를 각각 변수로 분리해 수치로 제시하고 동물 모델로 검증했습니다. 다만 이식용 패치여서 in vitro 평가용 FT 등가물과는 목적이 다릅니다."
+  },
+  {
+    title: "A novel strategy to engineer pre-vascularized 3-dimensional skin substitutes to achieve efficient, functional engraftment",
+    authors: "Miyazaki H, Tsunoi Y, Akagi T, Sato S, Akashi M, Saitoh D",
+    paper_id: "10.1038_s41598-019-44113-6",
+    url: "https://doi.org/10.1038/s41598-019-44113-6",
+    doi: "10.1038/s41598-019-44113-6",
+    date: "2019-05-24",
+    venue: "Scientific Reports (Nature, OA, IF 3.9)",
+    topics: ["B. 기하 안정화 대응", "무스캐폴드 LbL 세포 코팅", "3종 세포", "7일 내 관류", "비혈관 대조군"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 층상 세포 코팅(layer-by-layer) 기법으로 진피 섬유아세포·내피세포·표피 각질형성세포를 스캐폴드 없이 쌓아 혈관망을 내재시킨 3차원 피부 대체물을 만들고, 비혈관 대조군과 나란히 이식해 관류 시점을 비교한 구성입니다.",
+    background: "조직공학 피부가 생착에 실패하는 주된 이유가 혈관화의 지연 또는 부재입니다. 대체물 안에 혈관을 미리 만들어 두면 숙주 혈관과 더 빨리 이어질 수 있다는 가설은 오래 있었지만, 스캐폴드 없이 세 종류의 세포를 층으로 쌓는 일이 간단하지 않았습니다. 비교 대조군 없이 보고된 사례도 많았습니다.",
+    solution: "저자들의 층상 세포 코팅(layer-by-layer) 기법을 써서 진피 섬유아세포·내피세포·표피 각질형성세포를 조합한 무스캐폴드 3차원 피부 대체물에 혈관망을 내재시켰습니다. 중증 복합 면역결핍 생쥐의 전층 결손에 이식해 숙주 조직과의 통합과 치유를 평가하면서, 혈관화하지 않은 같은 구조체를 대조군으로 썼습니다. 대조군에서는 적혈구가 든 혈관이 14일째에야 보인 반면, 사전 혈관화 구조체에서는 사람 유래 혈관의 혈액 관류가 이식 7일 이내에 검출됐습니다. 사전 혈관화 구조체는 생착률이 높았고 표피층이 점차 생쥐 표피로 대체됐습니다. 비혈관 대조군을 둔 덕분에 '혈관을 미리 넣는 것'의 효과가 시간 축으로 분리돼 보이는, 이 계열의 기준 논문입니다.",
+    rating: 4.0,
+    rating_reason: "비혈관 대조군과 관류 시점(7일 대 14일)을 직접 비교한 설계가 명확합니다. 다만 평가가 생체 내 생착 중심이라 in vitro 장벽·분화 근거는 없습니다."
+  },
+  {
+    title: "In vitro construction of scaffold-free bilayered tissue-engineered skin containing capillary networks",
+    authors: "Liu Y, Luo H, Wang X, Takemura A, Fang YR, Jin Y, Suwa F",
+    paper_id: "10.1155_2013_561410",
+    url: "https://doi.org/10.1155/2013/561410",
+    doi: "10.1155/2013/561410",
+    date: "2013-03-27",
+    venue: "BioMed Research International (Hindawi, OA, IF 없음·JCR 제외)",
+    topics: ["B. 기하 안정화 대응", "무스캐폴드 자가조립", "섬유아세포:내피 2:1", "20일 모세혈관", "3종 세포 상호작용"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 진피 섬유아세포와 진피 미세혈관 내피세포를 2:1로 공배양해 섬유성 시트와 모세혈관형 구조를 만들고, 그 위에 상피세포를 심어 이중층 조직으로 조립하는 흐름입니다.",
+    background: "피부 대체물은 대부분 외래 재료로 만들어지는데, 조직공학 피부 구조체에서는 혈관신생이 중요한 변수입니다. 재료를 쓰지 않고 세포끼리의 상호작용만으로 모세혈관을 품은 이중층을 세울 수 있는지가 이 연구의 질문이었습니다. 재료가 없으면 수축이나 이물 반응 같은 변수가 함께 빠집니다.",
+    solution: "진피 섬유아세포와 진피 미세혈관 내피세포를 2:1로 공배양하자 두 세포의 상호작용으로 섬유성 시트가 형성됐고 20일 공배양 후 모세혈관형 구조가 관찰됐습니다. 이 시트 위에 상피세포를 심어 이중층 조직으로 조립했고, 7일 뒤 헤마톡실린·에오신 염색에서 층을 이룬 표피가 확인됐습니다. 면역염색에서는 상피가 오히려 모세혈관형 구조의 형성을 촉진했고, 투과전자현미경으로 이 구조가 전형적인 미세혈관임을 확인했습니다. ELISA에서는 세 종류 세포가 함께 있을 때 혈관신생 관련 성장인자가 섬유아세포–내피세포 공배양이나 단독 배양보다 유의하게 올라갔습니다. 표피와 혈관이 서로를 돕는다는 점을 재료 없이 보여 준, 이 계열의 초기 원전 격 논문입니다.",
+    rating: 4.0,
+    rating_reason: "단독·2종·3종 배양을 단계적으로 비교해 상피의 기여를 분리했고 전자현미경으로 혈관 구조를 확인했습니다. 다만 장벽 기능이나 수축 측정은 없습니다."
+  },
+  {
+    title: "One-Step Coaxial 3D Printing of Pre-Vascularized Skin Organoid Models with ADSC Microspheres for Enhanced Wound Healing",
+    authors: "Wang K 외 10명",
+    paper_id: "10.1002_advs.202517409",
+    url: "https://doi.org/10.1002/advs.202517409",
+    doi: "10.1002/advs.202517409",
+    date: "2025-11-29",
+    venue: "Advanced Science (Wiley, OA, IF 14.1)",
+    topics: ["B. 기하 안정화 대응", "동축 바이오프린팅", "희생 내상(內相)", "ADSC 마이크로스피어", "PI3K-AKT-mTOR"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 동축 바이오프린팅으로 안쪽에는 온도 감응 희생 재료와 내피세포를 넣어 빈 혈관 채널을 만들고, 바깥쪽에는 오가노이드 마이크로스피어가 든 생체모방 하이드로겔을 둘러 한 번에 사전 혈관화 구조체를 뽑는 공정입니다.",
+    background: "오가노이드는 기관 발생 연구와 약물 스크리닝, 재생의학에 쓰이지만 혈관이 통합돼 있지 않아 배양과 임상 적용이 제한됩니다. 다 만든 뒤 혈관을 붙이려 하면 공정이 길어지고 재현성이 떨어집니다. 한 번의 공정으로 혈관과 오가노이드를 같이 배치할 수 있어야 규모를 키울 수 있습니다.",
+    solution: "PV-XOM 전략으로 동축 바이오프린팅 한 단계에서 사전 혈관화 오가노이드를 만들었습니다. 안쪽 상(相)에는 온도 감응 희생 재료와 내피세포를 넣어 빈 혈관 채널을 형성하고, 바깥쪽 상은 오가노이드 마이크로스피어가 든 생체모방 하이드로겔로 채웠습니다. 이 틀 위에 사전 혈관화 피부 오가노이드 모델(PV-SOM)을 세우면서 바깥쪽에 지방 유래 줄기세포(ADSC) 마이크로스피어와 피부 섬유아세포를 실었습니다. in vitro에서는 혈관의 빠른 폐쇄와 성숙이, 생체 내에서는 대형 결손에서 신생 혈관 형성·상처 폐쇄 가속·콜라겐 리모델링 개선이 나타났고, 프로테오믹스로 ADSC 마이크로스피어가 PI3K-AKT-mTOR 경로를 통해 여러 단계의 혈관 형성을 조절함을 밝혔습니다. 마이크로스피어(스페로이드)와 혈관 채널을 같은 공정에서 배치한 점이 이번 회차의 주제에 정확히 닿습니다.",
+    rating: 4.0,
+    rating_reason: "공정 일체화와 기전 규명을 함께 제시했습니다. 다만 상처 치유 목적이라 표피 분화·장벽 평가는 다루지 않았습니다."
+  },
+  {
+    title: "The Bioengineering of Microspheric Skin Organoids and Their Application in Drug Screening",
+    authors: "Xie J, Yang Q, Zhang Y, Zheng K, Geng H, Wu Y",
+    paper_id: "10.1002_advs.202416863",
+    url: "https://doi.org/10.1002/advs.202416863",
+    doi: "10.1002/advs.202416863",
+    date: "2025-05-08",
+    venue: "Advanced Science (Wiley, OA, IF 14.1)",
+    topics: ["C. 분화·장벽 결과", "스피너 바이오리액터", "코어-셸 구조", "루시페라제 리포터", "미녹시딜 Wnt 활성화"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 스피너 플라스크(회전 바이오리액터)에서 콜라겐과 진피 섬유아세포로 만든 코어 위에 각질형성세포를 셸로 입혀, 균일한 마이크로스페로이드형 피부 오가노이드를 양산하는 공정입니다.",
+    background: "인체 피부의 핵심 특징을 갖추면서 고속 대량 약물 스크리닝에도 쓸 수 있는 피부 모델을 만드는 일은 쉽지 않습니다. 평판형 전층 모델은 생리적이지만 수가 적고, 단순 스페로이드는 수는 많아도 이중층 구조가 없습니다. 둘을 동시에 만족시키려면 균일한 구조체를 대량으로 찍어내는 방법이 필요합니다.",
+    solution: "회전 바이오리액터를 기반으로 코어-셸 구조의 마이크로스페로이드형 피부 오가노이드를 만드는 방법을 개발했습니다. 셸은 배양한 인체 각질형성세포로 표피를, 코어는 인체 진피 섬유아세포와 콜라겐으로 진피를 모사합니다. 제작 과정에서 코어를 스피너 플라스크 안에서 각질형성세포와 정해진 조건으로 함께 배양해 표피 성장과 분화를 유도하고 성숙한 장벽을 형성시켰습니다. 효율적인 스크리닝을 위해 오가노이드에 루시페라제 리포터를 달아 고전적 Wnt 활성화를 검출할 수 있게 했고, 이를 써서 미녹시딜이 표피 Wnt/β-카테닌 신호를 유도함을 확인했습니다. 균일한 구조체를 대량으로 얻는 공정과 리포터 기반 판독을 함께 설계한 점이, 특집 ③(throughput)과 이어지는 지점입니다.",
+    rating: 4.0,
+    rating_reason: "코어-셸 구조와 리포터 판독을 묶어 스크리닝까지 시연했습니다. 다만 혈관 성분이 없고 장벽을 정량 지표로 보고하지 않았습니다."
+  },
+  {
+    title: "Self-assembly of differentiated progenitor cells facilitates spheroid human skin organoid formation and planar skin regeneration",
+    authors: "Ebner-Peking P 외 다수",
+    paper_id: "10.7150_thno.59661",
+    url: "https://doi.org/10.7150/thno.59661",
+    doi: "10.7150/thno.59661",
+    date: "2021-07-25",
+    venue: "Theranostics (Ivyspring, OA, IF 12.4)",
+    topics: ["B. 기하 안정화 대응", "3종 전구세포 자가조립", "혈소판 용해물", "표피 외곽·기질 코어", "혈관화 가속"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 내피 전구세포·피부 섬유아세포·각질형성세포(성체 유래 및 iPSC 유래) 세 종류를 인체 혈소판 용해물 조건에서 함께 띄워, 각질형성세포가 바깥을 감싸고 기질이 코어를 이루는 스페로이드형 피부 오가노이드로 자가조립시키는 구성입니다.",
+    background: "단일 세포에서 고형 장기를 스스로 조립할 수 있다면 재생의학의 적용 범위가 크게 넓어집니다. 줄기·전구세포가 오가노이드로 자기조직화한다는 것은 알려져 있었지만, 피부에서 세 가지 세포 계통을 한꺼번에 조립하면서 동물 유래 성분을 쓰지 않는 조건은 드물었습니다. 혈관 전구세포를 같이 넣었을 때의 효과도 분리해 볼 필요가 있었습니다.",
+    solution: "인체 조직에서 분리한 내피 집락형성세포·피부 섬유아세포·각질형성세포를 2차원 xeno-free 조건에서 증식시키고, iPSC에서도 같은 세 계통을 분화시켰습니다. 인체 혈소판 유래 성장인자가 든 배양 조건에서 세 세포를 함께 띄우자 각질형성세포가 바깥에 자리 잡고 기질이 코어를 이루는 독특한 구조의 스페로이드형 오가노이드가 형성됐고, 염증 자극에 특유의 신호 양상을 보였습니다. 각질형성세포의 장기 생존에는 FGF-7 mRNA 도입이 필요했습니다. 면역결핍 생쥐의 전층 상처에 세포 현탁액을 액상 이식하자 2주 안에 층을 이룬 사람 피부가 자가조립됐고, 내피 전구세포를 함께 이식했을 때 이식편 혈관화가 유의하게 빨라졌습니다. 기전은 세포외소포가 매개했고 종양 형성은 없었습니다. 혈관 전구세포를 같이 넣은 효과를 분리해 보인 점이 이 회차의 핵심 질문에 직접 답합니다.",
+    rating: 4.0,
+    rating_reason: "내피 전구세포 포함 여부로 혈관화 속도 차이를 분리했고 종양 형성까지 확인했습니다. 다만 스페로이드 자체의 장벽·분화 정량은 제한적입니다."
+  },
+  {
+    title: "Synergistic, shape-controlled endothelialized spheroid-hydrogel for wound healing",
+    authors: "Lu C, Zhong S, Liu H, Gao C, Sun W, He X, Liu Y",
+    paper_id: "10.1088_1758-5090_ae9598",
+    url: "https://doi.org/10.1088/1758-5090/ae9598",
+    doi: "10.1088/1758-5090/ae9598",
+    date: "2026-09-28",
+    venue: "Biofabrication (IOP, IF 8.2)",
+    topics: ["B. 기하 안정화 대응", "OBPS 일체형 플랫폼", "내피화 스페로이드", "실시간 모니터링", "in situ 프린팅"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 스페로이드 제작–배양–조립–적용을 하나로 묶은 일체형 바이오프린팅 플랫폼(OBPS)에서 내피화 스페로이드를 만들고, 실시간 관찰하면서 하이드로겔과 함께 결손 부위에 직접 인쇄하는 흐름입니다.",
+    background: "혈관화 스페로이드는 생물학적 빌딩 블록으로 쓸 만하지만, 현재의 내피화 스페로이드 제작법은 처리량이 낮고 균일성이 떨어지며 제어와 관찰이 어렵다는 한계가 있습니다. 게다가 혈관화 구조체를 만들 때 스페로이드를 어디에 배치할지에 대한 제어도 충분하지 않았습니다. 제작과 배치를 따로 두면 그 사이에서 품질이 흔들립니다.",
+    solution: "스페로이드 제작·바이오프린팅·생체 내 검증이라는 단계를 하나로 묶어 '제작–배양–조립–적용'의 통합 기술 틀을 세우고, 실시간 모니터링이 되는 일체형 바이오프린팅 플랫폼(OBPS)을 만들었습니다. 이 플랫폼으로 인체 섬유아세포와 인체 제대정맥 내피세포를 공배양해 내피화 스페로이드를 만들고, 피브리노겐을 더한 GelMA 하이드로겔과 함께 누드 생쥐의 전층 결손에 in situ로 인쇄했습니다. 형상 제어된 내피화 스페로이드는 상처 폐쇄를 유의하게 앞당기고 염증을 억제했으며 신생 혈관과 콜라겐 리모델링을 촉진하고 조직 통합도 좋았습니다. 스페로이드의 '균일성과 배치 제어'를 장비 수준에서 푼 접근이라 특집 ③(throughput)과도 이어집니다.",
+    rating: 3.5,
+    rating_reason: "제작부터 적용까지 공정을 일체화한 점이 분명합니다. 다만 치료용 in situ 인쇄 연구라 in vitro 피부 등가물로서의 평가가 없습니다."
+  },
+  {
+    title: "Vascularized 3D Human Skin Models in the Forefront of Dermatological Research",
+    authors: "Rimal R, Muduli S, Desai P, Marquez AB, Möller M, Platzman I, Spatz J, Singh S",
+    paper_id: "10.1002_adhm.202303351",
+    url: "https://doi.org/10.1002/adhm.202303351",
+    doi: "10.1002/adhm.202303351",
+    date: "2024-02-01",
+    venue: "Advanced Healthcare Materials (Wiley, OA, IF 10.0)",
+    topics: ["E. 인접 주제", "review", "혈관화 피부 모델 총론", "바이오리액터·칩·오가노이드", "동물실험 대체"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 혈관화 피부 모델이 왜 필요한지부터 제작 방식의 발전 과정, 바이오리액터·장기칩·오가노이드 접근, 남은 과제까지를 순서대로 정리한 리뷰의 구성입니다.",
+    background: "in vitro 피부 모델은 피부과 연구에서 동물실험을 줄이고 대체하는 대안으로 떠오르고 있습니다. 그런데 모델 안에 다양한 세포를 함께 넣는 일은 여전히 어렵고, 특히 혈관은 조직 항상성 유지와 피부 질환의 발생·진행 모두에 관여하는 핵심 요소입니다. 흩어져 있는 제작 방식들을 한 자리에 모아 볼 필요가 있었습니다.",
+    solution: "혈관화가 조직공학 피부 모델에 왜 필요한지를 이식 생착과 질환 병태생리의 두 측면에서 먼저 정리하고, 지금까지 만들어져 질환 모델링과 의약품·화장품 시험에 실제로 쓰이고 있는 혈관화 피부 모델들의 제작·활용 이정표를 짚었습니다. 바이오리액터, 장기칩 장치, 오가노이드 계열의 최근 진전도 함께 다루고 마지막으로 남은 과제와 전망을 제시합니다. 이번 회차의 개별 논문들이 어느 계보에 속하는지를 확인하는 지도로 쓰기 좋아, 아홉 편을 읽기 전후로 함께 두었습니다. 리뷰이므로 새로운 실험 근거를 제공하지는 않습니다.",
+    rating: 3.5,
+    rating_reason: "이 회차 주제의 지형을 정리하는 데 유용합니다. 다만 리뷰여서 원저 근거로는 쓸 수 없습니다."
+  },
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.venue} · ${p.date}${p.doi ? ' · DOI:' + p.doi : ''}${p.pdf ? ' · <a href="' + p.pdf + '" target="_blank" rel="noopener">PDF</a>' : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      ${p.image
+        ? `<div class="figwrap"><div class="fig"><img src="${p.image}" alt="${p.title}"></div>`
+          + (p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``) + `</div>`
+        : (p.figcap
+            ? `<div class="figwrap"><div class="capbox"><span class="caplabel">Figure 1 설명</span>${p.figcap}</div></div>`
+            : ``)}
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+    el.innerHTML = '<h3>지난 FT 피부 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="skin-brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>

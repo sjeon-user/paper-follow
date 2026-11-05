@@ -6,7 +6,10 @@ ROOT = r"C:\Users\KIMM\Desktop\2026\연구 행정 스킬화\2026.07.22 physical 
 
 # JCR 2024 Journal Impact Factor. None = 수록되지 않거나 출처 간 불일치가 커서 넣지 않음.
 IF = {
+ "Advanced Science": 14.1,
+ "Theranostics": 12.4,
  "Science Advances": 11.7,
+ "Experimental & Molecular Medicine": 9.5,
  "Acta Biomaterialia": 9.7,
  "Royal Society Open Science": 2.9,
  "Cellular & Molecular Biology Letters": 9.2,
@@ -52,6 +55,7 @@ IF = {
 # JIF가 없거나 신뢰할 만한 값을 확인하지 못한 저널 → 사유를 그대로 표기
 NOTE = {
  "Biomaterials and Biosystems": "IF 미수재",
+ "BioMed Research International": "IF 없음·JCR 제외",
  "Mutation Research Genetic Toxicology": "IF 미확인",
  "JID Innovations": "IF 미확인",
  "FASEB BioAdvances": "IF 미확인",
