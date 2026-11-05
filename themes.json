@@ -544,6 +544,23 @@
         "GMP / ISO standardised production"
       ],
       "note": "Europe PMC 최근 12년, 저널 범위 제한 없음 · 처리량/자동화/확장성/멀티웰/재현성/스크리닝 7개 질의 병합 365건에서 체외 피부 모델 맥락 245건을 추린 뒤 10편 선별 · 병목을 모델 제작(소형화·저비용 재료), 운영(자동화·칩 내장 측정), 판독(딥러닝), 생산 관리(GMP·ISO) 네 갈래로 나눠 구성 · 처리량 향상 수치를 명시한 논문은 드물어 대부분 포맷·공정 수준의 근거임"
+    },
+    "2026-11-05": {
+      "label": "특집 ④ 합성 biomaterial 부착성",
+      "title": "합성 biomaterial로 부착성과 기하 안정성을 높인 FT 피부 모델 10편",
+      "keywords": [
+        "synthetic polymer",
+        "PEG hydrogel",
+        "GelMA/PEGDA",
+        "self-assembling peptide",
+        "RGDS/YIGSR/HepIII",
+        "melt electrowriting PCL",
+        "electrospun PCL",
+        "2-photon polymerization",
+        "adhesion",
+        "contraction"
+      ],
+      "note": "특집 ②(천연 유래 코팅)의 짝으로, 합성 고분자·합성 펩타이드·합성 하이드로겔로 부착성과 기하 안정성을 높인 사례만 모았습니다. Europe PMC 12개 질의(합성 고분자 / PCL·PLGA·PEG·PDMS+부착 / RGD·IKVAV·YIGSR 등 접착 펩타이드 / 전기방사·나노섬유 / GelMA·PEGDA·thiol-ene / 정의된 합성 기질 / 2PP·SLA / MEW·보강)로 398+100편을 모은 뒤, 상처 드레싱·생체 내 치유·항균·약물전달 논문을 제외하고 in vitro 피부 모델 맥락 + 부착/수축 맥락이 함께 있는 것만 남겨 10편을 골랐습니다. 주의: GelMA·HAMA는 천연 고분자를 메타크릴화한 반합성 재료이고 2편은 I형 콜라겐·피브린과 혼합계입니다. 순수 합성 재료만으로 전층 모델 전체를 구성한 사례는 자가조립 펩타이드(10.1096/fba.2022-00026) 한 편뿐이었습니다. 또한 10.1002/jbm.a.36519만이 접착 강도를 kPa 단위로 직접 측정했고, 나머지 9편은 부착 개선을 세포 밀도·증식·마커로 간접 평가했습니다."
     }
   }
 }
