@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FT 피부 모델 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .capbox{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 13px;color:var(--muted);font-size:.82rem;line-height:1.65;background:var(--bg)}
+  .capbox .caplabel{display:block;font-weight:700;color:var(--text);font-size:.72rem;margin-bottom:4px}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .meta a{color:var(--accent);text-decoration:none}
+  .meta a:hover{text-decoration:underline}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>FT 피부 모델 논문 팔로우업</h1>
+    <div class="sub">FT(전층) 인체 피부 모델의 기하 불안정 → 분화·장벽 → OECD TG 431/439 규제 적합성 · 하루 1키워드 최대 5편 · 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="paper-brief.html">← arXiv 브리핑</a> <a href="rss-brief.html">🏛 RSS 학회</a> <a href="keep.html">⭐ 보관함</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>skin-config.md · skin-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-07";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "곡면 위에 FT 피부 등가물·오가노타이픽 피부를 만든 10편", "keywords": ["non-planar freeform fabrication", "curved collagen scaffold", "in situ bioprinting", "robotic arm wound scanning", "edge curvature", "curved channel interface", "conformal application", "shape and form retention", "handheld biopen", "conformal multielectrode array"], "note": "Europe PMC에 곡면 어휘(curved·curvature·non-planar·conformal·tubular·cylindrical·hemispherical·convex·concave·freeform·anatomically shaped·shape fidelity)를 피부 모델 맥락과 교차시켜 21개 질의로 최근 15~18년 1,432편을 모았습니다.\n**중요한 한계 — 이 주제는 문헌이 매우 얇습니다.** 'skin equivalent OR organotypic skin OR reconstructed skin OR full-thickness skin model' AND '곡면 어휘' 로 좁힌 핵심 질의는 전체에서 **16건**만 반환했고, 그중 기소개·무관을 빼면 사실상 남는 것이 없었습니다. 즉 '평평한 트랜스웰이 아닌 곡면 위에 FT 피부 등가물을 만들고 분화·장벽까지 평가한' 연구는 검색 범위 안에 거의 존재하지 않습니다. 그래서 이 회차는 곡률이 어떤 방식으로 개입하는지에 따라 네 갈래로 넓혀 구성했습니다. (1) 곡면 기질 위 제작 3편 — 10.1016/j.biomaterials.2008.12.009(PDMS 3D 굴곡 몰드, 평면 대조), 10.1016/j.heliyon.2022.e11468(곡면 콜라겐 스캐폴드에 DEJ 미세패턴 전사), 10.1089/ten.tec.2013.0335(형상 유지). (2) 살아 있는 곡면에 직접 인쇄 4편 — in situ 바이오프린팅 계열. (3) 곡률의 기전 2편 — 10.1038/s41556-025-01729-3(볼록/오목이 상피 이동 방식을 결정), 10.1021/acsbiomaterials.8b01346(곡선 경계로 상피화 3배 가속). (4) 곡면 계측 1편 — 10.1002/adhm.202502757.\n적합도 주의: 10편 중 '곡면'이 제목·초록에 변수로 명시된 것은 6편이고, 피부(또는 구강 점막) 등가물인 것은 5편입니다. 곡률에 따른 분화·장벽 차이를 정량한 논문은 **0편**입니다. 한편 곡면 FT 등가물의 실질적 구현체인 구형·마이크로스피어 모델은 특집 ③·⑨에서 이미 다뤘고(10.1002/adhm.202503250, 10.1126/sciadv.adu1251, 10.1002/advs.202416863), 레테 능선 같은 미세 곡률은 특집 ②·④·⑥에서 다뤘으므로 여기서는 제외했습니다."};
+/* 보관된 FT 피부 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 skin-brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-07", t:"특집 ⑪ 곡면 제작"}, {d:"2026-11-05g", t:"특집 ⑩ 대면적 스케일업"}, {d:"2026-11-05f", t:"특집 ⑨ 혈관 내재형 스페로이드"}, {d:"2026-11-05e", t:"특집 ⑧ AI 개발·응용"}, {d:"2026-11-05d", t:"특집 ⑦ 표면화학·리간드·패턴"}, {d:"2026-11-05c", t:"특집 ⑥ 전기방사 섬유 형상"}, {d:"2026-11-05b", t:"특집 ⑤ 수축 억제 합성·가교"}, {d:"2026-11-05", t:"특집 ④ 합성 biomaterial 부착성"}, {d:"2026-11-04d", t:"특집 ③ throughput·생산 효율"}, {d:"2026-11-04c", t:"특집 ② 부착성 재료 코팅"}, {d:"2026-11-04b", t:"특집 ① 장치적 접근"}, {d:"2026-11-04", t:"① 섬유아세포 콜라겐 수축"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     paper_id: "10.1016/j.xxx",        // DOI 우선, 없으면 "PMID:12345678" (skin-seen.json 중복 방지 키)
+     url:      "https://doi.org/...",
+     doi:      "10.1016/j.xxx",
+     date:     "2025-03",              // 출판 연-월
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
+     image:    "skin-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
+     figcap:   "Figure 1. ...",
+     background: "배경·기존 문제 2~3문장",
+     solution:   "해결·방법과 결과 2~3문장 + 마지막에 이 회차 문제 진술과의 관련성 한 줄",
+     rating:     4.0,
+     rating_reason: "근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "Multi-layered culture of human skin fibroblasts and keratinocytes through three-dimensional freeform fabrication",
+    authors: "Lee W, Debasitis JC, Lee VK, Lee JH, Fischer K, Edminster K, Park JK, Yoo SS",
+    paper_id: "10.1016_j.biomaterials.2008.12.009",
+    url: "https://doi.org/10.1016/j.biomaterials.2008.12.009",
+    doi: "10.1016/j.biomaterials.2008.12.009",
+    date: "2008-12-23",
+    venue: "Biomaterials (Elsevier, IF 12.8)",
+    topics: ["B. 기하 안정화 대응", "자유형상 적층(FF)", "PDMS 3D 굴곡 몰드", "평면 vs 비평면 비교", "층별 직접 토출"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 로봇 플랫폼으로 콜라겐 전구체와 섬유아세포·각질형성세포를 층층이 토출하고 분무한 중탄산나트륨으로 가교하는 과정을, 평평한 배양접시와 3차원 굴곡이 있는 PDMS 몰드 두 가지 표면에서 각각 수행한 구성입니다.",
+    background: "조직공학 피부는 대부분 평평한 배양접시나 인서트 위에서 만들어집니다. 그런데 실제 상처는 평평하지 않고, 몸의 굴곡을 따라 휘어 있습니다. 상처 모양에 맞춘 이식편을 만들려면 휘어진 표면 위에서도 층 구조가 서는지부터 확인해야 하는데, 세포를 섞어 붓는 전통적 방법으로는 곡면에서 층이 흘러내립니다.",
+    solution: "직접 세포 토출 방식의 3차원 자유형상 적층(freeform fabrication) 기법을 로봇 플랫폼으로 구현해, 콜라겐 하이드로겔 전구체와 섬유아세포·각질형성세포를 인쇄했습니다. 인쇄한 세포 함유 콜라겐 층을 분무한 중탄산나트륨 수용액으로 가교하고 이를 층층이 반복해, 안쪽은 섬유아세포·바깥쪽은 각질형성세포로 나뉜 두 층을 만들었습니다. 그런 다음 3차원 표면 굴곡을 가진 PDMS 몰드를 표적 기질로 삼아 같은 공정을 시험했는데, 평면과 비평면 양쪽에서 각 세포층이 높은 생존율로 증식했습니다. 저자들은 이를 상처 모양에 맞춘 이식편 제작의 가능성으로 제시했습니다. 곡면 위에서 피부 층 구조를 세운 것을 평면 대조와 함께 보여 준, 이 주제의 출발점에 해당하는 논문입니다.",
+    rating: 4.0,
+    rating_reason: "평면과 비평면을 같은 공정으로 비교한 설계가 이 주제의 기본을 세웁니다. 다만 2008년 연구라 기중 배양 분화나 장벽 평가까지는 가지 않았습니다."
+  },
+  {
+    title: "In-process monitoring of a tissue-engineered oral mucosa fabricated on a micropatterned collagen scaffold: use of optical coherence tomography for quality control",
+    authors: "Suebsamarn O 외 다수",
+    paper_id: "10.1016_j.heliyon.2022.e11468",
+    url: "https://doi.org/10.1016/j.heliyon.2022.e11468",
+    doi: "10.1016/j.heliyon.2022.e11468",
+    date: "2022-11-08",
+    venue: "Heliyon (Elsevier, OA, IF 3.4)",
+    topics: ["C. 분화·장벽 결과", "곡면 콜라겐 스캐폴드", "피코초 레이저 음각 몰드", "DEJ 미세패턴 전사", "OCT + 딥러닝 QC"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 피코초 레이저로 스테인리스강에 진피–표피 접합부를 모사한 미세구조를 새겨 음각 몰드로 쓰고, 이를 곡면 콜라겐 스캐폴드에 전사한 뒤 구강 각질형성세포를 올려 OCT로 상피 두께를 비침습 추적하는 구성입니다.",
+    background: "저자들은 앞서 진피–표피 접합부(DEJ)를 모사한 미세패턴 콜라겐 스캐폴드로 생체 외 제작 구강 점막 등가물(EVPOME)을 만드는 기법을 보고했는데, 임상으로 가려면 더 생체모방적인 패턴이 필요했습니다. 동시에 3차원 구조체는 완성 전에 품질을 확인하기가 어렵습니다. 구강 점막은 평평하지 않고 치조·협측을 따라 휘어 있어, 곡면 위에 미세패턴을 그대로 옮길 수 있는지가 관건이었습니다.",
+    solution: "피코초 레이저로 스테인리스강 표면에 DEJ를 모사한 미세구조를 새겨 음각 몰드로 쓴 결과, 곡면 콜라겐 스캐폴드 위에 미세패턴을 성공적으로 복제했습니다. EVPOME 제작 과정에서 광간섭단층촬영(OCT)을 두 차례 적용해 상피층과 그 아래 미세패턴 스캐폴드를 함께 영상화했고, 조직학 검사 전에는 찾을 수 없던 특정 결함을 비침습적으로 검출했습니다. 상피 두께가 시간에 따라 점차 증가하는 것도 추적했습니다. 곡면이라는 제약과 미세패턴이라는 요구를 함께 만족시키면서 공정 중 품질관리까지 붙인, 이번 회차에서 가장 완성도 높은 사례입니다. 피부가 아닌 구강 점막이지만 층 구조와 접합부 문제는 같습니다.",
+    rating: 4.0,
+    rating_reason: "곡면 전사·미세패턴·비침습 QC를 한 공정에 묶었고 결함 검출을 실제로 보였습니다. 다만 구강 점막이라 FT 피부 등가물에 그대로 옮기려면 재검증이 필요합니다."
+  },
+  {
+    title: "Robot-assisted in situ bioprinting of gelatin methacrylate hydrogels with stem cells induces hair follicle-inclusive skin regeneration",
+    authors: "Chen H, Ma X, Gao T, Zhao W, Xu T, Liu Z",
+    paper_id: "10.1016_j.biopha.2022.114140",
+    url: "https://doi.org/10.1016/j.biopha.2022.114140",
+    doi: "10.1016/j.biopha.2022.114140",
+    date: "2022-12-17",
+    venue: "Biomedicine & Pharmacotherapy (Elsevier, IF 6.9)",
+    topics: ["B. 기하 안정화 대응", "로봇 보조 in situ 인쇄", "GelMA 바이오잉크", "표피 줄기세포 + SKP", "모낭·피지선 포함"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 로봇이 상처의 형태에 맞춰 GelMA 바이오잉크를 결손부에 직접 인쇄하고, 표피 줄기세포와 피부 유래 전구세포를 함께 올려 전층 피부를 재생시키는 흐름입니다.",
+    background: "사고나 질환으로 생긴 큰 피부 결손은 체액 손실과 전해질 장애, 저단백혈증, 중증 감염으로 이어지는 난제입니다. in situ 바이오프린팅은 결손부의 형태에 맞춰(morphologically adapted) 바이오잉크를 그 자리에서 인쇄하는 기술로, 평평한 배양접시가 아니라 환자 몸의 곡면에 직접 조직을 올립니다. 이때 잉크가 어떤 성질을 가져야 하는지가 핵심 변수입니다.",
+    solution: "로봇 보조 in situ 바이오프린팅에 쓸 생체적합성 광감응 하이드로겔로 젤라틴 메타크릴레이트(GelMA)를 합성했습니다. GelMA는 인쇄성이 좋았고 피부 유래 전구세포(SKP)의 증식을 지지하면서 그 성질을 유지시켰습니다. 표피 줄기세포(Epi-SC)와 SKP를 담은 GelMA를 상처에 직접 인쇄하자 완전한 상처 치유와 기능적 피부 재생이 일어났고, 재생된 피부에는 표피·진피·혈관뿐 아니라 모낭과 피지선까지 포함돼 천연 피부에 가까웠습니다. 곡면 인쇄를 '장비'가 아니라 '잉크 성질'의 문제로 풀어 간 점이 이번 회차의 다른 in situ 논문들과 구별됩니다.",
+    rating: 4.0,
+    rating_reason: "부속기까지 포함한 재생을 보고한 결과가 강합니다. 다만 곡률 자체를 변수로 비교하지는 않아, 곡면 효과는 간접적으로만 드러납니다."
+  },
+  {
+    title: "Edge curvature drives endoplasmic reticulum reorganization and dictates epithelial migration mode",
+    authors: "Rawal S, Keshavanarayana P, Manoj D, Khuntia P, Banerjee S, Thurakkal B, Marwaha R, Spill F, Das T",
+    paper_id: "10.1038_s41556-025-01729-3",
+    url: "https://doi.org/10.1038/s41556-025-01729-3",
+    doi: "10.1038/s41556-025-01729-3",
+    date: "2025-08-18",
+    venue: "Nature Cell Biology (Nature, OA, IF 17.3)",
+    topics: ["A. 수축·탈착 원인", "볼록 대 오목 가장자리", "소포체 재편", "라멜리포디아 vs 퍼스스트링", "초점접착 방향"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 미세패턴으로 만든 간극과 자연 발생 간극 모두에서, 가장자리의 볼록·오목 여부에 따라 소포체가 세관형 또는 판상형으로 재편되고 그에 따라 상피의 이동 방식이 갈리는 과정을 지도화한 구성입니다.",
+    background: "단일 세포 탈락부터 센티미터 크기 상처까지 상피에는 다양한 크기와 기하의 간극이 생기고, 그 폐쇄는 두 가지 방식으로 일어납니다. 볼록한 가장자리에서는 라멜리포디아 기어가기, 오목한 가장자리에서는 퍼스스트링(주머니끈) 수축입니다. 왜 곡률에 따라 방식이 갈리는지는 분명하지 않았습니다. 곡면 위 피부 모델을 설계할 때 이 차이는 무시할 수 없습니다.",
+    solution: "세포 내부를 지도화한 결과, 미세패턴 간극과 자연 발생 간극 모두에서 소포체(ER)가 가장자리 곡률에 따라 형태를 바꿔 볼록한 가장자리에서는 세관(tubule), 오목한 가장자리에서는 판(sheet)을 이루는 것을 확인했습니다. 이 재편은 세포골격이 만드는 돌출력과 수축력에 의존했고, 수학적 모형은 각 기하 조건에서 변형 에너지를 최소화하는 형태가 그것임을 보였습니다. 기능적으로 볼록 가장자리의 ER 세관은 초점접착을 수직 방향으로 정렬시켜 라멜리포디아 기어가기를, 오목 가장자리의 ER 판은 초점접착을 평행하게 정렬시켜 퍼스스트링 운동을 뒷받침했습니다. 곡률이 접착 방향을 통해 조직 거동을 바꾼다는 기전으로, 이 팔로우업의 A 계층(부착·장력)과 직접 이어집니다.",
+    rating: 4.0,
+    rating_reason: "두 가지 곡률 조건에서 기전을 분자 수준까지 분리하고 모형으로 뒷받침했습니다. 다만 피부 전층 모델이 아니라 상피 단층 수준의 기초 연구입니다."
+  },
+  {
+    title: "Optimized Topological and Topographical Expansion of Epithelia",
+    authors: "Pramotton FM, Robotti F, Giampietro C, Lendenmann T, Poulikakos D, Ferrari A",
+    paper_id: "10.1021_acsbiomaterials.8b01346",
+    url: "https://doi.org/10.1021/acsbiomaterials.8b01346",
+    doi: "10.1021/acsbiomaterials.8b01346",
+    date: "2019-04-02",
+    venue: "ACS Biomaterials Science & Engineering (ACS, IF 5.4)",
+    topics: ["B. 기하 안정화 대응", "곡선 경계 채널", "자성 실리콘 스텐실", "이방성 격자 지형", "상피화 3배 가속"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 자성 실리콘 스텐실로 만든 폐쇄 채널에 상피세포를 고밀도로 심고, 채널 경계를 곡선형 계면으로 설계한 뒤 채널에 수직한 이방성 격자 지형을 더해, 스텐실 제거 후의 상피화 속도를 성긴 파종과 비교한 구성입니다.",
+    background: "화상 치료용 자가 표피 이식편을 체외에서 만들려면 건강한 조직에서 충분한 세포를 얻어 표적 표면에 성기게 심어야 합니다. 그런데 완전히 융합된 성숙한 단층을 만드는 데 걸리는 시간과 쓸 수 있는 세포 수의 한계가 이 방법의 임상 확대를 막고 있습니다. 세포를 더 쓰지 않고 기하만 바꿔 속도를 올릴 수 있다면 그 병목이 풀립니다.",
+    solution: "세 가지 독립적인 요소를 결합해 상피 확장을 가속하는 공학적 접근을 설계하고 실험으로 검증했습니다. 첫째, 자성 실리콘 스텐실로 만든 폐쇄 채널에 상피세포를 고밀도로 전략적으로 심었습니다. 둘째, 채널을 따라 곡선형 계면을 도입해 가장자리 계면의 길이를 늘렸습니다. 셋째, 채널에 수직으로 정렬한 이방성 격자 지형을 합리적으로 설계해 넣었습니다. 스텐실을 제거하면 구속에서 풀린 단층이 빈 공간으로 퍼져 나가며, 상피 집단의 방향성 이동을 온전히 활용하게 됩니다. 그 결과 같은 세포 수로 성긴 파종보다 약 3배 빠른 완전 상피화를 달성했습니다. 곡률을 '세포가 전진하는 전선의 길이'로 해석해 설계 변수로 쓴, 발상이 분명한 사례입니다.",
+    rating: 3.5,
+    rating_reason: "세 요소를 결합해 3배라는 명확한 결과를 냈습니다. 다만 단층 상피 확장 단계이고 전층 구조체의 분화·장벽은 다루지 않았습니다."
+  },
+  {
+    title: "Design and fabrication of human skin by three-dimensional bioprinting",
+    authors: "Lee V, Singh G, Trasatti JP, Bjornsson C, Xu X, Tran TN, Yoo SS, Dai G, Karande P",
+    paper_id: "10.1089_ten.tec.2013.0335",
+    url: "https://doi.org/10.1089/ten.tec.2013.0335",
+    doi: "10.1089/ten.tec.2013.0335",
+    date: "2013-12-31",
+    venue: "Tissue Engineering Part C Methods (Mary Ann Liebert, IF 미확인)",
+    topics: ["B. 기하 안정화 대응", "자유형상 적층", "형상·형태 유지", "기중 배양 성숙", "세포 밀도 최적화"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 각질형성세포와 섬유아세포를 콜라겐과 함께 층별로 인쇄해 표피·진피를 구성하고, 침수 배양 후 표피 쪽을 기중 계면에 노출시켜 성숙·층화시키는 공정입니다.",
+    background: "3차원 바이오프린팅은 복잡한 살아 있는 구조를 자유형상으로 만들 수 있는 유연한 자동 플랫폼입니다. 기존의 조직공학 피부 제작법은 틀에 부어 굳히는 방식이라 형상과 형태를 원하는 대로 주기 어렵습니다. 피부를 원형 사례로 삼아 이 차이를 확인할 필요가 있었습니다.",
+    solution: "각질형성세포와 섬유아세포를 표피·진피의 구성 세포로, 콜라겐을 진피 기질로 삼아 3차원 바이오프린팅으로 피부를 제작했습니다. 세포 생존율이 최대가 되도록 인쇄 변수를 먼저 최적화하고, 인체 피부의 생리적 특성을 모사하도록 표피와 진피의 세포 밀도도 함께 맞췄습니다. 인쇄한 구조체를 침수 배양한 뒤 표피 쪽을 기중 계면에 노출시켜 성숙과 층화를 유도했고, 조직학과 면역형광에서 형태·생물학적으로 생체 피부를 대표함을 확인했습니다. 저자들은 전통적 방법과 비교한 바이오프린팅의 이점으로 형상·형태 유지(shape- and form retention), 유연성, 재현성, 높은 배양 처리량을 들었습니다. 곡면 자체를 시험하지는 않았지만, 형상 자유도를 피부 모델의 장점으로 명시한 기준 논문입니다.",
+    rating: 3.5,
+    rating_reason: "인쇄 변수와 세포 밀도를 최적화하고 기중 성숙까지 확인했습니다. 다만 형상 유지를 이점으로 제시했을 뿐 비평면 기하를 직접 시험하지는 않았습니다."
+  },
+  {
+    title: "Development and Application of a Mechanical Arm-Based In Situ 3D Bioprinting Method for the Repair of Skin Wounds",
+    authors: "Luo Y, Xu X, Gao Y, Ma J, Zhou X, Li Q, Yang H, Zhang B",
+    paper_id: "10.21203_rs.3.rs-3575253_v1",
+    url: "https://doi.org/10.21203/rs.3.rs-3575253/v1",
+    doi: "10.21203/rs.3.rs-3575253/v1",
+    date: "2023-11-29",
+    venue: "Research Square (preprint) · 2023-11 (IF 없음·프리프린트)",
+    topics: ["B. 기하 안정화 대응", "로봇팔 제어", "3D 스캐닝 상처 모델링", "휴대형 장비", "상용 드레싱 대조"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 변연절제·상처의 정밀 3D 스캐닝과 모델링·세포 담지 바이오잉크 인쇄를 하나로 통합한 휴대형 장비로, 로봇팔이 상처 형태를 따라가며 피부를 그 자리에서 인쇄하는 구성입니다.",
+    background: "피부 결손 치료는 보통 여러 차례의 수술을 거쳐야 해서 과정이 복잡하고 비용이 크며, 재난 현장 같은 야외 환경에서는 제때 치료하기 어렵습니다. 지진·화재·폭발로 생기는 대면적 피부 손상은 상처 모양이 제각각이라 기성 드레싱으로는 맞추기 어렵습니다. 상처의 형상을 읽어 거기에 맞춰 인쇄하는 장비가 필요했습니다.",
+    solution: "로봇팔 제어를 이용한 in situ 인쇄 방법을 개발했습니다. 휴대형 3D 프린팅 장비에 변연절제와 상처의 정밀 3D 스캐닝·모델링, 세포 담지 바이오잉크 호환성을 함께 담아, 특수 야외 환경에서 대면적 피부 손상을 빠르게 복구할 수 있게 했습니다. 상처의 고유한 형태에 맞춰 치료를 맞춤화하고 빠른 치유를 얻으며 총비용을 낮출 수 있다는 점을 기존 방법 대비 이점으로 들었습니다. 전층 등부 결손 쥐 실험에서 상용 피부 결손 복구 드레싱과 비교한 결과, in situ 인쇄 피부가 더 빠른 치유와 더 균일한 재상피화를 보였습니다. 곡면 대응을 스캐닝–모델링–인쇄의 폐루프로 푼 점이 이번 회차에서 유일합니다.",
+    rating: 3.5,
+    rating_reason: "상처 형상을 읽어 반영하는 폐루프 구성이 이 주제에 정확히 맞고 대조군도 두었습니다. 다만 프리프린트이고 곡률에 따른 성능 차이를 정량하지 않았습니다."
+  },
+  {
+    title: "In-situ bioprinting at bioactive wound interfaces: A clinically driven design-rule framework",
+    authors: "Arabinour M, Sultani N, Zhou X, Tayebi L",
+    paper_id: "10.1177_08853282261503314",
+    url: "https://doi.org/10.1177/08853282261503314",
+    doi: "10.1177/08853282261503314",
+    date: "2026-10-29",
+    venue: "Journal of Biomaterials Applications (SAGE, IF 미확인)",
+    topics: ["E. 인접 주제", "review", "불규칙 기하 제약", "겔화 속도·점도 창", "상처 가장자리 이질성"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 불규칙한 상처 기하, 지속적 삼출, 출혈, 시간 제약 같은 현장 조건을 겔화 속도·점도 범위·공간 패터닝·분해 거동 같은 인쇄 변수로 체계적으로 연결한 설계 규칙 틀입니다.",
+    background: "만성·복합 상처는 불규칙한 기하와 지속적인 삼출, 출혈, 침상에서의 엄격한 시간 제약이라는 불안정한 임상 환경 안에 있습니다. 그런데 대부분의 상처 치유 전략은 이런 현실을 담지 못하는 통제된 실험실 조건에서 개발·검증돼, 임상 전환이 제한돼 왔습니다. 기존 문헌은 재료와 기술 중심이라 실제 상처 제약과 인쇄 설계 변수를 잇는 통합된 틀이 없었습니다.",
+    solution: "in situ 바이오프린팅을 '현장 생체제작 문제'로 재정의하고, 상처 위의 제약 조건을 인쇄 가능한 설계 변수로 체계적으로 사상하는 임상 주도 설계 규칙 틀을 세웠습니다. 겔화 속도론, 점도 작동 범위, 공간 패터닝, 분해 거동 같은 변수를 지혈·감염 통제·혈관신생·장기 조직 리모델링 같은 임상 결과와 연결했습니다. 특히 상처 가장자리의 이질성을 중요하지만 과소평가돼 온 제약으로 지목했고, 현장 생체제작 고유의 전환·규제 과제도 짚었습니다. 재료 조성이 아니라 제약 주도 설계 논리로 초점을 옮긴 점이 이 회차의 다른 논문들을 읽는 틀이 됩니다. 미니 리뷰이므로 새로운 실험 근거는 없습니다.",
+    rating: 3.5,
+    rating_reason: "곡면·불규칙 기하를 설계 변수로 번역한 틀이 실무적으로 유용합니다. 다만 미니 리뷰라 원저 근거로는 쓸 수 없습니다."
+  },
+  {
+    title: "Handheld bioprinter-enabled in situ application of lignin-mediated green-synthesized AgNP-doped antibacterial GelMA-silk fibroin tissue adhesives",
+    authors: "Torkay-Çay G 외 다수",
+    paper_id: "10.1016_j.ijbiomac.2026.154192",
+    url: "https://doi.org/10.1016/j.ijbiomac.2026.154192",
+    doi: "10.1016/j.ijbiomac.2026.154192",
+    date: "2026-08-24",
+    venue: "International Journal of Biological Macromolecules (Elsevier, IF 7.7)",
+    topics: ["B. 기하 안정화 대응", "휴대형 바이오펜", "불규칙·젖은 표면", "파열압 1019 mmHg", "광경화 밀착"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 휴대형 바이오프린터(바이오펜)로 GelMA–실크 피브로인 접착제를 돼지 피부 결손부에 직접 압출하고 광경화시켜, 불규칙하고 젖은 표면에 밀착되는 층을 만드는 과정입니다.",
+    background: "조직 접착제는 봉합 없이 빠르게 불규칙하고 젖은 조직 표면에 밀착(conformal sealing)시킬 수 있다는 장점이 있지만, 그 자리에서 제어해 바르는 일과 동시에 항균 기능을 갖추는 일이 과제로 남아 있었습니다. 휴대형 바이오프린터(바이오펜)는 불규칙한 상처 표면에 빠르게 바르고 빛으로 바로 굳힐 수 있어 이 요구에 맞습니다.",
+    solution: "리그닌을 매개로 친환경 합성한 은 나노입자(L-AgNP)를 젤라틴 메타크릴로일–실크 피브로인(GSF) 기질에 넣어, 바이오펜 호환·광경화·다기능 조직 접착제를 만들었습니다. 이 제형은 바이오펜으로 쉽게 압출돼 돼지 피부 결손부에 in situ로 도포됐고, 광경화로 조직에 밀착된 장벽을 형성했습니다. 돼지 피부 ex vivo 접착 시험에서 최적 제형은 건조 조건 파열압 1019.06±126.90 mmHg, 습윤 조건 986.77±45.55 mmHg, 랩전단 접착력 12.59±2.16 N, 상처 폐쇄 접착강도 1.26±0.17 MPa를 보였습니다. 인체 진피 섬유아세포로 생체적합성을 확인했고 L-AgNP가 항균성을 더했습니다. 곡면 밀착을 접착 강도 수치로 보고한 이번 회차의 유일한 논문입니다.",
+    rating: 3.0,
+    rating_reason: "곡면 밀착을 파열압·전단력으로 정량한 점이 유용합니다. 다만 피부 등가물이 아니라 조직 접착제이고, 저자들도 생체 내 검증이 더 필요하다고 적었습니다."
+  },
+  {
+    title: "Customizable Fabrication of 2D and Conformal Multielectrode Arrays for 3D Printed Organotypic Bioelectronic Interfaces",
+    authors: "Cheah E, Gao X, Jaw WQ, Goh GL, Lee JM, Huang C, Chew SY, Yeong WY",
+    paper_id: "10.1002_adhm.202502757",
+    url: "https://doi.org/10.1002/adhm.202502757",
+    doi: "10.1002/adhm.202502757",
+    date: "2025-09-04",
+    venue: "Advanced Healthcare Materials (Wiley, OA, IF 10.0)",
+    topics: ["E. 인접 주제", "에어로졸 제트 인쇄", "곡면 적합 전극 배열", "하이드로겔 도관", "제작 320→175분"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 에어로졸 제트 인쇄로 유연 폴리이미드 기판에 금 나노입자 전극을 찍어 다전극 배열을 만들고, 이를 3D 프린팅 하이드로겔 도관에 곡면 적합(conformal) 방식으로 붙여 오가노타이픽 조직과 접속시키는 구성입니다.",
+    background: "오가노타이픽 3차원 조직 모델의 기능과 질환을 보려면 정밀한 전기생리 인터페이스가 필요하고, 다전극 배열(MEA)이 그 역할을 합니다. 그런데 기존 제작법은 비용과 시간이 많이 들고, 무엇보다 평평한 배열은 휘어진 3차원 구조체에 밀착되지 않습니다. 구조체의 곡면을 따라가는 전극이 있어야 신호를 제대로 읽습니다.",
+    solution: "에어로졸 제트 인쇄(AJP)로 유연 폴리이미드 기판 위에 금 나노입자를 찍어 전부 금으로 된 생체적합 다전극 배열을 빠르게 맞춤 제작했습니다. 제작 시간이 광리소그래피의 약 320분에서 약 175분으로 줄었고 재료 낭비도 적었습니다. 인쇄 전극은 1 kHz에서 0.05 kΩ µm⁻²의 낮은 임피던스를 14일간 안정적으로 유지했고, PEDOT/PSS 코팅으로 전하 주입 용량을 높여 20만 회 자극에도 안정했습니다. GelMA에 담은 근아세포를 전극 위에 직접 바이오프린팅해 70~80% 생존율로 세포적합성을 확인했으며, 3D 프린팅 하이드로겔 도관에 통합해 곡면 적합 적용과 향상된 세포 조직화를 보였습니다. 피부가 아닌 일반 오가노타이픽 모델이지만, 곡면 구조체를 계측하는 쪽의 해법을 제시합니다.",
+    rating: 3.0,
+    rating_reason: "곡면 적합 전극의 제작과 전기적 성능을 수치로 제시했습니다. 다만 피부 모델이 아니고 곡면 적용은 개념 시연 수준입니다."
+  },
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.venue} · ${p.date}${p.doi ? ' · DOI:' + p.doi : ''}${p.pdf ? ' · <a href="' + p.pdf + '" target="_blank" rel="noopener">PDF</a>' : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      ${p.image
+        ? `<div class="figwrap"><div class="fig"><img src="${p.image}" alt="${p.title}"></div>`
+          + (p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``) + `</div>`
+        : (p.figcap
+            ? `<div class="figwrap"><div class="capbox"><span class="caplabel">Figure 1 설명</span>${p.figcap}</div></div>`
+            : ``)}
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+    el.innerHTML = '<h3>지난 FT 피부 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="skin-brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>

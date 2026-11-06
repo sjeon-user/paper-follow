@@ -6,7 +6,9 @@ ROOT = r"C:\Users\KIMM\Desktop\2026\연구 행정 스킬화\2026.07.22 physical 
 
 # JCR 2024 Journal Impact Factor. None = 수록되지 않거나 출처 간 불일치가 커서 넣지 않음.
 IF = {
+ "Nature Cell Biology": 17.3,
  "Advanced Science": 14.1,
+ "Biomaterials": 12.8,
  "Theranostics": 12.4,
  "Science Advances": 11.7,
  "Experimental & Molecular Medicine": 9.5,
@@ -19,6 +21,7 @@ IF = {
  "Biofabrication": 8.2,
  "International Journal of Biological Macromolecules": 7.7,
  "Stem Cell Research & Therapy": 7.1,
+ "Biomedicine & Pharmacotherapy": 6.9,
  "Journal of Tissue Engineering": 6.7,
  "International Journal of Nanomedicine": 6.6,
  "Lab on a Chip": 6.1,
@@ -43,6 +46,7 @@ IF = {
  "Biotechnology and Bioengineering": 3.5,
  "Experimental Dermatology": 3.5,
  "Biomimetics": 3.4,
+ "Heliyon": 3.4,
  "J Biomed Mater Res B Appl Biomater": 3.4,
  "J Mech Behav Biomed Mater": 3.3,
  "Adipocyte": 3.3,
@@ -56,6 +60,9 @@ IF = {
 # JIF가 없거나 신뢰할 만한 값을 확인하지 못한 저널 → 사유를 그대로 표기
 NOTE = {
  "Biomaterials and Biosystems": "IF 미수재",
+ "Research Square": "IF 없음·프리프린트",
+ "Journal of Biomaterials Applications": "IF 미확인",
+ "Tissue Engineering Part C Methods": "IF 미확인",
  "Biomedical Materials": "IF 미확인",
  "Journal of Burn Care & Research": "IF 미확인",
  "BioMed Research International": "IF 없음·JCR 제외",

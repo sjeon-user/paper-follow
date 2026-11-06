@@ -663,6 +663,23 @@
         "scalable cell-derived ECM"
       ],
       "note": "특집 ③(throughput·생산 효율)이 '많이·빨리·작게' 만드는 쪽이었다면, 이 회차는 '한 장을 크게' 만드는 쪽입니다. Europe PMC에 면적·규모 어휘(large-scale·scale-up·upscaling·large-area·clinically relevant size·centimeter-scale·surface area·expansion ratio·diffusion limit·GMP·bioreactor)를 피부 모델 맥락과 교차시켜 9개 질의로 최근 15년 842편을 모았고, 임상 증례·화상 역학·타 장기를 제외해 169편을 거른 뒤 10편을 골랐습니다.\n구성: 면적 확대 5편 / 제조 체계 3편 / 공정 단순화 1편 / 원재료 공급 1편.\n핵심은 10.1088/1748-605x/abbdbe입니다. 임상 시험 중인 35 cm² 자가조립 대체물을 289 cm²로 키우고, 수축 거동·두께·표피 분화를 같은 지표로 비교해 모두 유지됨을 보였습니다. 면적 확대의 동기가 '여러 장을 이어 붙이면 이음매에 자국이 남는다'는 임상 관찰이라는 점도 기록해 둘 만합니다.\n한계: 10편 중 수축률을 지표로 명시한 것은 3편(abbdbe, 10.1093/jbcr/irab034 상처 수축 4.5%, 10.3390/ijms241612537 혈청 유무 동등)뿐이고, 장벽을 정량한 것은 2편(irab034 TEWL 11.9, 10.3791/61802 TEER)입니다. '크게 만들면 가운데가 죽는다'는 확산 한계를 정면으로 다룬 논문은 검색 범위에서 찾지 못했습니다. 또 대부분이 이식용 대체물 연구라, in vitro 평가용 FT 등가물을 대면적으로 만든 사례는 거의 없습니다. 특집 ③에서 이미 다룬 표준화 생산 논문(10.1007/164_2020_417)은 중복 제외됐습니다."
+    },
+    "2026-11-07": {
+      "label": "특집 ⑪ 곡면 제작",
+      "title": "곡면 위에 FT 피부 등가물·오가노타이픽 피부를 만든 10편",
+      "keywords": [
+        "non-planar freeform fabrication",
+        "curved collagen scaffold",
+        "in situ bioprinting",
+        "robotic arm wound scanning",
+        "edge curvature",
+        "curved channel interface",
+        "conformal application",
+        "shape and form retention",
+        "handheld biopen",
+        "conformal multielectrode array"
+      ],
+      "note": "Europe PMC에 곡면 어휘(curved·curvature·non-planar·conformal·tubular·cylindrical·hemispherical·convex·concave·freeform·anatomically shaped·shape fidelity)를 피부 모델 맥락과 교차시켜 21개 질의로 최근 15~18년 1,432편을 모았습니다.\n**중요한 한계 — 이 주제는 문헌이 매우 얇습니다.** 'skin equivalent OR organotypic skin OR reconstructed skin OR full-thickness skin model' AND '곡면 어휘' 로 좁힌 핵심 질의는 전체에서 **16건**만 반환했고, 그중 기소개·무관을 빼면 사실상 남는 것이 없었습니다. 즉 '평평한 트랜스웰이 아닌 곡면 위에 FT 피부 등가물을 만들고 분화·장벽까지 평가한' 연구는 검색 범위 안에 거의 존재하지 않습니다. 그래서 이 회차는 곡률이 어떤 방식으로 개입하는지에 따라 네 갈래로 넓혀 구성했습니다. (1) 곡면 기질 위 제작 3편 — 10.1016/j.biomaterials.2008.12.009(PDMS 3D 굴곡 몰드, 평면 대조), 10.1016/j.heliyon.2022.e11468(곡면 콜라겐 스캐폴드에 DEJ 미세패턴 전사), 10.1089/ten.tec.2013.0335(형상 유지). (2) 살아 있는 곡면에 직접 인쇄 4편 — in situ 바이오프린팅 계열. (3) 곡률의 기전 2편 — 10.1038/s41556-025-01729-3(볼록/오목이 상피 이동 방식을 결정), 10.1021/acsbiomaterials.8b01346(곡선 경계로 상피화 3배 가속). (4) 곡면 계측 1편 — 10.1002/adhm.202502757.\n적합도 주의: 10편 중 '곡면'이 제목·초록에 변수로 명시된 것은 6편이고, 피부(또는 구강 점막) 등가물인 것은 5편입니다. 곡률에 따른 분화·장벽 차이를 정량한 논문은 **0편**입니다. 한편 곡면 FT 등가물의 실질적 구현체인 구형·마이크로스피어 모델은 특집 ③·⑨에서 이미 다뤘고(10.1002/adhm.202503250, 10.1126/sciadv.adu1251, 10.1002/advs.202416863), 레테 능선 같은 미세 곡률은 특집 ②·④·⑥에서 다뤘으므로 여기서는 제외했습니다."
     }
   }
 }
