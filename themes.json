@@ -681,5 +681,24 @@
       ],
       "note": "Europe PMC에 곡면 어휘(curved·curvature·non-planar·conformal·tubular·cylindrical·hemispherical·convex·concave·freeform·anatomically shaped·shape fidelity)를 피부 모델 맥락과 교차시켜 21개 질의로 최근 15~18년 1,432편을 모았습니다.\n**중요한 한계 — 이 주제는 문헌이 매우 얇습니다.** 'skin equivalent OR organotypic skin OR reconstructed skin OR full-thickness skin model' AND '곡면 어휘' 로 좁힌 핵심 질의는 전체에서 **16건**만 반환했고, 그중 기소개·무관을 빼면 사실상 남는 것이 없었습니다. 즉 '평평한 트랜스웰이 아닌 곡면 위에 FT 피부 등가물을 만들고 분화·장벽까지 평가한' 연구는 검색 범위 안에 거의 존재하지 않습니다. 그래서 이 회차는 곡률이 어떤 방식으로 개입하는지에 따라 네 갈래로 넓혀 구성했습니다. (1) 곡면 기질 위 제작 3편 — 10.1016/j.biomaterials.2008.12.009(PDMS 3D 굴곡 몰드, 평면 대조), 10.1016/j.heliyon.2022.e11468(곡면 콜라겐 스캐폴드에 DEJ 미세패턴 전사), 10.1089/ten.tec.2013.0335(형상 유지). (2) 살아 있는 곡면에 직접 인쇄 4편 — in situ 바이오프린팅 계열. (3) 곡률의 기전 2편 — 10.1038/s41556-025-01729-3(볼록/오목이 상피 이동 방식을 결정), 10.1021/acsbiomaterials.8b01346(곡선 경계로 상피화 3배 가속). (4) 곡면 계측 1편 — 10.1002/adhm.202502757.\n적합도 주의: 10편 중 '곡면'이 제목·초록에 변수로 명시된 것은 6편이고, 피부(또는 구강 점막) 등가물인 것은 5편입니다. 곡률에 따른 분화·장벽 차이를 정량한 논문은 **0편**입니다. 한편 곡면 FT 등가물의 실질적 구현체인 구형·마이크로스피어 모델은 특집 ③·⑨에서 이미 다뤘고(10.1002/adhm.202503250, 10.1126/sciadv.adu1251, 10.1002/advs.202416863), 레테 능선 같은 미세 곡률은 특집 ②·④·⑥에서 다뤘으므로 여기서는 제외했습니다."
     }
+  },
+  "cocult": {
+    "2026-11-10": {
+      "label": "① 총론 — 구획 배지·시간차 제어",
+      "title": "구획 배지 라인과 시간차 공배양 스케줄링을 다룬 10편 (개관)",
+      "keywords": [
+        "compartmentalized co-culture",
+        "independent medium line",
+        "sequential seeding",
+        "air-liquid interface + perfusion",
+        "common medium",
+        "two-compartment bioreactor",
+        "perfusion platform",
+        "TEER online monitoring",
+        "vascularized skin-on-a-chip",
+        "porous barrier"
+      ],
+      "note": "이 브리핑의 첫 회차입니다. 근거 문서는 『261109 인공피부 난제정의·해결전략·역할분담 초안』의 세부 난제 S4(구획 간 배양조건 상충)와 핵심기술 4 「구획 배지 라인·시간차 공배양 스케줄링 제어기」입니다. Europe PMC에 구획(compartment·dual-chamber·basolateral·ALI+perfusion), 배지 상충(common medium·calcium switch·serum-free), 시간차(sequential seeding·staggered·ALI switch·schedule), 장비·제어(perfusion bioreactor·multichannel·closed-loop·in-line sensor)를 교차시켜 11개 질의로 최근 12년 741편을 모았고, 배양계 설계를 다룬 297편을 거른 뒤 네 축에 고르게 10편을 배치했습니다.\n구성: A 구획 분리 4편 / B 배지 조성 상충 3편 / C 시간차·스케줄 2편 / D 장비·제어 2편(일부 중복 계산).\n**가장 중요한 발견 — C축(시간차·스케줄)이 거의 비어 있습니다.** 'sequential seeding / staggered / culture schedule'로 좁힌 질의에서 피부 공배양의 투입 시점을 변수로 비교한 논문을 찾지 못했습니다. 10.1039/d5lc00606f는 순차 파종을 쓰지만 순서만 기술하고 간격을 비교하지 않았고, 시점을 실제 설계 변수로 다룬 것은 미생물 2구획 바이오리액터(10.1007/s00449-024-03008-1)뿐이었습니다. 즉 기획서의 '시간차 공배양 스케줄링 제어기'는 선행 사례가 드문 영역입니다.\nB축은 반대 전략(구획을 나누지 않고 공통 배지로 상충을 회피)이 주류이고, 3편 모두 멀티장기 칩 문헌이라 `인접(MPS)` 태그를 붙였습니다. 10.2144/fsoa-2019-0065에서 네 조직 중 신장만 실패한 사실은 공통 배지 전략의 한계를 보여 주므로 비교군으로 유용합니다.\n주의: 10.1159/000476071은 관류로 분화 표지는 올랐으나 **장벽 기능은 개선되지 않았다**고 보고했습니다. 제어기 성능 지표를 정할 때 분화 표지와 장벽을 구분해야 한다는 근거입니다."
+    }
   }
 }

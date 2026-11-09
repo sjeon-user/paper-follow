@@ -31,6 +31,7 @@ IF = {
  "Cells": 5.1,
  "International Journal of Molecular Sciences": 4.9,
  "Journal of Functional Biomaterials": 4.8,
+ "The AAPS Journal": 5.0,
  "Polymers": 4.7,
  "The American Journal of Pathology": 4.7,
  "ACS Applied Bio Materials": 4.6,
@@ -50,6 +51,8 @@ IF = {
  "J Biomed Mater Res B Appl Biomater": 3.4,
  "J Mech Behav Biomed Mater": 3.3,
  "Adipocyte": 3.3,
+ "Micromachines": 3.0,
+ "Genes": 2.8,
  "Materials": 3.1,
  "Journal of Tissue Engineering and Regenerative Medicine": 3.1,
  "Annals of Biomedical Engineering": 3.0,
@@ -60,6 +63,10 @@ IF = {
 # JIF가 없거나 신뢰할 만한 값을 확인하지 못한 저널 → 사유를 그대로 표기
 NOTE = {
  "Biomaterials and Biosystems": "IF 미수재",
+ "Future Science OA": "IF 미확인",
+ "Cellular and Molecular Bioengineering": "IF 미확인",
+ "Bioprocess and Biosystems Engineering": "IF 미확인",
+ "Skin Pharmacology and Physiology": "IF 미확인",
  "Research Square": "IF 없음·프리프린트",
  "Journal of Biomaterials Applications": "IF 미확인",
  "Tissue Engineering Part C Methods": "IF 미확인",
@@ -115,7 +122,7 @@ def patch(venue, unknown):
 dry = "--apply" not in sys.argv
 unknown = set()
 changed = 0
-files = sorted(glob.glob(os.path.join(ROOT, "skin-brief*.html")))
+files = sorted(glob.glob(os.path.join(ROOT, "skin-brief*.html")) + glob.glob(os.path.join(ROOT, "cocult-brief*.html")))
 for f in files:
     s = io.open(f, encoding="utf-8").read()
     n = [0]

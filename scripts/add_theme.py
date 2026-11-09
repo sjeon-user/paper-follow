@@ -14,8 +14,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REG = os.path.join(ROOT, "themes.json")
 
 # kind -> snapshot filename prefix / current-page filename
-PREFIX = {"arxiv": "brief-", "rss": "rss-brief-", "skin": "skin-brief-"}
-CURRENT = {"arxiv": "paper-brief.html", "rss": "rss-brief.html", "skin": "skin-brief.html"}
+PREFIX = {"arxiv": "brief-", "rss": "rss-brief-", "skin": "skin-brief-", "cocult": "cocult-brief-"}
+CURRENT = {"arxiv": "paper-brief.html", "rss": "rss-brief.html", "skin": "skin-brief.html", "cocult": "cocult-brief.html"}
 
 CSS = """  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
   .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
