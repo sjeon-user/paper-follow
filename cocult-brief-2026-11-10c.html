@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>구획 배지·시간차 공배양 제어 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .capbox{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 13px;color:var(--muted);font-size:.82rem;line-height:1.65;background:var(--bg)}
+  .capbox .caplabel{display:block;font-weight:700;color:var(--text);font-size:.72rem;margin-bottom:4px}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .meta a{color:var(--accent);text-decoration:none}
+  .meta a:hover{text-decoration:underline}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>구획 배지·시간차 공배양 제어 논문 팔로우업</h1>
+    <div class="sub">FT(전층) 인체 피부 모델의 기하 불안정 → 분화·장벽 → OECD TG 431/439 규제 적합성 · 하루 1키워드 최대 5편 · 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="paper-brief.html">← arXiv 브리핑</a> <a href="rss-brief.html">🏛 RSS 학회</a> <a href="skin-brief.html">🧫 FT 피부</a> <a href="keep.html">⭐ 보관함</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>cocult-config.md · cocult-keywords.md 설정 기반 자동 생성 · Europe PMC(PubMed/PMC/프리프린트) 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-10c";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "무엇을 언제 넣는가 — 배지 조성이 장벽과 분화를 바꾼 10편", "keywords": ["PUFA supplementation", "serum reduction", "chemically defined medium", "medium adaptation protocol", "oxygen gradient in RhE", "PPAR agonist (negative)", "endogenous ECM low-serum", "OECD TG439 validation", "feeder co-culture", "waste clearance co-culture"], "note": "S4(구획 간 배양조건 상충) 팔로우업의 특집 회차입니다. Europe PMC에 세 주제를 각각 6개 질의로 던져 최근 12~16년 ALI·관류 339편 / 배지 조성 840편 / 시간차·제어 831편을 모은 뒤 축별로 추렸습니다.\n이 회차는 **배지에 무엇을 넣고 빼느냐가 조직 성능을 얼마나 바꾸는가**를 다룹니다. 구성: 조성→성능이 확인된 사례 4편 / 혈청·정의배지 전환 4편 / 공급·제거 설계 2편.\n핵심 두 편이 서로 반대 방향입니다. 10.1016/j.actbio.2021.11.021은 지방산 10 µM 보충만으로 **테스토스테론 흡수가 줄고 표피 지질이 배수 단위로 바뀌었다**고 보고한 반면, 10.1111/exd.14733은 PPAR 조절물질이 **하류 표적에는 도달했지만 지질 조성은 거의 바꾸지 못했다**는 음성 결과입니다. '배지에 넣으면 바뀐다'가 성분마다 다르다는 뜻이므로, 구획 배지를 설계할 때 성분별로 검증이 필요합니다.\n통념과 반대인 결과도 둘 있습니다. 10.1016/j.tiv.2024.105948은 **혈청을 75% 줄이자 분화가 14일에서 7일로 빨라졌고**, 10.1186/s13036-025-00522-y는 **다른 세포용 무혈청 배지**가 오히려 표지 발현과 기질 침착을 높였습니다. 공통 배지의 성능 손실을 당연시하지 말고 지표별로 재야 한다는 근거입니다.\n10.1038/s41598-025-19891-x는 기획서 물리모델의 입력인 **구획별 산소 소모**에 직접 닿습니다. 표피 안에 기저층→각질층 산소 구배가 있고, 분화 유도제인 **칼슘을 올리면 산소 소비가 증가**합니다. 즉 Ca²⁺ 상승 스케줄은 그 구획의 산소 요구를 함께 올립니다 — 배지 조성과 산소 공급은 분리된 변수가 아닙니다."};
+/* 보관된 FT 피부 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 cocult-brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-10c", t:"특집 ② 배지 조성·공급 상충"}, {d:"2026-11-10b", t:"특집 ① ALI ↔ 관류 계면"}, {d:"2026-11-10", t:"① 총론 — 구획 배지·시간차 제어"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     paper_id: "10.1016/j.xxx",        // DOI 우선, 없으면 "PMID:12345678" (skin-seen.json 중복 방지 키)
+     url:      "https://doi.org/...",
+     doi:      "10.1016/j.xxx",
+     date:     "2025-03",              // 출판 연-월
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
+     image:    "cocult-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
+     figcap:   "Figure 1. ...",
+     background: "배경·기존 문제 2~3문장",
+     solution:   "해결·방법과 결과 2~3문장 + 마지막에 이 회차 문제 진술과의 관련성 한 줄",
+     rating:     4.0,
+     rating_reason: "근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "α-Linolenic acid and linoleic acid modulate the lipidome and the skin barrier of a tissue-engineered skin model",
+    authors: "Simard M, Tremblay A, Morin S, Martin C, Julien P, Fradette J, Flamand N, Pouliot R",
+    paper_id: "10.1016_j.actbio.2021.11.021",
+    url: "https://doi.org/10.1016/j.actbio.2021.11.021",
+    doi: "10.1016/j.actbio.2021.11.021",
+    date: "2021-11-20",
+    venue: "Acta Biomaterialia (Elsevier, IF 9.7)",
+    topics: ["B. 배지 조성 상충", "ALA·LA 각 10 µM", "테스토스테론 흡수 감소", "EPA 15배·DPA 3배", "지질 매개체 정상화"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 자가조립 방식으로 만든 피부 대체물의 배양 배지에 α-리놀렌산과 리놀레산을 각각 10 µM씩 넣고, 표피 인지질·중성지방의 지방산 조성과 장벽 투과를 보충하지 않은 대조와 비교한 구성입니다.",
+    background: "다가불포화지방산은 피부 장벽의 형성과 유지에 관여하지만, 그 유래 지질 매개체가 어떤 역할을 하는지는 불분명했습니다. 더 실무적으로는 배지에 무엇을 넣느냐가 장벽을 바꾸는가가 문제입니다. 배지 조성이 장벽 성능을 좌우한다면 구획별 배지를 설계할 때 반드시 고려해야 합니다.",
+    solution: "자가조립 피부 대체물의 배양 배지에 α-리놀렌산(ALA)과 리놀레산(LA)을 각각 10 µM씩 보충한 결과, 테스토스테론의 경피 흡수가 줄어 장벽 기능이 개선됐습니다. 외부에서 공급한 지방산은 피부 대체물의 인지질과 중성지방 분획에 실제로 편입됐는데, 표피 인지질에서 EPA 15배·DPA 3배·LA 1.5배, 표피 중성지방에서 ALA 20배 이상·DPA 3배·LA 1.5배로 늘었습니다. 액체크로마토그래피-질량분석으로 본 생리활성 지질 매개체 프로파일(프로스타글란딘·하이드록시지방산 등)도 정상 인체 피부에 더 가까워졌습니다. 저자들의 결론대로 배지를 통한 지방산 공급 최적화가 장벽 확립에 필수적이며, 이는 배지 조성이 곧 장벽 성능 지표라는 뜻입니다.",
+    rating: 4.5,
+    rating_reason: "배지 보충 → 지질 편입 → 투과 감소로 이어지는 사슬을 배수까지 정량했습니다. 다만 단일 조성이라 농도 반응 곡선은 없습니다."
+  },
+  {
+    title: "Integration of MUTZ-Langerhans cells into a 3D full-thickness skin equivalent and influences of serum reduction and undefined medium supplements on differentiation",
+    authors: "Böttcher P, Steinmeyer L, Stark H, Breitkreutz J, Mewes KR",
+    paper_id: "10.1016_j.tiv.2024.105948",
+    url: "https://doi.org/10.1016/j.tiv.2024.105948",
+    doi: "10.1016/j.tiv.2024.105948",
+    date: "2024-09-27",
+    venue: "Toxicology in Vitro (Elsevier, IF 미확인)",
+    topics: ["B. 배지 조성 상충", "FCS 75% 감축", "분화 14일→7일", "Ultroser G 실패", "조건배지 불필요 확인"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 랑게르한스세포 대용 MUTZ-3 세포의 분화 배지에서 소 태아 혈청(FCS) 농도를 줄이고 미정의 조건배지(5637CM)를 뺀 조건들을 비교한 뒤, 완성된 세포를 전층 피부 모델에 통합하는 구성입니다.",
+    background: "피부 감작성 평가용 면역적격 모델을 만들려면 랑게르한스세포를 먼저 분화시켜야 하는데, 기존 프로토콜은 모두 고농도 소 태아 혈청을 씁니다. 혈청은 로트 편차와 규제 부담을 함께 가져오므로 줄이거나 빼야 하지만, 줄이면 분화가 안 될 위험이 있습니다. 한 구획의 배지 조성을 바꾸는 일이 모델 전체에 어떤 영향을 주는지 확인이 필요했습니다.",
+    solution: "FCS 함량을 75% 줄이자 오히려 목표 분화 상태가 14일이 아닌 7일 만에 달성됐고, CD207과 CD1a 발현 상승으로 확인됐습니다. 반면 FCS 대체용 합성 첨가제인 Ultroser G로 바꾼 조건에서는 충분한 수의 세포를 얻지 못했습니다. FCS 5%로 분화시킨 세포는 강한 감작물질 DNCB로 활성화돼 CD83 발현이 올랐습니다. 정의가 불분명한 5637 조건배지는 분화에 영향이 없어 첨가가 불필요함이 확인됐습니다. 이렇게 조성을 정리한 세포를 Phenion 전층 피부 모델에 통합해 CD1a 발현으로 확인했습니다. '혈청을 줄이면 나빠진다'는 통념과 반대 결과가 나온 점이 중요하며, 배지 단순화가 오히려 공정을 단축할 수 있음을 보여 줍니다.",
+    rating: 4.0,
+    rating_reason: "줄이기·대체·제거 세 가지를 모두 시험해 각각의 결과를 분리했습니다. 다만 세포주 기반이고 전층 모델 내 기능 평가는 발현 확인 수준입니다."
+  },
+  {
+    title: "Visualization of oxygen profile in reconstructed human epidermis by phosphorescence-lifetime imaging microscopy using Ir(III) complex",
+    authors: "Ochiai-Noguchi M, Horikoshi A, Hirakata S, Yoshihara T",
+    paper_id: "10.1038_s41598-025-19891-x",
+    url: "https://doi.org/10.1038/s41598-025-19891-x",
+    doi: "10.1038/s41598-025-19891-x",
+    date: "2025-10-15",
+    venue: "Scientific Reports (Nature, OA, IF 3.9)",
+    topics: ["B. 배지 조성 상충", "인광수명 영상(PLIM)", "세포 수준 산소 분포", "기저→각질층 구배", "칼슘이 산소 소모 증가"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 세포 투과성 인광 탐침(이리듐 착물 BTPDM1)과 공초점 인광수명 영상으로 재구성 인체 표피의 산소 분압을 세포 수준 해상도로 Z축을 따라 지도화하는 구성입니다.",
+    background: "구획별 배지 라인을 설계하려면 각 구획이 산소를 얼마나 쓰는지, 어디서 부족해지는지를 알아야 합니다. 기획서의 물리모델도 구획별 산소 소모율과 확산계수를 입력으로 요구합니다. 그런데 조직 안의 산소 분포를 세포 수준에서 실제로 본 자료는 드물었습니다.",
+    solution: "세포 투과성 인광 탐침과 공초점 인광수명 영상으로 재구성 인체 표피 안의 산소 분압을 세포 수준 해상도로 가시화했습니다. Z축 영상에서 분화 방향을 따라 기저층에서 각질층으로 갈수록 산소가 낮아지는 구배가 드러났습니다. 미토콘드리아 산화적 인산화 짝풀림제(FCCP)를 넣자 산소 분압이 유의하게 떨어져, 미토콘드리아 호흡이 이 구배를 만든다는 것이 확인됐습니다. 호흡 억제제(안티마이신 A)는 필라그린·로리크린 발현을 낮춰 미토콘드리아 호흡이 정상적인 표피 성숙에 필수적임을 보였습니다. 2차원 배양에서는 분화 유도제인 칼슘을 넣자 미토콘드리아 산소 소비와 산화적 인산화가 증가했습니다. 즉 Ca²⁺를 올리는 표피 분화 스케줄은 그 구획의 산소 요구를 함께 올립니다. 배지 조성과 산소 공급이 분리된 변수가 아니라는 직접적 근거입니다.",
+    rating: 4.0,
+    rating_reason: "산소 구배를 영상으로 보이고 억제제로 인과를 확인했으며 칼슘과의 연결까지 짚었습니다. 다만 표피 단독 모델이라 혈관 구획과의 상호작용은 없습니다."
+  },
+  {
+    title: "Serum-free endothelial cell culture medium for vascular smooth muscle cells sheet formation",
+    authors: "Yang J, Sun X, Jiang H, Li J, Liang J, Lin Z",
+    paper_id: "10.1186_s13036-025-00522-y",
+    url: "https://doi.org/10.1186/s13036-025-00522-y",
+    doi: "10.1186/s13036-025-00522-y",
+    date: "2025-05-28",
+    venue: "Journal of Biological Engineering (BMC, OA, IF 미확인)",
+    topics: ["B. 배지 조성 상충", "내피 배지로 타세포 배양", "α-SMA 1.8배·SM22 2배", "콜라겐 40% 증가", "무혈청 vs 10% FBS"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 내피세포용 무혈청 배지(SFM)와 10% FBS 배지에서 각각 혈관 평활근세포 시트를 만들어, 구조·표현형·기계 물성·기질 침착을 나란히 비교한 구성입니다.",
+    background: "여러 세포를 한 계에 담을 때 흔히 쓰는 타협은 한 세포용 배지로 다른 세포도 키우는 것입니다. 이 논문이 바로 그 상황으로, 내피세포용 무혈청 배지로 혈관 평활근세포 시트를 만들 수 있는지 시험합니다. 혈청을 빼야 할 이유(면역원성·윤리·규제)는 분명하지만 성능 손실이 걱정이었습니다.",
+    solution: "무혈청 배지(SFM)와 10% FBS 조건에서 만든 세포 시트를 구조·표현형·기능 면에서 체계적으로 비교했습니다. 무혈청 조건에서 평활근 표지인 α-SMA와 SM22 발현이 각각 1.8배·2배 높아졌고(p<0.0001) 세포골격 배열도 더 또렷했습니다. 시트 면적은 차이가 없었고 두께와 기계 물성은 FBS 조건과 비슷했으며, 세포외기질 침착은 콜라겐 함량 기준 약 40% 증가했습니다. 조직학에서도 무혈청 시트가 더 치밀하고 균일했습니다. 즉 '다른 세포용 배지'이면서 '무혈청'인 조건이 오히려 더 나은 결과를 냈습니다. 공통 배지를 고를 때 성능 손실을 당연시하지 말고 지표별로 재 봐야 한다는 사례입니다.",
+    rating: 4.0,
+    rating_reason: "표현형·물성·기질을 모두 같은 조건에서 비교해 수치로 제시했습니다. 다만 피부 세포가 아니고 공배양이 아닌 단독 배양입니다."
+  },
+  {
+    title: "Chemically-defined medium formulation and adaptation method for supporting growth of endothelial cells",
+    authors: "Brunmaier LAE, Walker TW",
+    paper_id: "10.1038_s41598-025-19226-w",
+    url: "https://doi.org/10.1038/s41598-025-19226-w",
+    doi: "10.1038/s41598-025-19226-w",
+    date: "2025-10-10",
+    venue: "Scientific Reports (Nature, OA, IF 3.9)",
+    topics: ["B. 배지 조성 상충", "HUVEC 정의배지 적응", "점진 vs 단계 이행", "피브로넥틴 우위", "AI 합류도 판정"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): HUVEC를 혈청 배지에서 화학적으로 정의된 배지로 옮기는 과정을 점진적·단계적 두 방식으로 비교하고, 피브로넥틴·라미닌·IV형 콜라겐 코팅별 부착·생존을 평가하는 구성입니다.",
+    background: "구획별로 조성이 정의된 배지를 쓰려면 세포를 먼저 그 배지에 적응시켜야 합니다. 그런데 부착성 세포, 특히 내피세포처럼 민감한 세포를 혈청 배지에서 정의배지로 어떻게 옮기는가에 대한 믿을 만한 절차가 잘 보고되지 않았습니다. 적응 과정에서 세포를 잃으면 조성을 아무리 잘 짜도 소용이 없습니다.",
+    solution: "HUVEC를 맞춤 화학정의배지로 옮기는 간결한 프로토콜을 제시하면서, 세포 스트레스를 줄이기 위해 점진적(gradual) 이행과 단계적(stepwise) 이행을 비교하고 무혈청 조건에서 부착을 돕는 세포외기질 코팅을 함께 평가했습니다. 시험한 코팅 중 피브로넥틴이 라미닌과 IV형 콜라겐보다 부착과 생존을 뚜렷이 개선했습니다. 적응 과정의 세포 성장은 학습 가능한 AI 기반 영상 분석으로 합류도를 판정해 정량·재현 가능하게 추적했습니다. 저자들은 이를 HUVEC뿐 아니라 다른 인체 세포주에도 적용할 수 있는 모듈형 틀로 제시했습니다. 구획별 정의배지를 실제로 돌리려면 '조성'만큼 '이행 절차'가 필요하다는 점을 보여 줍니다.",
+    rating: 4.0,
+    rating_reason: "이행 방식과 코팅을 변수로 나눠 비교하고 판정까지 자동화했습니다. 다만 단독 배양이고 피부 세포와의 공배양은 다루지 않습니다."
+  },
+  {
+    title: "The effect of PPAR isoform (de)activation on the lipid composition in full-thickness skin models",
+    authors: "Helder RWJ, Rousel J, Boiten WA, Gooris GS, Nadaban A, El Ghalbzouri A, Bouwstra JA",
+    paper_id: "10.1111_exd.14733",
+    url: "https://doi.org/10.1111/exd.14733",
+    doi: "10.1111/exd.14733",
+    date: "2023-01-02",
+    venue: "Experimental Dermatology (Wiley, IF 3.5)",
+    topics: ["B. 배지 조성 상충", "PPAR α·δ·γ 조절", "SCD1 단불포화", "하류 표적은 활성화", "지질 조성 변화 미미(음성)"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 전층 피부 모델 배지에 PPAR 세 가지 이소형의 작용제·길항제와 Wy14643을 각각 넣고, 하류 표적 mRNA·지질 합성 유전자·각질층 지질 조성의 변화를 비교한 구성입니다.",
+    background: "인체 피부 등가물은 구조는 닮았지만 각질층 장벽이 약하고, 그 원인은 지질 조성이 천연 피부와 달라 단불포화 지질이 지나치게 많다는 데 있습니다. 이 변화의 핵심 효소가 SCD1이므로, 지질 합성을 조절하는 핵수용체 PPAR를 배지로 건드리면 조성을 정상화할 수 있으리라는 기대가 있었습니다. 배지 첨가로 장벽을 고칠 수 있는가에 대한 직접 시험입니다.",
+    solution: "PPAR의 세 이소형(α·δ·γ)을 각각 활성화·비활성화하는 물질과 추가로 PPAR-α 작용제 Wy14643을 배지에 보충하고, 하류 표적과 지질 합성 유전자, 지질 조성을 조사했습니다. 하류 표적은 실제로 활성화돼 보충물이 각질형성세포에 도달했음이 확인됐지만, 지질 조성에는 거의 영향이 없었습니다. 가장 높은 농도의 Wy14643만 세라마이드 조성에 강하지만 부정적인 영향을 미쳤습니다. 저자들은 시험한 수정이 개선으로 이어지지 않았다고 분명히 적었습니다. 배지 첨가물이 세포에 도달했다는 것과 목표 성능이 좋아졌다는 것은 별개라는 점을 보여 주는 음성 결과로, 배지 설계의 기대치를 조정하는 데 유용합니다.",
+    rating: 4.0,
+    rating_reason: "도달 여부와 효과를 분리해 측정하고 음성 결과를 명확히 보고했습니다. 다만 왜 효과가 없었는지에 대한 기전 규명은 남아 있습니다."
+  },
+  {
+    title: "Engineering a Multilayered Skin Equivalent: The Importance of Endogenous Extracellular Matrix and Model Flexibility",
+    authors: "Smith L, Maltman V, De Los Santos Gomez P, Goncalves K, Przyborski S",
+    paper_id: "10.1007_978-1-0716-4510-9_12",
+    url: "https://doi.org/10.1007/978-1-0716-4510-9_12",
+    doi: "10.1007/978-1-0716-4510-9_12",
+    date: "2025-01-01",
+    venue: "Methods in Molecular Biology (Springer, IF 없음·단행본)",
+    topics: ["B. 배지 조성 상충", "저혈청 정의배지", "내인성 기질 생산", "외래 콜라겐 불필요", "배양 체계 변경 가능"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 일정한 스캐폴드(Alvetex)와 상용 세포, 저혈청 정의배지를 써서 섬유아세포가 스스로 기질을 만들게 하고, 그 위에 표피를 층층이 올리는 단계별 프로토콜입니다.",
+    background: "인체 피부 등가물은 복잡한 프로토콜과 외래 세포외기질 단백질 때문에 편차가 크다는 한계가 있습니다. 외래 콜라겐을 쓰면 로트마다 성질이 달라지고, 복잡한 배지 조성은 재현을 어렵게 합니다. 변수를 줄이면서도 층 구조를 세울 방법이 필요했습니다.",
+    solution: "일정한 스캐폴드와 상용 세포, 그리고 저혈청 정의배지를 조합해 재현성 있는 전층 인체 피부 등가물을 만드는 프로토콜을 제시했습니다. Alvetex 스캐폴드 기술이 섬유아세포로 하여금 자신의 내인성 세포외기질 단백질을 생산하게 해, 외래 콜라겐이 필요 없으면서도 표피 분화와 층화를 지지합니다. 이 모델은 유연해서 다른 세포 집단을 넣어 더 복잡한 등가물을 만들거나, 실험 필요에 따라 배양 체계를 바꾸거나, 생체 내 연구와 같은 도구로 전임상 시험을 할 수 있습니다. 인체 피부의 다층 구조를 순차적으로 형성하는 단계별 절차가 상세히 기술돼 있습니다. 배지 변수를 줄이는 쪽으로 간 사례이며, 구획별 배지를 설계할 때의 기준선이 됩니다.",
+    rating: 3.5,
+    rating_reason: "변수 축소라는 설계 의도가 분명하고 절차가 재현 가능하게 기술됐습니다. 다만 프로토콜 장(章)이라 정량 비교 데이터는 제한적입니다."
+  },
+  {
+    title: "Structural and Functional Validation of a Full-Thickness Self-Assembled Skin Equivalent for Disease Modeling",
+    authors: "Mok BR, Shon SJ, Kim AR, Simard-Bisson C, Martel I, Germain L, Kim DH, Shin JU",
+    paper_id: "10.3390_pharmaceutics14061211",
+    url: "https://doi.org/10.3390/pharmaceutics14061211",
+    doi: "10.3390/pharmaceutics14061211",
+    date: "2022-06-07",
+    venue: "Pharmaceutics (MDPI, OA, IF 4.9)",
+    topics: ["D. 규제 적합성", "자가조립 전층 등가물", "OECD TG439 성능표준", "민감도 100%·특이도 90%", "IL-17A 건선 모델"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 섬유아세포가 자기 기질을 분비해 만든 진피 위에 각질형성세포를 올려 자가조립 전층 등가물을 만들고, 기중 배양 기간에 IL-17A를 배지에 넣어 건선 모델로 전환하는 구성입니다.",
+    background: "배지에 무엇을 언제 넣느냐로 모델의 성격 자체를 바꿀 수 있다면, 그 변화가 규제 기준에서도 통하는지 확인해야 합니다. 기존 3차원 피부 모델은 질환 모델링에 쓰이지만 표준 성능 기준으로 검증된 사례는 많지 않았습니다. 구조와 기능을 함께 검증할 필요가 있었습니다.",
+    solution: "조직공학 방식으로 자가조립 재구성 피부 등가물을 만들었습니다. 진피층은 섬유아세포가 자기 세포외기질을 분비해 형성하고, 그 위에 각질형성세포를 심어 표피층을 구성했습니다. 기중 배양 기간에 IL-17A를 배지에 넣어 건선 모델로 전환한 결과 표피 과증식·착각화와 KRT6·KRT17·hBD2·S100A9 발현 증가 같은 건선 특징이 나타났습니다. 구조적으로는 완전 분화된 표피, 잘 형성된 기저막, 콜라겐 침착이 확인됐고, OECD TG439 성능표준에 따라 기준물질 20종을 시험해 민감도 100%·특이도 90%·정확도 95%를 얻었습니다. 배지 첨가 시점으로 모델 성격을 바꾸면서도 규제 성능 기준을 만족시킨 사례로, 스케줄 설계가 규제 적합성과 어떻게 이어지는지 보여 줍니다.",
+    rating: 4.0,
+    rating_reason: "OECD 성능표준으로 정량 검증하고 질환 전환까지 같은 계에서 보였습니다. 다만 IL-17A 투입 시점을 변수로 비교하지는 않았습니다."
+  },
+  {
+    title: "A serum-free culture medium production system by co-culture combining growth factor-secreting cells and L-lactate-assimilating cyanobacteria",
+    authors: "Chu S, Haraguchi Y, Asahi T, Kato Y, Kondo A, Hasunuma T, Shimizu T",
+    paper_id: "10.1038_s41598-024-70377-8",
+    url: "https://doi.org/10.1038/s41598-024-70377-8",
+    doi: "10.1038/s41598-024-70377-8",
+    date: "2024-08-23",
+    venue: "Scientific Reports (Nature, OA, IF 3.9)",
+    topics: ["B. 배지 조성 상충", "인접(비피부)", "트랜스웰 공배양", "락테이트·암모늄 제거", "희석 없이 증식 유지"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 성장인자를 분비하는 세포와 L-락테이트를 소비하도록 유전자를 넣은 시아노박테리아를 트랜스웰로 함께 배양해, 조건배지를 만들면서 동시에 노폐물을 치우는 구성입니다.",
+    background: "조건배지로 혈청을 대체하려면 성장인자를 분비하는 세포를 오래 길러야 하는데, 그 세포가 시간이 지나며 영양을 고갈시키고 락테이트와 암모늄 같은 해로운 대사물을 쌓아 오히려 증식을 막습니다. 즉 '공급'과 '제거'를 동시에 해결해야 합니다. 기획서의 부산물 회수 관망 문제와 구조가 같습니다.",
+    solution: "락테이트 투과효소 유전자(lldP)와 L-락테이트→피루브산 전환 효소 유전자(lldD)를 넣어 L-락테이트를 소비하는 재조합 시아노박테리아 균주를 만들고, 이를 성장인자 분비 세포(RL34)와 트랜스웰로 공배양했습니다. 그 결과 락테이트와 암모늄 농도가 뚜렷이 줄면서도 포도당·피루브산·피루브산 유래 아미노산 농도는 단독 배양보다 높게 유지됐습니다. 이렇게 만든 공배양 배지는 희석이나 추가 영양 보충 없이 근아세포 증식을 지지했는데, 이는 균주의 노폐물 제거와 영양 보충 효과 덕분이었습니다. 배양육을 겨냥한 연구이지만, '공배양 파트너에게 노폐물 처리를 맡긴다'는 발상은 구획 배지 라인에서 재순환·회수 구획을 설계할 때 참고할 만합니다.",
+    rating: 3.5,
+    rating_reason: "공급과 제거를 한 계에서 동시에 푼 설계가 명확합니다. 다만 포유류 조직 공배양이 아니고 피부와는 거리가 있습니다."
+  },
+  {
+    title: "Expansion of Human Epidermal Keratinocytes in Co-culture with Human Feeder Cells",
+    authors: "Suzuki D, Pinto F, Senoo M",
+    paper_id: "10.1007_978-1-0716-4510-9_1",
+    url: "https://doi.org/10.1007/978-1-0716-4510-9_1",
+    doi: "10.1007/978-1-0716-4510-9_1",
+    date: "2025-01-01",
+    venue: "Methods in Molecular Biology (Springer, IF 없음·단행본)",
+    topics: ["B. 배지 조성 상충", "피더 공배양", "TGF-β 억제제", "인체 피더로 대체", "xeno-free 지향"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 기존 3T3-J2 마우스 피더 대신 인체 진피 섬유아세포와 전지방세포를 피더로 쓰고 TGF-β 신호 저해제를 더해, 표피 각질형성세포를 빠르게 증식시키는 공배양 프로토콜입니다.",
+    background: "각질형성세포를 대량으로 확보하려면 1980년대부터 쓰여 온 3T3-J2 마우스 피더 공배양이 표준이었습니다. 그런데 동물 유래 피더는 이종 성분 문제를 남기고, 피더가 분비하는 인자가 무엇인지도 정의되지 않습니다. 세포 공급 단계의 조성을 정의하지 못하면 이후 구획 배지 설계도 흔들립니다.",
+    solution: "Green 등이 확립한 3T3-J2 피더 공배양법을 개선해, TGF-β 신호의 소분자 저해제를 활용해 인체 표피 각질형성세포의 증식을 더 촉진했습니다. 더 중요하게는 3T3-J2를 대신할 두 가지 인체 피더, 즉 인체 진피 섬유아세포와 인체 전지방세포와의 공배양에서도 각질형성세포를 빠르게 증식시킬 수 있게 했습니다. 저자들은 장기적으로 맞춤형 xeno-free 피부 자가이식편 개발을 목표로 제시합니다. 이 두 피더 세포는 우리 구상에서 진피·피하 구획에 들어갈 세포와 같은 종류라, 세포 확장 단계와 조직 구성 단계를 같은 세포로 묶을 수 있다는 점에서 공정 설계상 의미가 있습니다.",
+    rating: 3.5,
+    rating_reason: "이종 피더를 인체 피더로 대체하는 경로를 구체적으로 제시했습니다. 다만 프로토콜 장이라 정량 비교와 공배양 상호작용 분석은 제한적입니다."
+  },
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.venue} · ${p.date}${p.doi ? ' · DOI:' + p.doi : ''}${p.pdf ? ' · <a href="' + p.pdf + '" target="_blank" rel="noopener">PDF</a>' : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      ${p.image
+        ? `<div class="figwrap"><div class="fig"><img src="${p.image}" alt="${p.title}"></div>`
+          + (p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``) + `</div>`
+        : (p.figcap
+            ? `<div class="figwrap"><div class="capbox"><span class="caplabel">Figure 1 설명</span>${p.figcap}</div></div>`
+            : ``)}
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+    el.innerHTML = '<h3>지난 FT 피부 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="cocult-brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>

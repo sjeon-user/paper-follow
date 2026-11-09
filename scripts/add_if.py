@@ -7,11 +7,13 @@ ROOT = r"C:\Users\KIMM\Desktop\2026\연구 행정 스킬화\2026.07.22 physical 
 # JCR 2024 Journal Impact Factor. None = 수록되지 않거나 출처 간 불일치가 커서 넣지 않음.
 IF = {
  "Nature Cell Biology": 17.3,
+ "Nature Communications": 15.7,
  "Advanced Science": 14.1,
  "Biomaterials": 12.8,
  "Theranostics": 12.4,
  "Science Advances": 11.7,
  "Experimental & Molecular Medicine": 9.5,
+ "PNAS": 9.1,
  "Acta Biomaterialia": 9.7,
  "Royal Society Open Science": 2.9,
  "Cellular & Molecular Biology Letters": 9.2,
@@ -32,6 +34,7 @@ IF = {
  "International Journal of Molecular Sciences": 4.9,
  "Journal of Functional Biomaterials": 4.8,
  "The AAPS Journal": 5.0,
+ "Pharmaceutics": 4.9,
  "Polymers": 4.7,
  "The American Journal of Pathology": 4.7,
  "ACS Applied Bio Materials": 4.6,
@@ -53,6 +56,7 @@ IF = {
  "Adipocyte": 3.3,
  "Micromachines": 3.0,
  "Genes": 2.8,
+ "PLOS ONE": 2.9,
  "Materials": 3.1,
  "Journal of Tissue Engineering and Regenerative Medicine": 3.1,
  "Annals of Biomedical Engineering": 3.0,
@@ -63,6 +67,13 @@ IF = {
 # JIF가 없거나 신뢰할 만한 값을 확인하지 못한 저널 → 사유를 그대로 표기
 NOTE = {
  "Biomaterials and Biosystems": "IF 미수재",
+ "ALTEX": "IF 미확인",
+ "Toxicology in Vitro": "IF 미확인",
+ "Journal of Biological Engineering": "IF 미확인",
+ "Methods in Molecular Biology": "IF 없음·단행본",
+ "Biotechnology Progress": "IF 미확인",
+ "Journal of the Royal Society Interface": "IF 미확인",
+ "Lipids in Health and Disease": "IF 미확인",
  "Future Science OA": "IF 미확인",
  "Cellular and Molecular Bioengineering": "IF 미확인",
  "Bioprocess and Biosystems Engineering": "IF 미확인",
