@@ -59,4 +59,4 @@ for _name in ("cocult-brief.html", f"cocult-brief-{date}.html"):
 if not _label:
     print(f"WARNING: themes.json has no 'cocult' entry for {date} - add it and re-run to fill the theme box")
 else:
-    print(f"theme applied: {_label}")
+    print("theme applied")

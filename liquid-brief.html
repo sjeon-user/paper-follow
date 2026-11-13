@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>액체 핸들링·신개념 파이펫 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .capbox{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 13px;color:var(--muted);font-size:.82rem;line-height:1.65;background:var(--bg)}
+  .capbox .caplabel{display:block;font-weight:700;color:var(--text);font-size:.72rem;margin-bottom:4px}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .meta a{color:var(--accent);text-decoration:none}
+  .meta a:hover{text-decoration:underline}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>액체 핸들링·신개념 파이펫 논문 팔로우업</h1>
+    <div class="sub">FT(전층) 인체 피부 모델의 기하 불안정 → 분화·장벽 → OECD TG 431/439 규제 적합성 · 하루 1키워드 최대 5편 · 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="paper-brief.html">← arXiv 브리핑</a> <a href="rss-brief.html">🏛 RSS 학회</a> <a href="skin-brief.html">🧫 FT 피부</a> <a href="cocult-brief.html">🧪 공배양 제어</a> <a href="keep.html">⭐ 보관함</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>liquid-config.md · liquid-keywords.md 설정 기반 자동 생성 · Europe PMC + arXiv 데이터 · 저널 범위 제한 없음<br>저널명 옆 <b>IF</b>는 JCR 2024 Journal Impact Factor입니다. 선별에는 쓰이지 않으며 참고용입니다. JCR 미수재이거나 출처 간 값이 엇갈리는 저널은 <b>IF 미수재 / IF 미확인</b>으로 적었습니다. 공식 인용 시에는 Clarivate JCR 원본을 확인하십시오.</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-13";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "스스로 감지하고 고치는 파이펫 — 점도·기포 대응과 AI 폐루프·로봇 10편 (개관)", "keywords": ["viscous liquid transfer", "multi-objective Bayesian optimization", "bubble detection", "pressure monitoring", "closed-loop volume correction", "LLM protocol validation", "YOLO runtime monitoring", "noise-aware optimization", "collaborative robot pipetting", "reinforcement learning VLA"], "note": "이 브리핑의 첫 회차입니다. 출발 문제는 '기존 파이펫·액체 핸들러는 물 같은 액체를 전제로 한 개루프 장치'라는 점입니다. Europe PMC 20개 질의 + arXiv 7개 질의로 최근 10년 약 1,400편을 모았고, 파이펫을 도구로만 쓴 분석법 논문과 임상 용어 혼입(흡인성 폐렴·조제 등)을 걸러 209편을 남긴 뒤 다섯 축에 맞춰 10편을 골랐습니다. 구성: 점도 대응 3편 / 기포·오류 대응 2편 / AI·폐루프 3편 / 로봇 2편.\n**검색 소스에 관한 중요한 발견**: 점도 대응의 핵심 논문(10.1039/D3DD00255A, Digital Discovery)은 Europe PMC에 색인돼 있지 않아 웹 검색으로 찾았습니다. 화학 자동화 저널과 ChemRxiv는 Europe PMC만으로는 누락되므로 이 팔로우업은 arXiv·웹 검색을 반드시 병행합니다.\n눈여겨볼 점. (1) **점도 + AI + 폐루프가 한 논문에서 만난 것은 사실상 1편**입니다 — 204~1275 cP 표준액에 다목적 베이즈 최적화를 적용하고 자동 저울로 폐루프를 닫았습니다. (2) **기포 검출은 영상이 주류**이고(정확도 99.6%), 압력 파형 기반 학술 논문은 드뭅니다. 상용 장비(Hamilton·Tecan)에는 압력 감시가 이미 있지만 문헌보다 특허·기술문서에 많습니다. (3) **저가 장비는 압력 감시가 없어 개루프**라는 점이 여러 논문의 공통 출발점이고, 카메라로 그 공백을 메우는 흐름입니다. 다만 **투명한 액체는 정면 카메라로 볼 수 없다**는 한계가 명시돼 있습니다(arXiv:2607.15620). (4) 로봇 쪽은 **팁 장착 정밀도**가 병목이고, 액체의 점도·기포를 로봇 정책이 직접 다룬 사례는 아직 찾지 못했습니다.\n주의: 10편 중 4편이 arXiv 프리프린트입니다. 10.1039/D3DD00255A의 수치는 초록과 공개 요약에 근거했습니다."};
+/* 보관된 FT 피부 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 liquid-brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-13", t:"① 총론 — 점도·기포·AI·로봇"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     paper_id: "10.1016/j.xxx",        // DOI 우선, 없으면 "PMID:12345678" (skin-seen.json 중복 방지 키)
+     url:      "https://doi.org/...",
+     doi:      "10.1016/j.xxx",
+     date:     "2025-03",              // 출판 연-월
+     venue: "Journal name · 2025",  // 프리프린트면 "bioRxiv (preprint)"
+     topics:   ["A. 수축·탈착 원인", "collagen lattice", "수축률 62%"],  // [0]은 계층 라벨
+     image:    "liquid-img/<id>.png",    // OA 논문의 Figure 1 (없으면 "")
+     figcap:   "Figure 1. ...",
+     background: "배경·기존 문제 2~3문장",
+     solution:   "해결·방법과 결과 2~3문장 + 마지막에 이 회차 문제 진술과의 관련성 한 줄",
+     rating:     4.0,
+     rating_reason: "근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "Optimization of liquid handling parameters for viscous liquid transfers with pipetting robots, a \"sticky situation\"",
+    authors: "Quijano Velasco P, Low AKY, Leong CJ, Ng WT, Qiu S, Jhunjhunwala S, Li BY, Qian A, Hippalgaonkar K, Cheng J",
+    paper_id: "10.1039_D3DD00255A",
+    url: "https://doi.org/10.1039/D3DD00255A",
+    doi: "10.1039/D3DD00255A",
+    date: "2024-05",
+    venue: "Digital Discovery (RSC, OA, IF 미확인)",
+    topics: ["A. 점도 대응", "다목적 베이즈 최적화", "204~1275 cP", "자동 저울 폐루프", "2개 제조사 파이펫"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 점도 표준액 네 가지에 대해 흡인·토출 속도 조합을 다목적 베이즈 최적화가 제안하고, 중량 측정으로 이송 오차와 소요 시간을 평가해 다음 조건을 정하는 반복 루프입니다.",
+    background: "자동 공기치환식 파이펫은 실험실 액체 이송의 표준 장비이지만, 점도가 약 100 cP를 넘는 액체에서는 정확하고 정밀한 이송에 실패합니다. 흡인 때 피스톤이 액체가 팁으로 흘러드는 속도보다 빨리 움직이거나, 토출 때 액체가 끊어지는 것이 대표적 실패 양상입니다. 지금까지의 해법은 사용자의 직관에 기댄 시행착오 조정이었습니다.",
+    solution: "흡인 속도와 토출 속도를 변수로 두고, 이송 오차의 절댓값과 이송 시간을 동시에 최소화하는 다목적 베이즈 최적화(MOBO)를 적용했습니다. 제안된 속도 조합을 중량 측정으로 반복 시험하는 방식으로, 204~1275 cP 범위의 점도 표준액 네 가지를 서로 다른 제조사의 자동 파이펫 두 종에서 평가했습니다. 그 결과 MOBO가 사람의 직관과 같거나 더 나은 조건, 즉 정확도 또는 속도가 더 높은 파라미터를 찾아냈습니다. 나아가 자동 저울을 통합해 점도를 모르는 액체에 대해서도 파이펫 파라미터를 완전 폐루프로 최적화할 수 있음을 보였습니다. 점도 대응·AI·폐루프 세 요소가 한 논문에서 만나는, 이 팔로우업의 기준점입니다.",
+    rating: 4.5,
+    rating_reason: "점도 범위·장비 2종·사람 직관 대조를 갖추고 폐루프까지 실증했습니다. 다만 동료평가에서도 지적됐듯 새 최적화 알고리즘을 제안한 것은 아니고 뉴턴 유체 표준액에 한정됩니다."
+  },
+  {
+    title: "AEGIS: Assay-Aware Protocol Validation and Runtime Monitoring for Open-Source Liquid Handling Robots",
+    authors: "Setty PV, Ramanathan A, Foster I, Stevens R",
+    paper_id: "arXiv:2607.15620",
+    url: "https://arxiv.org/abs/2607.15620",
+    doi: "arXiv:2607.15620",
+    date: "2026-07-17",
+    venue: "arXiv (preprint) · 2026-07 (IF 없음·프리프린트)",
+    topics: ["C. AI·폐루프 제어", "LLM 사전 검증 F1 0.97", "YOLO+PCA 실행 감시 AP 0.89", "부분 토출·기포·팁 누락", "투명 액체 한계 명시"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 1층은 분석법 규칙 데이터베이스와 LLM이 OT-2 프로토콜 코드를 실행 전에 검증하고, 2층은 카메라로 잡은 파이펫 궤적을 세계 모델에 넣어 실행 중 실패를 잡는 2단 감시 구조입니다.",
+    background: "자율 실험실은 Opentrons OT-2 같은 저가 액체 핸들러에 점점 더 의존하지만, 이 장비에는 Hamilton·Tecan 장비가 가진 압력 기반 흡인 감시가 없어 대개 개루프로 운전됩니다. 그래서 두 종류의 실패가 잡히지 않습니다. 문법은 맞지만 분석법 규칙을 어긴 프로토콜(예: PCR 주형과 무주형 대조 사이 팁 재사용), 그리고 실행 중의 물리적 실패(부분 토출·기포·팁 누락)입니다.",
+    solution: "두 층으로 된 감시 체계 AEGIS를 제시했습니다. 1층은 기계가 읽을 수 있는 분석법 규칙 데이터베이스와 LLM을 짝지어 OT-2 파이썬 코드를 추론하며, 5개 분석법 계열 24개 프로토콜 벤치마크에서 조정 F1 0.97을 얻어 규칙 단독·LLM 단독보다 나았습니다. 2층은 YOLO로 잘라낸 파이펫 궤적에 PCA 세계 모델을 맞춰, 누설 없는 평가에서 평균 정밀도 0.89, F1 0.71을 기록했고 소형 파이펫(p20)에서는 해상도 한계로 F1 0.47에 그쳤습니다. 실물 OT-2 시연에서 팁 누락을 확정적으로 잡았고 색소 용액의 부분 토출도 검출했습니다. 저자들은 투명한 물은 정면 카메라만으로는 원리적으로 볼 수 없다는 한계를 숨기지 않고, 그 경우 오판 대신 낮은 확신으로 표시하도록 했습니다. 사전 검증과 실행 감시를 하나로 묶은 첫 사례로, 폐루프 제어의 '감지' 절반을 맡습니다.",
+    rating: 4.5,
+    rating_reason: "두 층 모두 제거 실험과 누설 없는 평가로 수치를 냈고 한계(p20·투명 액체)를 스스로 명시했습니다. 다만 프리프린트이고 검출 후 자동 보정까지는 닫지 않았습니다."
+  },
+  {
+    title: "Data-Centric Visual Development for Self-Driving Labs",
+    authors: "Liu A, Hu G, Wang J, Guo P, Liu H",
+    paper_id: "arXiv:2512.02018",
+    url: "https://arxiv.org/abs/2512.02018",
+    doi: "arXiv:2512.02018",
+    date: "2025-12-01",
+    venue: "arXiv (preprint) · 2025-12 (IF 없음·프리프린트)",
+    topics: ["B. 기포·오류 대응", "팁 내 기포 검출", "정확도 99.6%", "실제+생성 영상 혼합", "음성 샘플 부족 해결"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 자동 수집과 선택적 사람 검증을 결합한 실제 데이터 경로와, 참조 영상 조건부 생성으로 데이터를 늘리는 가상 경로를 합쳐 클래스 균형 잡힌 기포 검출 학습 데이터를 만드는 파이프라인입니다.",
+    background: "자율 실험실은 정밀도 요구가 엄격해 견고한 모델이 필요하고, 그 학습에는 많은 주석 데이터가 듭니다. 그런데 일상 운전에서 이런 데이터, 특히 실패 사례(음성 샘플)는 얻기 어렵습니다. 기포는 드물게 생기기 때문에 모을수록 편향된 데이터가 됩니다.",
+    solution: "자율 실험실에서 가장 정밀도에 민감한 동작인 파이펫팅에 초점을 맞춰, 실제 데이터와 가상 데이터 생성을 융합한 하이브리드 파이프라인을 만들었습니다. 실제 경로는 자동 수집에 선택적 사람 검증을 붙여 최소 노력으로 정확도를 확보하고, 가상 경로는 참조 영상 조건부·프롬프트 유도 영상 생성으로 데이터를 늘린 뒤 신뢰성을 걸러냅니다. 이렇게 얻은 균형 데이터로 기포 검출기를 학습시킨 결과, 따로 떼어 둔 실제 시험 세트에서 자동 수집한 실제 영상만으로 학습한 모델이 정확도 99.6%, 실제와 생성 데이터를 섞어도 99.4%를 유지하면서 수집·검토 부담을 줄였습니다. 기포 대응을 '검출 알고리즘'이 아니라 '드문 사건의 데이터 확보' 문제로 푼 점이 실용적입니다.",
+    rating: 4.0,
+    rating_reason: "실제 시험 세트로 평가하고 생성 데이터 혼합의 효과를 분리해 보였습니다. 다만 프리프린트이고 검출 이후의 보정 동작은 다루지 않습니다."
+  },
+  {
+    title: "A Study on Micropipetting Detection Technology of Automatic Enzyme Immunoassay Analyzer",
+    authors: "Shang Z, Zhou X, Li C, Tsai SB",
+    paper_id: "10.1038_s41598-018-24145-0",
+    url: "https://doi.org/10.1038/s41598-018-24145-0",
+    doi: "10.1038/s41598-018-24145-0",
+    date: "2018-04-10",
+    venue: "Scientific Reports (Nature, OA, IF 3.9)",
+    topics: ["B. 기포·오류 대응", "동적 압력 감시", "이중 문턱값 고장 판정", "칼만 필터", "영상 체적 측정 → 폐루프 보정"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 파이펫팅 중 압력과 그 1차 도함수를 실시간 감시해 고장을 판정하고, 고장 시 카메라로 팁 안 액체 영역을 추출해 체적을 계산한 뒤 편차를 파이펫 모듈에 되먹이는 구성입니다.",
+    background: "자동 분석기의 미량 파이펫팅은 정확도와 신뢰성이 결과를 좌우하지만, 기포 흡인이나 막힘 같은 고장이 생겨도 장치가 알아채지 못하면 그대로 다음 단계로 넘어갑니다. 압력 신호만으로는 '무엇이 얼마나 틀렸는지'까지 알기 어렵고, 영상만으로는 실시간성이 떨어집니다.",
+    solution: "파이펫팅 중 동적 압력 감시와 영상 처리에 의한 체적 정량을 결합한 검출·보정 방법을 제안했습니다. 먼저 파이펫 동작의 운동학 모델로 정규화 압력 모델을 세우고 실험으로 보정한 뒤, 압력과 압력의 1차 도함수를 실시간 감시하면서 구간별 이중 문턱값을 고장 판정 기준으로 썼고, 센서 데이터에 칼만 필터를 적용해 진단 정확도를 높였습니다. 고장이 나면 카메라로 팁 영상을 얻어 배경 대비로 액체 영역 경계를 추출하고 팁의 기하 특성으로 체적을 계산해, 그 편차를 자동 파이펫 모듈에 되먹여 보정합니다. 적정 시험에서 고장을 실시간으로 판정·분류할 수 있었고 폐루프 체적 조정이 정확도와 신뢰성을 높였습니다. 압력과 영상을 묶어 폐루프를 닫은 이른 사례로, 학술 문헌에 드문 압력 파형 기반 접근의 기준입니다.",
+    rating: 4.0,
+    rating_reason: "압력 감시와 영상 보정을 한 폐루프로 묶은 구조가 명확합니다. 다만 2018년 연구라 학습 기반 기법은 없고 초록 수준에서 정량 개선폭이 제시되지 않습니다."
+  },
+  {
+    title: "Noise-Aware Bayesian Optimization for Precision Improvement of Micro-Volume Liquid Handling in In Vitro Diagnostics",
+    authors: "Bai L",
+    paper_id: "10.3390_mi17101128",
+    url: "https://doi.org/10.3390/mi17101128",
+    doi: "10.3390/mi17101128",
+    date: "2026-09-28",
+    venue: "Micromachines (MDPI, OA, IF 3.0)",
+    topics: ["C. AI·폐루프 제어", "잡음 인지 베이즈 최적화", "CV 1.480% → 0.270%", "펌프 변수 5개·33조합", "혈청·BSA로 확인"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 50 µL 토출 공정의 펌프 제어 변수 다섯 개를 대상으로, 각 조건을 독립 5배치로 시험해 평균 CV와 표준오차를 가우시안 과정에 관측 잡음으로 넣어 다음 조건을 고르는 구성입니다.",
+    background: "체외진단 분석기에서 미량 토출의 정밀도는 결과 신뢰성에 직결됩니다. 펌프 제어 변수는 여럿이고 서로 얽혀 있어 엔지니어가 경험으로 정하는 것이 보통인데, 측정 자체에 잡음이 커서 '좋은 조건'과 '운 좋은 측정'을 가리기 어렵습니다. 잡음을 무시한 최적화는 엉뚱한 곳으로 수렴합니다.",
+    solution: "50 µL 토출 공정의 런 내 변동계수(CV)를 최소화하도록 펌프 제어 변수 다섯 개를 최적화하는 잡음 인지 베이즈 최적화 틀을 제시했습니다. 각 조건을 독립 5배치로 시험해 평균 CV를 반응값으로 쓰고, 표준오차의 제곱을 관측 잡음 분산으로 가우시안 과정에 넣었습니다. 시험한 33개 조합에서 최저 평균 CV는 0.266%였고, 공학적으로 반올림한 설정에서 0.270%로 엔지니어가 고른 설정(1.480%) 대비 81.8% 감소했습니다. 사후 재현 시험에서 CV 1.5% 미만에 도달하는 데 잡음 인지 방식은 2.8±1.2회, 등분산 GP 4.1회, 표준 GP 6.5회, 무작위 탐색 11.3회가 걸렸습니다. 탈이온수·희석 인체 혈청·5% 소 혈청 알부민 모두 평균 CV 0.45% 미만이었습니다. 적은 실험 횟수로 조건을 찾는 방법이며, 단백질 용액까지 확인해 점도가 조금 다른 액체에도 통함을 보였습니다.",
+    rating: 4.0,
+    rating_reason: "엔지니어 설정 대조와 탐색 효율 비교를 수치로 제시했습니다. 다만 저자 스스로 밝히듯 전향적 알고리즘 비교와 다중 장비 검증이 남아 있고 단독 저자 논문입니다."
+  },
+  {
+    title: "Noncontact Microfluidics of Highly Viscous Liquids for Accurate Self-Splitting and Pipetting",
+    authors: "Han X, Tan S, Wang Q, Zuo X, Heng L, Jiang L",
+    paper_id: "10.1002_adma.202402779",
+    url: "https://doi.org/10.1002/adma.202402779",
+    doi: "10.1002/adma.202402779",
+    date: "2024-04-19",
+    venue: "Advanced Materials (Wiley, IF 26.8)",
+    topics: ["A. 점도 대응", "인접", "비접촉 자가 분할", "15,000 mPa·s", "정확도 80% 이상 vs 1.3%"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 투명한 광초전 슬리퍼리 표면 위에서 햇빛과 냉각원이 만드는 국소 온도차로 고점도 액체가 접촉 없이 스스로 갈라지게 하고, 20 nm 이하 MXene 박막을 광열층으로 쓰는 구성입니다.",
+    background: "정확한 정량 분주는 분자 가교부터 재료 가공까지 기본이지만, 스포이트나 파이펫은 점도 100 mPa·s를 넘는 고분자 액체 앞에서 무력합니다. 얽힌 고분자 사슬과 강한 응집 에너지 때문에 액체가 끊어지지 않고 따라오기 때문입니다. 흡인·토출이라는 원리 자체가 한계라면 원리를 바꿔야 합니다.",
+    solution: "매우 투명한 광초전 슬리퍼리(PS) 플랫폼을 만들어, 햇빛과 냉각원으로 국소 온도차(ΔT)를 주는 것만으로 점도 15,000 mPa·s에 이르는 액체를 비접촉으로 자가 분할시켰습니다. 투명도와 광열 특성 사이의 상충은 두께 20 nm 이내의 초박막 MXene을 자기조립해 광열층으로 쓰는 방식으로 풀었고, 이로써 분주 정확도 80% 이상을 확보했습니다. 기존 파이펫 방식이 고분자 액체에서 약 1.3%의 정확도에 그친 것과 대비됩니다. 접착 계에 적용했을 때 스포이트나 파이펫을 쓴 경우보다 접착 강도가 두 배였습니다. 재료 분야 연구이지만, 고점도 액체를 '빨아들이지 않고 나눈다'는 발상은 신개념 파이펫의 원리 후보로 볼 만합니다.",
+    rating: 4.0,
+    rating_reason: "점도 상한과 기존 방식 대비 정확도를 수치로 대조했습니다. 다만 실험실 자동화 장비로의 통합이나 체적 범위·반복 정밀도는 제시되지 않았습니다."
+  },
+  {
+    title: "Real-time AI-driven quality control for laboratory automation: a novel computer vision solution for the Opentrons OT-2 liquid handling robot",
+    authors: "Khan SU, Møller VK, Frandsen RJ, Mansourvar M",
+    paper_id: "10.1007_s10489-025-06334-3",
+    url: "https://doi.org/10.1007/s10489-025-06334-3",
+    doi: "10.1007/s10489-025-06334-3",
+    date: "2025-03-10",
+    venue: "Applied Intelligence (Springer, IF 미확인)",
+    topics: ["C. AI·폐루프 제어", "YOLOv8", "팁·액체량 검출", "실시간 오류 피드백", "저가 장비 대상"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): YOLOv8 객체 검출 모델을 OT-2에 통합해 파이펫 팁과 액체량을 검출하고, 팁 누락이나 액면 이상 같은 오류를 실시간으로 되먹이는 구성입니다.",
+    background: "생명과학 연구개발에서 액체 핸들링 로봇은 자동화의 중심이지만, Opentrons OT-2 같은 현행 장비에는 통합된 영상 기반 품질 관리가 없어 정확도와 신뢰성이 제한됩니다. 팁이 안 끼워졌거나 액체가 덜 들어가도 장비는 그대로 진행합니다. 자원이 한정된 연구실일수록 이 공백을 메울 저가 수단이 필요합니다.",
+    solution: "YOLOv8 객체 검출 모델을 OT-2에 통합한 AI 기반 컴퓨터 비전 모델을 제시했습니다. 이 모델은 파이펫 팁과 액체량을 검출해 팁 누락, 잘못된 액면 같은 오류에 대해 실시간 피드백을 제공합니다. 저자들은 이 폐루프 구성이 OT-2를 자동화 실험 작업에 견고한 도구로 바꾸며, 학술·연구 실험실이 감당할 수 있는 비용으로 품질 관리를 개선하는 방법이라고 제시합니다. 앞의 AEGIS와 같은 문제(저가 장비의 개루프)를 더 단순한 구성으로 푼 사례이고, 동료평가를 거친 논문이라는 점에서 근거로 인용하기 좋습니다.",
+    rating: 3.5,
+    rating_reason: "문제 설정과 통합 방식이 명확하고 저널 게재 논문입니다. 다만 초록 수준에서 검출 성능 수치와 보정 동작의 구체 내용이 제시되지 않습니다."
+  },
+  {
+    title: "Keyframe-Guided Structured Rewards for Reinforcement Learning in Long-Horizon Laboratory Robotics",
+    authors: "Qiu Y, Sun S, Ye H, Xu RX, Sun M",
+    paper_id: "arXiv:2603.00719",
+    url: "https://arxiv.org/abs/2603.00719",
+    doi: "arXiv:2603.00719",
+    date: "2026-02-28",
+    venue: "arXiv (preprint) · 2026-02 (IF 없음·프리프린트)",
+    topics: ["D. 로봇 기술", "강화학습 + VLA", "키프레임 유도 보상", "성공률 82% vs 42~47%", "40~60분 온라인 미세조정"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 시연에서 운동학 기반 키프레임을 자동 추출하고, 확산 모델로 단계별 목표를 예측해 진행도 기반 보상을 만든 뒤 VLA 백본을 사람 개입 강화학습으로 미세조정하는 구성입니다.",
+    background: "파이펫 팁 장착과 액체 이송 같은 실험실 조작은 엄격한 절차 논리를 지키면서 연속적인 고차원 상태 공간에서 움직여야 하는 긴 과업입니다. 기존 접근은 보상이 드물고 다단계 구조 제약이 있으며 시연이 불완전해, 탐색이 비효율적이고 수렴이 불안정했습니다.",
+    solution: "시연에서 운동학을 고려한 키프레임을 자동으로 뽑고, 잠재 공간의 확산 기반 예측기로 단계별 목표를 생성한 뒤, 기하적 진행도 기반 보상을 구성해 온라인 강화학습을 이끄는 틀을 제안했습니다. 다시점 시각 부호화, 잠재 유사도 기반 진행 추적, 그리고 VLA(시각-언어-행동) 백본에 대한 사람 개입 강화 미세조정을 통합해, 정책 최적화를 생물학 프로토콜의 단계 논리에 맞췄습니다. 고정밀 파이펫 장착과 동적 액체 이송을 포함한 실제 실험실 과업 4종에서 40~60분의 온라인 미세조정 후 평균 성공률 82%를 달성했고, 비교 기법인 HG-DAgger(42%)와 Hil-ConRFT(47%)를 크게 앞섰습니다. 갠트리가 아닌 로봇 팔이 학습으로 파이펫을 다루는 방향의 최신 수치입니다.",
+    rating: 4.0,
+    rating_reason: "실물 과업 4종에서 두 기준 기법과 성공률을 대조했습니다. 다만 프리프린트이고, 이송 체적의 정확도나 점도·기포 같은 액체 물성은 평가하지 않았습니다."
+  },
+  {
+    title: "Integrating a Manual Pipette into a Collaborative Robot Manipulator for Flexible Liquid Dispensing",
+    authors: "Zhang J, Wan W, Tanaka N, Fujita M, Harada K",
+    paper_id: "arXiv:2207.01214",
+    url: "https://arxiv.org/abs/2207.01214",
+    doi: "arXiv:2207.01214",
+    date: "2022-07-04",
+    venue: "arXiv (preprint) · 2022-07 (IF 없음·프리프린트)",
+    topics: ["D. 로봇 기술", "6자유도 협동로봇", "수동 파이펫 엔드이펙터", "영상 기반 위치 오차 보정", "팁 장착 정밀도"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 수동 파이펫을 쥐고 누르는 전용 엔드이펙터를 단 6자유도 협동로봇이 랩웨어 자세를 인식해 동작을 계획하고, 영상 분류기로 위치 오차를 예측·보정해 팁을 장착하는 구성입니다.",
+    background: "전용 액체 핸들러는 정해진 덱 안에서만 움직이고 실험실 환경을 장비에 맞춰야 합니다. 사람이 쓰는 수동 파이펫을 로봇 팔이 그대로 쓸 수 있다면 환경을 크게 바꾸지 않고 자동화할 수 있지만, 일회용 팁을 정확히 끼우는 일이 정밀도 면에서 어렵습니다.",
+    solution: "6자유도 협동로봇이 파이펫을 조작해 액체를 분주하도록 하는 시스템 통합 방식을 제시했습니다. 기술 개발은 세 갈래입니다. 첫째 수동 파이펫을 쥐고 작동시키는 엔드이펙터를 설계했고, 둘째 협동로봇으로 랩웨어 자세를 인식해 그에 맞춰 동작을 계획했으며, 셋째 영상 기반 분류기로 위치 오차를 예측·보정해 파이펫을 일회용 팁에 정밀하게 장착했습니다. 실험과 분석으로 특히 계획과 시각 인식 방법이 고정밀·유연한 분주를 확보하는 데 기여함을 확인했습니다. 저자들은 이 시스템이 저빈도·고반복 생화학 분주 과업에 적합하다고 봅니다. 팁 장착을 영상 피드백으로 보정한다는 점에서 로봇과 폐루프가 만나는 지점입니다.",
+    rating: 3.5,
+    rating_reason: "하드웨어·계획·시각 보정을 통합해 실험으로 확인했습니다. 다만 분주 정확도의 정량 수치가 초록에 없고 액체 물성 변화는 다루지 않습니다."
+  },
+  {
+    title: "Practical Pipetting Optimization Strategies for Accurate Concentration Measurement of High-Concentration Protein Formulations",
+    authors: "Wu SY, He YJ, Qian C, Zhong SR, Xiao HX, Xiong C, Di B, Fang WJ",
+    paper_id: "10.1208_s12249-026-03553-w",
+    url: "https://doi.org/10.1208/s12249-026-03553-w",
+    doi: "10.1208/s12249-026-03553-w",
+    date: "2026-09-23",
+    venue: "AAPS PharmSciTech (Springer, IF 미확인)",
+    topics: ["A. 점도 대응", "고농도 항체 제형", "전동 연속 파이펫", "중량 보정법", "상용 분석기 3종 대조"],
+    image: "",
+    figcap: "그림 설명(초록 기반 요약): 점도가 서로 다른 고농도 단클론항체 제형 두 가지를 모델로, 전동 연속 파이펫 직접 측정법과 중량 보정법을 수동 파이펫팅·상용 단백질 분석기 3종과 비교한 구성입니다.",
+    background: "피하 투여용 고농도 단백질 제형이 빠르게 늘고 있지만, 점도에서 오는 파이펫팅 오차가 단백질 농도를 정확히 정량하는 데 핵심 병목으로 남아 있습니다. 상용 검출 장비도 이런 시료를 직접 측정하는 데 뚜렷한 한계를 보입니다. 실제 바이오 시료에서 점도 문제가 어떻게 나타나는지 보여 주는 사례입니다.",
+    solution: "점도가 다른 고농도 단클론항체 제형 두 가지를 모델로 두 가지 파이펫팅 최적화 정량 전략을 개발했습니다. 하나는 전동 연속 파이펫 기반 직접 측정법, 다른 하나는 중량 보정법입니다. 전동 연속 파이펫이 고점도 액체 취급에서 높은 정확도와 반복성을 보임을 확인하고, 최적화한 방법들을 전통적인 수동 파이펫팅 및 주요 상용 단백질 분석기 3종과 체계적으로 비교했습니다. 분석기 3종의 직접 측정은 제형에 따라 편차를 보였고, 두 최적화 워크플로 모두 파이펫팅 정밀도를 개선해 반복성 높은 농도 추정값을 냈습니다. 저자들은 다른 단백질 양식과 중간 점도 제형으로의 적용은 추가 검증이 필요하다고 밝혔습니다. AI는 없지만 '체적이 틀리면 무게로 고친다'는 보정 원리가 폐루프 설계의 가장 단순한 형태입니다.",
+    rating: 3.5,
+    rating_reason: "실제 고점도 바이오 시료로 수동·상용 장비와 비교했고 적용 한계를 스스로 명시했습니다. 다만 초록에 개선폭 수치가 없고 자동화·학습 요소는 없습니다."
+  },
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.venue} · ${p.date}${p.doi ? ' · DOI:' + p.doi : ''}${p.pdf ? ' · <a href="' + p.pdf + '" target="_blank" rel="noopener">PDF</a>' : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      ${p.image
+        ? `<div class="figwrap"><div class="fig"><img src="${p.image}" alt="${p.title}"></div>`
+          + (p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``) + `</div>`
+        : (p.figcap
+            ? `<div class="figwrap"><div class="capbox"><span class="caplabel">Figure 1 설명</span>${p.figcap}</div></div>`
+            : ``)}
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+    el.innerHTML = '<h3>지난 FT 피부 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="liquid-brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>

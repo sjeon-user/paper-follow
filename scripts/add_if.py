@@ -6,6 +6,7 @@ ROOT = r"C:\Users\KIMM\Desktop\2026\연구 행정 스킬화\2026.07.22 physical 
 
 # JCR 2024 Journal Impact Factor. None = 수록되지 않거나 출처 간 불일치가 커서 넣지 않음.
 IF = {
+ "Advanced Materials": 26.8,
  "Nature Cell Biology": 17.3,
  "Nature Communications": 15.7,
  "Advanced Science": 14.1,
@@ -67,6 +68,10 @@ IF = {
 # JIF가 없거나 신뢰할 만한 값을 확인하지 못한 저널 → 사유를 그대로 표기
 NOTE = {
  "Biomaterials and Biosystems": "IF 미수재",
+ "arXiv": "IF 없음·프리프린트",
+ "Digital Discovery": "IF 미확인",
+ "Applied Intelligence": "IF 미확인",
+ "AAPS PharmSciTech": "IF 미확인",
  "ALTEX": "IF 미확인",
  "Toxicology in Vitro": "IF 미확인",
  "Journal of Biological Engineering": "IF 미확인",
@@ -133,7 +138,7 @@ def patch(venue, unknown):
 dry = "--apply" not in sys.argv
 unknown = set()
 changed = 0
-files = sorted(glob.glob(os.path.join(ROOT, "skin-brief*.html")) + glob.glob(os.path.join(ROOT, "cocult-brief*.html")))
+files = sorted(glob.glob(os.path.join(ROOT, "skin-brief*.html")) + glob.glob(os.path.join(ROOT, "cocult-brief*.html")) + glob.glob(os.path.join(ROOT, "liquid-brief*.html")))
 for f in files:
     s = io.open(f, encoding="utf-8").read()
     n = [0]
