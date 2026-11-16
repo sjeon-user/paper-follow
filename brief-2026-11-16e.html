@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physical AI 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Physical AI 논문 팔로우업</h1>
+    <div class="sub">최근 arXiv 신규 논문 · 대표 그림 + 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="keep.html">⭐ 보관함</a> <a href="skin-brief.html">🧫 FT 피부</a> <a href="cocult-brief.html">🧪 공배양 제어</a> <a href="liquid-brief.html">💧 액체 핸들링</a> <a href="rss-brief.html">🏛 RSS 학회</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>follow-config.md 설정을 기반으로 자동 생성 · arXiv 데이터</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-16e";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "실험실 조작과 피펫팅에 가장 가까운 선행 연구 8편 (표 5·6)", "keywords": ["DexBioLab", "LabDex", "LabVLA", "Pipette platform", "BioProVLA-Agent", "keyframe reward RL", "Labimus", "FARM"], "note": "사용자 조사 문서 『VLA·UMI·피펫팅 조사 표 총정리』(2026-11-15)의 arXiv 논문을 유형별로 나눈 특집입니다. 문서의 arXiv ID 30개를 arXiv API로 모두 대조해 제목·저자가 일치함을 확인했습니다. 이 중 15편은 이전 회차에 이미 실려 기존 요약·그림을 그대로 재사용했고(첫 태그에 표·유형 라벨만 추가), 새 15편은 초록을 읽고 작성했습니다. 문서가 '확인 못함'·'기억'으로 표시한 항목 중 arXiv 번호가 없는 것(HYDRA, SPHINX, HDCNet, ACT/ALOHA, π0.7, 산업계 사례)은 싣지 않았습니다. 구성: 벤치마크 3편(DexBioLab·LabDex·Labimus) / 정책 3편(LabVLA·BioProVLA-Agent·키프레임 강화학습) / 플랫폼 1편(Pipette) / 힘·촉각 UMI 1편(FARM). 신규 4편, 재수록 4편입니다. **수치 출처 주의**: LabDex(π0.5 평균 0.57, 비커 방해물 1.00→0.00)와 LabVLA(71.1%/70.0%, 붓기 34.2%)의 세부 수치는 초록에 없어 **조사 문서의 값을 인용**했고 본문에 그 사실을 적었습니다. 인용 전 원문 확인이 필요합니다. 문서의 두 결론은 그대로 유효합니다 — UMI 방식으로 피펫팅을 다룬 논문은 없고, 이송한 액체의 부피 정확도를 지표로 쓴 사례도 없습니다. 그 공백에 가장 가까운 것은 Labimus로, '과제를 끝낸 정책도 실험의 정량 허용 오차를 못 맞출 수 있다'는 정밀도 격차를 보였지만 대상이 고체 칭량입니다. 관련 주제는 '💧 액체 핸들링' 브리핑(점도·기포·폐루프)과 함께 보시면 됩니다."};
+/* 보관된 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-16e", t:"조사표 ⑤ 실험실 조작·피펫팅"}, {d:"2026-11-16d", t:"조사표 ④ 투명 물체 인식·파지"}, {d:"2026-11-16c", t:"조사표 ③ 양팔 역할 분담"}, {d:"2026-11-16b", t:"조사표 ② 혼합형 VLA"}, {d:"2026-11-16", t:"조사표 ① UMI→VLA 계보"}, {d:"2026-10-18b", t:"자동화·CV 한계 극복 학습 조작"}, {d:"2026-10-18", t:"CLIP/ViT + Diffusion Policy + RLinf"}, {d:"2026-10-06", t:"학습 없는 비전 제어 vs 행동 학습"}, {d:"2026-10-01", t:"VLA + 강화학습 · 정답 감독"}, {d:"2026-09-30c", t:"텔레센트릭 카메라 활용"}, {d:"2026-09-30b", t:"거울(mirror) 활용"}, {d:"2026-09-30", t:"조명(lighting) 활용"}, {d:"2026-09-29", t:"다중 신호 동기화 · 지연"}, {d:"2026-09-28", t:"파이펫팅 조작 특집"}, {d:"2026-09-21", t:"정밀도·정확도·재현성"}, {d:"2026-09-10", t:"Diffusion/Flow 정책 · ACT · 접촉 저널"}, {d:"2026-08-12", t:"UMI 계보 특집"}, {d:"2026-08-10", t:"투명 물체 특집"}, {d:"2026-08-08", t:"일일 · follow-config 주제"}, {d:"2026-08-06", t:"일일 · 주제 5개로 축소"}, {d:"2026-08-04", t:"일일 · follow-config 주제"}, {d:"2026-08-03", t:"일일 브리핑"}, {d:"2026-07-31", t:"일일 브리핑"}, {d:"2026-07-30", t:"일일 브리핑"}, {d:"2026-07-29", t:"일일 브리핑"}, {d:"2026-07-28", t:"일일 브리핑"}, {d:"2026-07-27", t:"일일 브리핑"}, {d:"2026-07-24", t:"일일 브리핑"}, {d:"2026-07-23", t:"일일 브리핑"}, {d:"2026-07-22", t:"일일 브리핑"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     arxiv_id: "2507.xxxxx",
+     url:      "https://arxiv.org/abs/2507.xxxxx",
+     date:     "2026-07-15",           // arXiv 최초 제출일
+     categories: "cs.RO, cs.CV",
+     topics:   ["VLA","robot arm"],     // follow-config의 세부 주제 태그
+     image:    "images/2507xxxxx.png",  // 대표 그림 (없으면 "")
+     figcap:   "Figure 1. ...",         // 그림 설명 (선택)
+     background: "배경·기존 문제 2~3문장 (설명/소개 문투)",
+     solution:   "해결·방법과 결과 2~3문장 (설명/소개 문투)",
+     rating:     4.5,                  // 논문 전체 논리 + 근거 견고함 (0~5, 0.5 단위)
+     rating_reason: "그 점수를 준 근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "DexBioLab: Benchmarking Dexterous Manipulation with Dynamic Experimental Phenomena in Realistic Laboratories",
+    authors: "Xuanye Wu 외 10명",
+    arxiv_id: "2610.13643",
+    url: "https://arxiv.org/abs/2610.13643",
+    date: "2026-10-09",
+    categories: "cs.RO",
+    topics: ["표6 · 실험실 조작 (벤치마크)", "DexBioLab", "14과제 · 4개 로봇 형태", "불꽃·증기·기포 동적 현상", "가우시안 스플래팅 배경 6곳"],
+    image: "images/2610.13643.png",
+    figcap: "Fig. 개요 — 핀셋·피펫 조작 등 정교 생물 실험 과제, 기포·불꽃·증기 같은 동적 실험 현상, 실제 실험실 6곳을 재구성한 가우시안 스플래팅 배경, 병렬 상태기계 데이터 수집, 다중 로봇 형태",
+    rating: 4.0,
+    rating_reason: "동적 현상과 실제 배경을 넣어 평가 조건을 현실에 가깝게 만들고 병렬 프레임워크까지 공개했습니다. 다만 초록에 정책별 수치가 없고 액체 체적 정확도는 지표가 아닙니다.",
+    background: "생물 실험실을 자동화하려면 로봇이 현실적인 시각 조건에서 정교한 도구 상호작용을 하면서 동적으로 변하는 실험 현상까지 다뤄야 합니다. 이런 조건에서 정책을 체계적으로 평가할 벤치마크가 없었습니다.",
+    solution: "DexBioLab은 현실적인 생물 실험실 환경의 정교 조작을 위한 시뮬레이션 벤치마크이자 프레임워크입니다. 기능적 도구 사용, 정밀 조작, 언어 조건부 시각 접지, 장비 조작에 걸친 14개 과제를 4개 로봇 형태로 구성했습니다. 실험 절차의 변하는 시각 조건을 담기 위해 불꽃·증기·기포 같은 제어 가능한 동적 실험 현상을 도입했고, 상호작용하는 전경 물체와 실제 실험실 6곳에서 재구성한 가우시안 스플래팅 배경을 합치는 하이브리드 렌더링을 개발했습니다. mjlab 위에 병렬 유한상태기계(PFSM)와 배치 렌더링을 얹어 대규모 시연 생성과 정책 평가를 효율화했습니다. 평가 결과 과제에 따라 정책 성능의 편차가 컸고, 실제 실험으로 시뮬레이션–현실 격차가 줄었음을 보였습니다. 조사 문서에 따르면 피펫 팁 끼우기와 흡인 과제가 포함되며 GR00T N1.7이 피펫·핀셋·뚜껑 조작에서 약했습니다(수치 미확인)."
+  },
+  {
+    title: "LabDex: A Hierarchical Benchmark for Dexterous Manipulation in Laboratories",
+    authors: "Zhipeng Tang 외 13명",
+    arxiv_id: "2608.18618",
+    url: "https://arxiv.org/abs/2608.18618",
+    date: "2026-08-19",
+    categories: "cs.RO",
+    topics: ["표6 · 실험실 조작 (벤치마크)", "LabDex", "Franka + 다지 손 실제 데이터", "원자 기술 → 조합 → 긴 워크플로", "실기–시뮬 통합"],
+    image: "images/2608.18618.png",
+    figcap: "Fig. 개요 — 위: 실제 플랫폼(XHand+Franka)과 시뮬레이션 환경을 하나의 틀로 통합. 가운데: 원자 기술·조합 기술·긴 실험 워크플로의 3단 과제 위계. 아래: 자산·원격조종 장치·데이터 규모",
+    rating: 4.0,
+    rating_reason: "실제 데이터와 시뮬레이션을 한 틀로 묶고 기술 위계로 실패 원인을 추적할 수 있게 했습니다. 다만 초록에는 수치가 없어 위 값은 조사 문서 인용이며 원문 확인이 필요합니다.",
+    background: "자율 실험실이 과학적 발견을 앞당기려면 로봇이 다양한 실험 기구와 장비를 정교하게 다루고, 상태에 따라 달라지는 긴 실험 절차를 수행해야 합니다. 그런데 기존 벤치마크는 다지 손 사용, 실제 실험실 상호작용, 다단계 실험 절차를 함께 담지 못해 체계적인 학습과 평가가 어려웠습니다.",
+    solution: "LabDex는 화학 실험실의 정교 조작을 위한 대규모 실제 데이터셋이자 벤치마크로, 원자 기술·조합 과제·긴 실험의 위계적 과제 분류를 중심으로 구성됩니다. 실제 플랫폼과 시뮬레이션 플랫폼을 처음으로 공통 틀 아래 통합해 표준화된 과제 정의·시연·평가 절차를 제공합니다. 이 위계 설계 덕분에 최종 과제 성능뿐 아니라 기초 기술이 어떻게 조합되어 복잡한 실험 조작에 영향을 주는지를 분석할 수 있습니다. 대표 로봇 학습 방법들을 실제와 시뮬레이션에서 수준별로 교차 평가했습니다. 조사 문서 기준으로 π0.5의 평균은 0.57(놓기 0.92, 붓기 0.66, 집기 0.46, 끼우기 0.30)이었고, 대상 옆에 100 mL 비커를 두면 1.00에서 0.00으로 떨어졌습니다. 투명 유리 기구가 방해물일 때 기존 정책이 무너진다는 뜻입니다."
+  },
+  {
+    title: "LabVLA: Grounding Vision-Language-Action Models in Scientific Laboratories",
+    authors: "Baochang Ren 외 17명",
+    arxiv_id: "2606.13578",
+    url: "https://arxiv.org/abs/2606.13578",
+    date: "2026-06-11",
+    categories: "cs.CL, cs.AI, cs.LG, cs.MM, cs.RO",
+    topics: ["표6 · 실험실 조작 (정책)", "LabVLA", "RoboGenesis 합성 시연", "FAST 토큰 사전학습 → 플로우 매칭", "LabUtopia 최고 평균"],
+    image: "images/2606.13578.png",
+    figcap: "Fig. 학습 구조 — 왼쪽 사전학습: 접지 데이터와 FAST 행동 토큰으로 Qwen3-VL 백본을 행동 인지형으로 만듦. 오른쪽 사후학습: 지식 격리 아래 DiT 액션 전문가를 플로우 매칭으로 부착",
+    rating: 4.0,
+    rating_reason: "데이터 엔진과 2단계 학습법을 함께 제시하고 분포 밖 평가를 포함했습니다. 다만 합성 시연 기반이라 실제 실험실 검증이 약하고, 위 세부 수치는 조사 문서 인용입니다.",
+    background: "AI는 문헌을 읽고 가설을 만들고 프로토콜을 짜는 일은 돕지만, 그 프로토콜을 실험대에서 실행하는 일은 여전히 사람 몫입니다. VLA가 그 접점이 될 수 있으나, 기존 정책은 주로 가정·탁상 시연으로 학습돼 실험 장비, 투명한 액체, 고정된 프로토콜 흐름을 거의 접하지 못했습니다. 저자들은 모델 설계와 함께 데이터와 로봇 형태를 핵심 병목으로 지목했습니다.",
+    solution: "데이터 쪽으로는 RoboGenesis라는 시뮬레이션 기반 워크플로·데이터 엔진을 만들어, 원자 기술로 실험 워크플로를 구성하고 롤아웃을 검증·선별해 여러 로봇 프로필의 구조화된 시연으로 내보냅니다. 정책 쪽 LabVLA는 2단계로 학습합니다. 먼저 FAST 행동 토큰 사전학습으로 Qwen3-VL-4B 백본이 연속 제어를 배우기 전에 행동을 인지하게 하고, 이어 플로우 매칭 사후학습으로 지식 격리 아래 DiT 액션 전문가를 붙입니다. LabUtopia 벤치마크에서 분포 내·분포 밖 모두 평가된 기준선 가운데 가장 높은 평균 성공률을 기록했습니다. 조사 문서 기준 평균은 71.1%(분포 내)·70.0%(분포 밖)이고, 액체 붓기는 34.2%로 어떤 기준선도 50%를 넘지 못했으며 원인으로 액면 높이 피드백의 부재가 지목됐습니다."
+  },
+  {
+    title: "Pipette: An Embodied Simulation Platform, Benchmark, and Data-Efficient Augmentation Framework for Wet-Lab Robotics",
+    authors: "Zhe Liu 외 12명",
+    arxiv_id: "2606.12936",
+    url: "https://arxiv.org/abs/2606.12936",
+    date: "2026-06-11",
+    categories: "cs.RO, cs.AI",
+    topics: ["표6 · 실험실 조작 (플랫폼)", "A. 액체·화학 실험실 정밀 조작", "wet-lab benchmark", "precision placement", "sim augmentation"],
+    image: "images/2606.12936.png",
+    figcap: "Figure. 실험실 자산(워크스테이션·장비·튜브·랙)으로 장면을 구성하고, 원격조작 시연을 조명·속도·카메라·궤적 섭동으로 증강해 VLA를 학습·평가하는 Pipette 플랫폼과 12개 과제군",
+    rating: 4.0,
+    rating_reason: "웻랩 로봇 학습의 병목(안전한 과제 생성, 편집 가능한 자산, 소수 시연의 증강)을 100개 이상 공개 자산·3개 팔 임베디먼트·자동 성공 판정 증강 파이프라인으로 함께 다뤘고, 12개 과제 벤치마크에서 과제당 30개 시연으로 ACT 60.3%, 증강으로 SmolVLA 40.4→71.8%, π0 37.3→44.1%라는 구체적 수치를 제시했습니다. 시뮬레이션 중심 검증이라는 점은 감안할 부분입니다.",
+    background: "웻랩(wet-lab) 로봇은 생의학 실험의 재현성·처리량·안전성을 높일 수 있지만, 학습을 확장하려면 안전하고 재현 가능한 과제 생성을 위한 맞춤형 시뮬레이터, 편집 가능한 공개 실험실 자산, 그리고 제한된 시연을 쓸 만한 학습 데이터로 바꾸는 효율적 파이프라인이 필요합니다. 기존에는 이 세 요소가 함께 갖춰진 플랫폼이 없었습니다.",
+    solution: "저자들은 웻랩 로봇 학습을 위한 임베디드 시뮬레이션 플랫폼·벤치마크·데이터 효율적 증강 프레임워크 Pipette를 제시했습니다. 텍스트·이미지 조건 3D 자산 생성을 지원하는 확장형 자산 구축 파이프라인으로 100개 이상의 공개·재편집 가능 웻랩 자산을 제공하고, 통합 시뮬레이션 인터페이스로 세 가지 로봇 팔 임베디먼트의 과제 구성·데이터 수집·증강·평가를 지원합니다. 핵심은 사람 시연을 시뮬레이션에서 재생하며 조명·카메라·속도·행동 섭동을 적용하고 자동 성공 검사로 걸러 소수의 수동 시연을 빠르게 확장하는 증강 파이프라인입니다. 시료 취급, 배양기구 조작, 장비 조작, 정밀 배치를 아우르는 12개 과제 벤치마크에서 과제당 30개 시연만으로 ACT가 평균 60.3%를 달성했고, 시뮬레이션 증강은 SmolVLA를 40.4%에서 71.8%로, π0를 37.3%에서 44.1%로 끌어올렸습니다. 자연어 기반 장면 구성·과제 등록도 지원해 비전문가의 과제 정의 문턱을 낮췄습니다."
+  },
+  {
+    title: "BioProVLA-Agent: An Affordable, Protocol-Driven, Vision-Enhanced VLA-Enabled Embodied Multi-Agent System with Closed-Loop-Capable Reasoning for Biological Laboratory Manipulation",
+    authors: "Zhaohui Du 외 11명",
+    arxiv_id: "2605.07306",
+    url: "https://arxiv.org/abs/2605.07306",
+    date: "2026-05-08",
+    categories: "cs.RO, cs.AI",
+    topics: ["표6 · 실험실 조작 (정책)", "A. 지그·전용 장비·수작업 프로그래밍 없이 · C. CV 한계(투명·반사 기구)", "wet lab: unstructured protocols · transparent/reflective labware · dedicated instruments & fixed workflows", "LLM protocol agent + VLM-RAG verification + AugSmolVLA", "transparent-labware augmentation · tube placement 40 → 65%"],
+    image: "images/2605.07306.png",
+    figcap: "Figure. BioProVLA-Agent — LLM 프로토콜 에이전트가 생물 실험 프로토콜을 사전·사후 조건이 있는 하위 과제로 변환하고, VLM-RAG 검증 에이전트가 실시간 영상으로 조건을 확인하며, 안내 결정 에이전트가 실행·재시도를 관리하고, 다중 스케일 증강으로 학습한 VLA 체화 에이전트가 원심분리기 뚜껑 열기·시험관 삽입 등 단일·복합·양팔 과제를 수행",
+    rating: 3.5,
+    rating_reason: "전용 기기·고정 워크플로라는 자동화 한계와 투명·반사 기구라는 CV 한계를 함께 명시하고 프로토콜 인터페이스 + 증강 VLA로 대응한 시스템 설계가 문제에 잘 맞으며, 여러 VLA 기준선과 조건별 성공률을 공개했습니다. 다만 절대 성공률이 40~65%대로 아직 낮고 시스템 구성 요소가 많아 각 부분의 기여 분리가 제한적입니다.",
+    background: "생물 실험실 자동화는 반복 수작업을 줄이고 재현성을 높일 수 있지만 습식 실험실에서의 신뢰성 있는 체화 실행은 어렵습니다. 프로토콜은 비구조화된 자연어이고, 시험관·병 같은 기구는 투명하거나 반사되어 시각 지각이 어렵고, 다단계 절차는 상태 인지 실행을 요구합니다. 기존 로봇 실험실 플랫폼은 값비싼 하드웨어, 전용 기기, 고정 워크플로, 로봇 공학자용 인터페이스에 의존해 자원이 부족한 연구실이 쓰기 어렵습니다.",
+    solution: "저자들은 저렴하고 프로토콜 주도적이며 시각 강화된 VLA 기반 다중 에이전트 시스템 BioProVLA-Agent를 제안했습니다. 프로토콜을 과제 인터페이스로 삼아 맞춤 LLM 프로토콜 에이전트가 프로토콜을 검증 가능한 하위 과제로 바꾸고, VLM-RAG 검증 에이전트가 사전·사후 조건을 시각으로 확인하며(RAG로 전체 정확도 +9.34%p), 안내 결정 에이전트가 실행과 재시도를 관리하고, VLA 체화 에이전트가 동작을 수행하는 폐루프 워크플로입니다. 습식 실험실의 시각 교란에 맞서 투명 기구·경면 반사·조명 변화·과노출을 겨냥한 온라인 증강 AugSmolVLA를 개발해, 정상·고노출 설정 모두에서 ACT·X-VLA·원본 SmolVLA보다 안정적으로 실행했고 특히 정밀 놓기와 투명 물체 조작에서 이득이 컸습니다(냉동 튜브 랙 놓기 40.00%→65.00%, 원심분리 튜브 놓기 43.33%→53.33%)."
+  },
+  {
+    title: "Keyframe-Guided Structured Rewards for Reinforcement Learning in Long-Horizon Laboratory Robotics",
+    authors: "Yibo Qiu 외 4명",
+    arxiv_id: "2603.00719",
+    url: "https://arxiv.org/abs/2603.00719",
+    date: "2026-03-01",
+    categories: "cs.RO",
+    topics: ["표6 · 실험실 조작 (정책)", "A. 액체·화학 실험실 정밀 조작", "pipetting · liquid transfer", "reward design", "online RL"],
+    image: "images/2603.00719.png",
+    figcap: "Figure. 시연에서 운동학 인식 키프레임을 추출·예측하는 키프레임 생성부(왼쪽)와, 키프레임 진행도로 보상을 만들어 사람 개입형 온라인 RL(Hil-ConRFT)을 돌리는 부분(오른쪽)",
+    rating: 4.0,
+    rating_reason: "피펫 팁 장착·액체 이송처럼 절차 논리가 엄격한 장기 정밀 과제에서 보상 희소성·단계 제약·불완전 시연이라는 세 난점을 '키프레임 기반 기하 진행도 보상'으로 한 번에 다룬 설계가 명확합니다. 실제 실험실 과제 4종에서 40~60분 온라인 미세조정 후 평균 82%로, HG-DAgger 42%·Hil-ConRFT 47%를 크게 앞선 비교 근거가 있습니다. 과제 수가 4개로 많지 않은 점은 감안할 부분입니다.",
+    background: "피펫 팁 장착이나 액체 이송 같은 실험실 자동화의 장기 정밀 조작은 연속·고차원 상태 공간에서 엄격한 절차 논리를 지키는 정책을 요구합니다. 그런데 기존 접근은 보상 희소성, 다단계 구조 제약, 잡음이 있거나 불완전한 시연에 시달려 탐색이 비효율적이고 수렴이 불안정했습니다.",
+    solution: "저자들은 시연에서 운동학을 인식하는 키프레임을 자동 추출하고, 잠재 공간의 확산 기반 예측기로 단계별 목표를 생성한 뒤, 기하학적 진행도에 기반한 보상을 구성해 온라인 강화학습을 이끄는 키프레임 유도 보상 생성 프레임워크를 제안했습니다. 다시점 시각 인코딩, 잠재 유사도 기반 진행도 추적, 그리고 VLA 백본 위의 사람 개입형 강화 미세조정을 통합해, 정책 최적화를 생물학 프로토콜의 단계적 논리에 맞춥니다. 고정밀 피펫 장착과 동적 액체 이송을 포함한 실제 실험실 과제 4종에서 40~60분의 온라인 미세조정 후 평균 성공률 82%를 달성해, HG-DAgger(42%)·Hil-ConRFT(47%)보다 크게 앞섰습니다."
+  },
+  {
+    title: "Labimus: A Simulation and Benchmark for Humanoid Dexterous Manipulation in Chemical Laboratory",
+    authors: "Yuhan Wu 외 11명",
+    arxiv_id: "2606.31037",
+    url: "https://arxiv.org/abs/2606.31037",
+    date: "2026-06-30",
+    categories: "cs.RO",
+    topics: ["표6 · 실험실 조작 (벤치마크)", "Labimus", "휴머노이드 + 다지 손", "분말 물리 · 계측기 폐루프 판독", "과제 완료 ≠ 실험 정밀도"],
+    image: "images/2606.31037.png",
+    figcap: "Fig. 개요 — Isaac Sim의 Tianyi2.0 휴머노이드 실험실 장면, 문 열기·집기·저울 영점·도구 집기·뜨기와 칭량 등 과제 모음, 3단계 평가(완료·정밀도·긴 과제), 조명·질감 교란 조건",
+    rating: 4.5,
+    rating_reason: "과제 성공과 실험 타당성이 다르다는 점을 평가 설계로 드러냈고 계측기 판독을 루프에 넣었습니다. 다만 고체 칭량 중심이라 액체·피펫팅은 다루지 않고 시뮬레이션에 한정됩니다.",
+    background: "실험실 자동화는 로봇 플랫폼과 AI 추론으로 크게 발전했지만, 고체–고체 이송 같은 많은 조작은 본질적으로 동적이어서 재료와 실험 조건에 따라 실시간 적응이 필요합니다. 이런 정밀도가 결정적인 조작은 표준화하기 어려워 다지 손을 가진 휴머노이드가 대안으로 거론되지만, 그런 환경에서 휴머노이드 조작을 평가하는 벤치마크가 없었습니다.",
+    solution: "Labimus는 유기화학 실험실의 휴머노이드 정교 조작을 다루는 첫 벤치마크입니다. 실제 유기화학 작업대에서 기능이 충실한 자산 30여 개를 재구성하고, 관절형 실험 장비, 입자 기반 분말 물리, 계측기의 폐루프 판독을 통합해 조작에서 측정까지 이어지는 파이프라인을 구현했습니다. 원자 조작 6종과 실제 표준작업절차에서 따온 7단계 고체 칭량 워크플로를 정의하고, 과제 완료·실험 정밀도·긴 과제 수행을 함께 재는 정밀도 인지 평가 절차를 도입했습니다. 대표 정책 3종을 평가한 결과 '정밀도 격차'가 드러났습니다. 과제를 성공적으로 끝낸 정책도 실험 프로토콜이 요구하는 정량 허용 오차를 만족하지 못할 수 있습니다. 조사 문서가 '이송한 액체의 부피 정확도를 지표로 쓴 사례가 없다'고 지적한 공백에 가장 가까이 다가간 논문입니다."
+  },
+  {
+    title: "FARM: Tactile-Conditioned Diffusion Policy for Force-Aware Robotic Manipulation",
+    authors: "Erik Helmut 외 4명",
+    arxiv_id: "2510.13324",
+    url: "https://arxiv.org/abs/2510.13324",
+    date: "2025-10-15",
+    categories: "cs.RO",
+    topics: ["표6 · 힘·촉각 UMI", "B. 촉각·힘", "UMI", "diffusion policy"],
+    image: "images/2510.13324.png",
+    figcap: "GelSight Mini와 RealSense D405를 통합한 핸드헬드 UMI 그리퍼(왼쪽)와, 형상을 맞춰 제작한 배포용 액추에이티드 그리퍼(오른쪽)",
+    rating: 4.0,
+    rating_reason: "'대부분의 모방학습은 촉각을 관찰 하나로만 취급하고 정작 가해지는 힘은 그리퍼 명령의 부산물로 방치한다'는 지적이 문제의 핵심을 정확히 짚습니다. 촉각으로 힘 신호를 추론하고 그 힘에 맞춘 행동 공간을 따로 정의한다는 해법이 그 지적과 정확히 맞물립니다. 수집용 핸드헬드와 배포용 액추에이티드 그리퍼의 형상을 일치시킨 점은 UMI 계열의 고질적 간극을 실물로 좁힌 기여입니다. 고force·저force·동적 force 적응이라는 세 가지 상반된 요구로 나눠 검증한 설계도 설득력 있고, 코드와 설계 파일을 공개했습니다.",
+    background: "접촉이 많은 조작은 과제 내내 올바른 파지력을 주는 데 달려 있습니다. 깨지기 쉽거나 잘 변형되는 물체를 다룰 때 특히 그렇습니다. 그런데 기존 모방학습 접근 대부분은 시각-촉각 피드백을 그저 관찰 하나로 더할 뿐이고, 실제로 가해지는 힘은 그리퍼 명령에 딸려 오는 통제되지 않은 결과로 남겨 뒀습니다.",
+    solution: "저자들은 고차원 촉각 데이터를 통합해 촉각 조건부 힘 신호를 추론하고, 그 신호로 힘 기반 행동 공간을 정의하는 모방학습 프레임워크 FARM을 제안했습니다. 사람 시연은 GelSight Mini 시각-촉각 센서를 통합한 핸드헬드 UMI 그리퍼 개조판으로 모읍니다. 학습한 정책을 배포하기 위해서는 핸드헬드 버전과 형상을 일치시킨 액추에이티드 UMI 그리퍼를 따로 제작했습니다. 정책 롤아웃 중 FARM 확산 정책은 로봇 자세, 그립 폭, 그리고 그립 힘을 함께 예측합니다. 힘 요구가 서로 다른 세 과제, 즉 큰 힘이 필요한 과제와 작은 힘이 필요한 과제, 그리고 힘을 동적으로 조절해야 하는 과제에서 여러 기준선을 앞섰습니다. 힘에 근거한 고차원 촉각 관찰과 힘 기반 제어 공간이라는 두 축이 각각 기여함을 보인 셈입니다. 코드베이스와 설계 파일은 공개돼 있습니다."
+  },
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.date} · ${p.categories}${p.arxiv_id ? ' · arXiv:' + p.arxiv_id : ''}${p.doi ? ' · DOI:' + p.doi : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      <div class="figwrap">
+        <div class="fig">
+          ${p.image
+            ? `<img src="${p.image}" alt="${p.title}">`
+            : `<div class="noimg">대표 그림 없음</div>`}
+        </div>
+        ${p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``}
+      </div>
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+  el.innerHTML = '<h3>지난 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>

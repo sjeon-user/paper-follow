@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physical AI 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Physical AI 논문 팔로우업</h1>
+    <div class="sub">최근 arXiv 신규 논문 · 대표 그림 + 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="keep.html">⭐ 보관함</a> <a href="skin-brief.html">🧫 FT 피부</a> <a href="cocult-brief.html">🧪 공배양 제어</a> <a href="liquid-brief.html">💧 액체 핸들링</a> <a href="rss-brief.html">🏛 RSS 학회</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>follow-config.md 설정을 기반으로 자동 생성 · arXiv 데이터</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-16b";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "규칙 기반과 학습을 섞는 혼합형 VLA — 전환을 누가 정하는가 9편 (표 2)", "keywords": ["Gemini Robotics-ER", "Pigey", "Harness VLA", "VoLoAgent", "RoboBRIDGE", "SkipVLA", "Code as Policies", "VoxPoser", "ReKep"], "note": "사용자 조사 문서 『VLA·UMI·피펫팅 조사 표 총정리』(2026-11-15)의 arXiv 논문을 유형별로 나눈 특집입니다. 문서의 arXiv ID 30개를 arXiv API로 모두 대조해 제목·저자가 일치함을 확인했습니다. 이 중 15편은 이전 회차에 이미 실려 기존 요약·그림을 그대로 재사용했고(첫 태그에 표·유형 라벨만 추가), 새 15편은 초록을 읽고 작성했습니다. 문서가 '확인 못함'·'기억'으로 표시한 항목 중 arXiv 번호가 없는 것(HYDRA, SPHINX, HDCNet, ACT/ALOHA, π0.7, 산업계 사례)은 싣지 않았습니다. 구성: A(언어 모델이 도구처럼 호출) 5편 / B(작업 구간에 따라 전환) 1편 / D(규칙·최적화만) 3편. C 유형(HYDRA·SPHINX)은 arXiv 번호가 확인되지 않아 제외했습니다. 문서에서 별표(*)로 '기억에 근거한 주소'라고 표시한 Code as Policies(2209.07753)·VoxPoser(2307.05973)·ReKep(2409.01652)은 **세 주소 모두 실제 논문과 일치함을 확인**했습니다. 문서의 'VoLoAgent' 논문명은 정확히는 'VoLo: A Physical Orchestrator…'이고 에이전트 이름이 VoLoAgent입니다. Gemini Robotics 논문(2510.03342)은 1.5 세대 보고서이며 문서가 함께 적은 ER 2의 수치는 여기서도 확인되지 않습니다. 새 6편은 초록에 정량 수치가 거의 없어 별점 근거에 그 점을 적었습니다."};
+/* 보관된 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-16b", t:"조사표 ② 혼합형 VLA"}, {d:"2026-11-16", t:"조사표 ① UMI→VLA 계보"}, {d:"2026-10-18b", t:"자동화·CV 한계 극복 학습 조작"}, {d:"2026-10-18", t:"CLIP/ViT + Diffusion Policy + RLinf"}, {d:"2026-10-06", t:"학습 없는 비전 제어 vs 행동 학습"}, {d:"2026-10-01", t:"VLA + 강화학습 · 정답 감독"}, {d:"2026-09-30c", t:"텔레센트릭 카메라 활용"}, {d:"2026-09-30b", t:"거울(mirror) 활용"}, {d:"2026-09-30", t:"조명(lighting) 활용"}, {d:"2026-09-29", t:"다중 신호 동기화 · 지연"}, {d:"2026-09-28", t:"파이펫팅 조작 특집"}, {d:"2026-09-21", t:"정밀도·정확도·재현성"}, {d:"2026-09-10", t:"Diffusion/Flow 정책 · ACT · 접촉 저널"}, {d:"2026-08-12", t:"UMI 계보 특집"}, {d:"2026-08-10", t:"투명 물체 특집"}, {d:"2026-08-08", t:"일일 · follow-config 주제"}, {d:"2026-08-06", t:"일일 · 주제 5개로 축소"}, {d:"2026-08-04", t:"일일 · follow-config 주제"}, {d:"2026-08-03", t:"일일 브리핑"}, {d:"2026-07-31", t:"일일 브리핑"}, {d:"2026-07-30", t:"일일 브리핑"}, {d:"2026-07-29", t:"일일 브리핑"}, {d:"2026-07-28", t:"일일 브리핑"}, {d:"2026-07-27", t:"일일 브리핑"}, {d:"2026-07-24", t:"일일 브리핑"}, {d:"2026-07-23", t:"일일 브리핑"}, {d:"2026-07-22", t:"일일 브리핑"}, {d:"2026-07-21", t:"일일 브리핑"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     arxiv_id: "2507.xxxxx",
+     url:      "https://arxiv.org/abs/2507.xxxxx",
+     date:     "2026-07-15",           // arXiv 최초 제출일
+     categories: "cs.RO, cs.CV",
+     topics:   ["VLA","robot arm"],     // follow-config의 세부 주제 태그
+     image:    "images/2507xxxxx.png",  // 대표 그림 (없으면 "")
+     figcap:   "Figure 1. ...",         // 그림 설명 (선택)
+     background: "배경·기존 문제 2~3문장 (설명/소개 문투)",
+     solution:   "해결·방법과 결과 2~3문장 (설명/소개 문투)",
+     rating:     4.5,                  // 논문 전체 논리 + 근거 견고함 (0~5, 0.5 단위)
+     rating_reason: "그 점수를 준 근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "Gemini Robotics 1.5: Pushing the Frontier of Generalist Robots with Advanced Embodied Reasoning, Thinking, and Motion Transfer",
+    authors: "Gemini Robotics Team 외 171명",
+    arxiv_id: "2510.03342",
+    url: "https://arxiv.org/abs/2510.03342",
+    date: "2025-10-02",
+    categories: "cs.RO",
+    topics: ["표2 · A. 언어 모델이 도구처럼 호출", "Gemini Robotics 1.5 (VLA)", "Gemini Robotics-ER 1.5", "Motion Transfer", "생각 후 행동"],
+    image: "images/2510.03342.png",
+    figcap: "Fig. 개요 — 위쪽 ER 1.5(체화 추론 모델)가 검색·코드 실행·함수 호출 같은 도구를 쓰며 계획을 세우고, 아래쪽 VLA 1.5가 그 지시를 여러 로봇 형태의 행동으로 옮기는 2단 구성",
+    rating: 3.5,
+    rating_reason: "모델군의 세 가지 설계 요소를 분명히 제시한 기술 보고서입니다. 다만 초록에 정량 수치가 없고 172명 저자의 기업 보고서라 독립 재현이 어렵습니다.",
+    background: "범용 로봇에는 물리 세계에 대한 깊은 이해, 고급 추론, 그리고 범용적이고 정교한 제어가 모두 필요합니다. 그런데 하나의 VLA가 추론과 제어를 한꺼번에 맡으면 여러 단계로 이루어진 복잡한 과제를 쪼개 수행하기 어렵고, 서로 다른 로봇 형태의 데이터를 함께 쓰기도 까다롭습니다.",
+    solution: "이 보고서는 다중 형태 VLA인 Gemini Robotics 1.5와 체화 추론(ER) 모델인 Gemini Robotics-ER 1.5를 함께 소개합니다. 첫째, VLA에 새 구조와 모션 트랜스퍼(MT) 기법을 넣어 이종·다중 형태 로봇 데이터로 학습할 수 있게 했습니다. 둘째, 행동 사이에 자연어로 된 다단계 내부 추론을 끼워 넣어 로봇이 '행동 전에 생각'하게 했고, 이것이 복잡한 다단계 과제의 분해·수행 능력을 높이고 행동을 해석하기 쉽게 만들었습니다. 셋째, ER 1.5는 시공간 이해·작업 계획·진행도 추정 같은 체화 추론에서 최고 수준을 기록했습니다. 조사 문서의 분류로는 ER 모델이 로봇 함수와 VLA를 '도구'로 골라 부르는 A 유형의 대표이며, 문서가 언급한 후속 ER 2의 수치는 확인되지 않았습니다."
+  },
+  {
+    title: "Addressing the Orchestration Gap in Generalist Robots via Physical Agency",
+    authors: "Liane Galanti, Dhruv Shah, Tri Dao",
+    arxiv_id: "2607.21725",
+    url: "https://arxiv.org/abs/2607.21725",
+    date: "2026-07-24",
+    categories: "cs.RO",
+    topics: ["표2 · A. 언어 모델이 도구처럼 호출", "robot arm", "VLA"],
+    image: "images/2607.21725.png",
+    figcap: "Figure 1. 연역·안전·장애물·장기기억·공간 추론 등 추론이 필요한 실제 조작 과제들을 지휘하는 Pigey",
+    rating: 4.0,
+    rating_reason: "학습된 정책에 모든 능력을 몰아넣는 대신 오케스트레이터로 분리한다는 문제의식이 뚜렷하고, 추가 학습 없이 LIBERO-PRO에서 4배 향상(12.8%→53.3%)·실기기에서 거의 0%→90%라는 큰 폭의 개선을 시뮬레이션과 실기기 양쪽에서 제시해 근거가 견고합니다. 다만 이득이 '추론이 관건인 과제'에 집중된 점은 성격상 감안할 부분입니다.",
+    background: "범용 로봇은 지각, 세계 지식, 계획, 성공 판정, 회복, 저수준 제어를 모두 엮어 자신의 행동을 추론해야 합니다. 오늘날 최고 수준 모델들은 이 능력을 대규모 사전학습으로 하나의 학습된 정책 안에 몰아넣으려 하는데, 이 방식은 데이터·학습 비용이 크고 추론이 필요한 복잡한 과제에서 한계를 보였습니다.",
+    solution: "저자들은 이 능력들을 '언어 조건부 정책/제어 에이전트'와 '고수준 관리자/오케스트레이터'로 분리할 수 있음을 보였습니다. 정책이 스스로 추론하도록 사전학습하는 대신, 고수준 계획을 세우고 목표를 달성 가능한 하위 목표로 쪼개며 저수준 모터 명령을 내리고 관측으로 결과를 추적·검증하며 실패에서 회복하는 폐루프 물리 에이전트 오케스트레이터 'Pigey'를 만들었습니다. Pigey는 추가 데이터 수집이나 사후학습 없이 기존 VLA 정책과 파라미터화된 스킬을 그대로 지휘합니다. 시뮬레이션과 실기기 평가에서 LIBERO-PRO 성능을 과제별 미세조정 없이 4배 이상(12.8%→53.3%) 끌어올렸고, 실제 로봇에서는 추론이 관건인 과제에서 얼어붙은 정책을 거의 0%에서 90% 이상으로 높였습니다. 저자들은 얼어붙은 모터 스킬이 단독으로 낼 수 있는 성능과 에이전트 루프 안에서 낼 수 있는 성능의 차이를 '오케스트레이션 갭'이라 불렀습니다."
+  },
+  {
+    title: "Harness VLA: Steering Frozen VLAs into Reliable Manipulation Primitives via Memory-Guided Agents",
+    authors: "Yixian Zhang 외 16명",
+    arxiv_id: "2607.08448",
+    url: "https://arxiv.org/abs/2607.08448",
+    date: "2026-07-09",
+    categories: "cs.RO",
+    topics: ["표2 · A. 언어 모델이 도구처럼 호출", "A. RLinf 계열 — RLinf 학습 VLA 활용", "frozen RLinf-trained VLA as retryable primitive (VLA_ACT)", "analytic primitives + memory-guided agentic planner", "LIBERO-Pro +38.6%p · RoboCasa365 +27.1%p · RoboTwin C2R 58.4%"],
+    image: "images/2607.08448.png",
+    figcap: "Figure 1. Harness VLA 개요 — 과제 설명·RGB-D·로봇 상태를 받은 에이전트형 플래너가 프리미티브 라이브러리(RLinf로 학습한 동결 VLA의 VLA_ACT + MOVE_TO·ROTATE·SET_GRIPPER 등 해석적 프리미티브)에서 구조화된 호출을 선택하고, 과제별 메모리·전역 메모리에서 성공 기록과 휴리스틱을 참조. 우측: LIBERO-Pro·RoboCasa365·RoboTwin C2R에서 π0.5·Cap-X·RATS 등 대비 성공률",
+    rating: 3.5,
+    rating_reason: "RLinf로 학습한 VLA를 바꾸지 않고 '호출 방식과 메모리'만으로 교란 강건성을 크게 높였다는 비교가 명확하고, 동일 체크포인트 직접 실행 기준선을 둬 이득의 출처를 분리했습니다. 다만 플래너로 상용 LLM을 쓰고 해석적 프리미티브에 깊이·자세 접지가 필요하며, 실기기 결과는 정성적입니다.",
+    background: "언어 조건 조작은 정밀한 접촉 제어와 언어·장면·장기 지평에 대한 강건한 추론을 함께 요구합니다. 종단간 VLA는 강한 국소 시각운동 기술을 제공하지만 분포 내 궤적으로 학습되어 의미 재지정, 목표 재결합, 공간 배치 이동, 불안정한 국소 접촉 같은 배치 교란에서 자주 실패합니다. LLM 코딩 에이전트는 상호보완적인 의미·조합 추론을 제공하지만 순수 해석적 프리미티브만으로는 불규칙 파지, 제약된 놓기, 관절 물체 상호작용이 어렵습니다.",
+    solution: "저자들은 동결된 VLA를 재시도 가능한 접촉 프리미티브로 노출하고, 접지·준비·운반·내비게이션·해제를 위한 작은 고정 해석적 프리미티브 라이브러리와 조합하는 메모리 증강 에이전트 프레임워크 Harness VLA를 제안했습니다. 기술 라이브러리를 늘리는 대신 과제별 실행 추적, 전역 성공 규칙, 실패 모델로부터 고정 프리미티브들의 작동 범위를 학습합니다. 내부의 VLA 프리미티브는 RLinf로 RL 학습한 체크포인트(π_RLinf, 표준 LIBERO 95.3%)를 그대로 쓰며, 하네스는 표준 LIBERO에서 96.0%(384/400)로 경쟁력을 유지하면서 교란 평가인 LIBERO-Pro에서 82.4%(RATS 대비 +38.6%p), RoboCasa365에서 +27.1%p, RoboTwin C2R에서 58.4%를 기록했습니다. 시각운동 백본을 바꾸지 않고 얻은 결과이며, 동일 체크포인트를 직접 돌린 기준선은 교란 하 50.0%였습니다."
+  },
+  {
+    title: "VoLo: A Physical Orchestrator for Open-Vocabulary Long-Horizon Manipulation",
+    authors: "Siyi Chen 외 11명",
+    arxiv_id: "2606.07723",
+    url: "https://arxiv.org/abs/2606.07723",
+    date: "2026-06-05",
+    categories: "cs.RO",
+    topics: ["표2 · A. 언어 모델이 도구처럼 호출", "VoLoAgent", "끊을 수 있는 VLA/WAM 도구", "RoboVoLo 벤치마크", "계획·감시·복구"],
+    image: "images/2606.07723.png",
+    figcap: "Fig. 개요 — VLM이 하위 목표마다 VLA·시각 모델·동작 프리미티브 중 도구를 고르고, 실행을 감시하다 충돌·오인식이 보이면 중간에 끊고 복구하는 흐름. 아래는 RoboVoLo 벤치마크의 네 과제군과 실패 진단",
+    rating: 4.0,
+    rating_reason: "실행 중 개입이라는 문제 설정이 분명하고 벤치마크에 실패 진단까지 넣었습니다. 다만 초록에 구체 수치가 없어 향상 폭은 본문 확인이 필요합니다.",
+    background: "개방 어휘의 긴 조작 과제에서는 로봇이 유연한 지시와 복잡한 다물체 장면을 추론하면서 계획·실행·감시·실패 복구를 계속 조정해야 합니다. 가상 세계의 AI 에이전트와 달리 물리 세계는 추론하는 동안 멈춰 주지 않기 때문에, 결정과 도구 호출의 '타이밍'이 문제가 됩니다.",
+    solution: "저자들은 이 설정을 '물리적 오케스트레이션'이라 부르고, VLM이 이종 로봇 능력을 중간에 끊을 수 있는 도구로 조율하는 폐쇄 에이전트 루프 VoLoAgent를 제안했습니다. VLM은 VLA 또는 월드 액션 모델(WAM)을 실행 도중에도 조종할 수 있는 도구로 다루며, 시각 모델·동작 프리미티브와 함께 써서 계획하고 감시하고 복구합니다. 평가를 위해 상식·기억/상태 추적·복잡한 지칭·세계 지식에 걸친 고충실도 벤치마크 RoboVoLo를 만들고 과제 성공률과 실패 양상 진단을 함께 제공했습니다. 실험에서 단일 VLA/VLM이나 도구 기반 시스템을 크게 앞섰고 실제 로봇으로도 검증했습니다. 규칙 기반 동작과 학습 정책의 전환을 VLM이 '실행 중'에 정한다는 점이 A 유형 안에서의 차별점입니다."
+  },
+  {
+    title: "RoboBRIDGE: A Modular Framework for Bridging Policies to Robust Real-World Robotic Agents",
+    authors: "Sihyung Yoon 외 4명",
+    arxiv_id: "2607.27881",
+    url: "https://arxiv.org/abs/2607.27881",
+    date: "2026-07-30",
+    categories: "cs.RO, cs.AI",
+    topics: ["표2 · A. 언어 모델이 도구처럼 호출", "5개 모듈 오케스트레이션", "실패 감지·계층 복구", "프리미티브별 LoRA", "LIBERO·RoboCasa·실기"],
+    image: "images/2607.27881.png",
+    figcap: "Fig. 개요 — 위: 기존 방식은 VLA가 관측에서 바로 저수준 행동을 내며 피드백이 없음. 아래: RoboBRIDGE는 Perceptor·Planner·Controller·Monitor·Robot Interface가 VLA를 감싸 오류 처리·긴 과제·도메인 일반화를 지원",
+    rating: 4.0,
+    rating_reason: "모듈 구성이 명확하고 두 시뮬레이션 벤치마크와 실제 사례로 폭넓게 평가했습니다. 다만 초록에 수치가 없고 모듈별 기여의 분리는 본문 확인이 필요합니다.",
+    background: "VLA는 행동 예측기로서는 효과적이지만 로봇 에이전트로 배치하면 빈틈이 드러납니다. 실패 복구 수단이 없고, 긴 과제에서 실행이 일관되지 않으며, 관측·과제·로봇 형태가 바뀌면 약해집니다. 기존 해법은 재학습이나 환경 전용 모듈로 이 문제를 하나씩 따로 풀었습니다.",
+    solution: "RoboBRIDGE는 Monitor·Perceptor·Planner·Controller·Robot Interface 다섯 모듈 위에 오케스트레이션 계층을 두어, 사전학습 VLA를 포함한 기성 부품으로 견고한 에이전트를 조립하는 모듈형 프레임워크입니다. Monitor는 빠른 실패 감지와 계층적 복구를 짝지어 오류가 번지기 전에 바로잡고, 환경이 계획과 어긋나면 Planner가 재계획하는 동안 Perceptor가 장면 이해를 비동기로 갱신해 실행이 멈추지 않게 합니다. Controller 안에서는 조작을 도메인 불변 프리미티브로 나누고 프리미티브마다 전용 LoRA 어댑터를 붙였습니다. LIBERO, RoboCasa, 여러 로봇·VLA 백본의 실제 사례에서 단독 정책과 기존 증강 VLA 배치를 일관되게 앞섰습니다. 저자들의 결론은 신뢰할 수 있는 로봇 에이전트가 행동 예측기를 키우는 것만으로는 나오지 않고 그 주위의 구조화된 조율에서 나온다는 것입니다."
+  },
+  {
+    title: "SkipVLA: Skipping VLA Steps with Classical Planning for Fast Robot Manipulation",
+    authors: "Kaivalya Agrawal 외 3명",
+    arxiv_id: "2609.20648",
+    url: "https://arxiv.org/abs/2609.20648",
+    date: "2026-09-17",
+    categories: "cs.RO",
+    topics: ["표2 · B. 작업 구간에 따라 전환", "B. 고전 계획·모듈 + 학습 정책 하이브리드 vs 종단간", "classical planner for free-space, VLA only for contact-rich skills", "target pose predictor from frozen VLA backbone, no new demos", "up to 2.5× faster · < ½ energy · same success"],
+    image: "images/2609.20648.png",
+    figcap: "Figure. SkipVLA 실행 예 — 알파벳 수프를 바구니에 넣는 과제에서 (a) 점수기가 목표 물체를 고르면 플래너가 접근하고(파랑), (b) 핸드오버 자세에 도달하면 VLA로 전환해 파지(주황), (c) 파지 완료 후 다시 플래너가 바구니로 이동, (d)~(e) VLA가 놓기 완료 — 아래는 물체별 점수기 확률",
+    rating: 4.0,
+    rating_reason: "'VLA가 꼭 필요한 구간은 접촉 구간뿐'이라는 가설을 세 VLA·13 과제 시뮬레이션과 실기기 두 VLA 비교로 검증했고 속도·에너지·성공률을 함께 보고해 하이브리드의 이득을 명확히 보였습니다. 평가 과제가 집어 놓기 계열에 치우쳐 접촉 구간이 긴 과제에서의 이득은 미지수입니다.",
+    background: "VLA는 카메라 영상과 언어 지시를 로봇 행동에 직접 매핑하는 범용 정책이지만 테스트 시 느리고, 특히 정책을 여러 번 질의해야 하는 장기 과제에서 그렇습니다. 작은 모델 증류, 비동기 행동 청크 중첩, 빠른 저수준 정책 결합 같은 지연 감소 노력도 과제 전체를 학습 정책으로 돌립니다. 반대로 고전 운동 플래너는 충돌 없는 동작을 빠르게 찾지만 명시적 목표가 필요하고 과제의 의미를 모릅니다.",
+    solution: "저자들은 사전학습 VLA와 고전 운동 플래너를 결합한 하이브리드 정책 SkipVLA를 제안했습니다. 자유 공간 이동은 플래너가 맡고, 파지·놓기처럼 접촉이 많은 기술에서만 VLA를 질의합니다. 각 계획 동작의 목표 자세는 VLA의 동결된 비전-언어 백본을 재사용해 예측하며, 대형 VLA가 이미 배운 것을 활용하므로 추가 시연 없이 이 예측기를 학습합니다. 시뮬레이션 LIBERO 13개 과제에서 세 가지 VLA로, 실제 6자유도 YAM 팔에서는 π0.5·MolmoAct2와 세 가지 집어 놓기 과제로 평가해, 모든 과제에서 성공률을 유지하거나 높이면서 과제 완료가 최대 2.5배 빨라지고 에너지 소비는 기준 정책의 절반 이하로 줄었습니다."
+  },
+  {
+    title: "Code as Policies: Language Model Programs for Embodied Control",
+    authors: "Jacky Liang 외 7명",
+    arxiv_id: "2209.07753",
+    url: "https://arxiv.org/abs/2209.07753",
+    date: "2022-09-16",
+    categories: "cs.RO",
+    topics: ["표2 · D. 규칙·최적화만 (학습 정책 없음)", "Code as Policies", "언어 모델 생성 프로그램(LMP)", "계층적 코드 생성", "HumanEval 39.8%"],
+    image: "images/2209.07753.png",
+    figcap: "Fig. 사례 — 자연어 지시(예: 블록을 색이 맞는 그릇에 넣기, 사각형 그리기)를 받아 언어 모델이 작성한 정책 코드가 인식 결과를 처리하고 제어 API를 호출해 실행한 장면들",
+    rating: 4.0,
+    rating_reason: "발상이 단순하고 여러 실기 플랫폼으로 시연했으며 코드 생성 벤치마크 수치도 제시했습니다. 다만 로봇 과제의 성공률 비교는 초록에 없고 인식·제어 API가 주어져 있다는 전제에 기댑니다.",
+    background: "코드 완성으로 학습한 대형 언어 모델은 주석만 보고 간단한 파이썬 프로그램을 합성할 수 있습니다. 그런데 로봇 쪽에서는 언어 모델의 지식을 쓰더라도 미리 정해 둔 동작 목록 중에서 고르는 수준에 머물러, 새로운 지시나 '더 빠르게' 같은 모호한 표현을 정밀한 값으로 옮기지 못했습니다.",
+    solution: "저자들은 코드를 쓰는 언어 모델을 로봇 정책 코드 작성에 그대로 쓸 수 있음을 보였습니다. 정책 코드는 물체 검출기 같은 인식 출력을 처리하고 제어 프리미티브 API의 인자를 채우는 함수나 피드백 루프를 표현합니다. 예시 지시와 대응 코드를 몇 개 보여 주면(퓨샷) 새 지시에 대해 API 호출을 스스로 재조합하며, 고전 논리 구조와 NumPy·Shapely 같은 외부 라이브러리를 엮어 공간·기하 추론, 새 지시로의 일반화, 문맥에 따른 정밀 값 지정을 해냅니다. 임피던스 제어기 같은 반응형 정책과 경유점 기반 정책을 모두 표현할 수 있음을 여러 실제 로봇에서 시연했고, 정의되지 않은 함수를 재귀적으로 정의하는 계층적 코드 생성으로 HumanEval에서 39.8%를 풀었습니다. 조사 문서의 D 유형, 즉 학습된 행동 정책 없이 언어 모델이 규칙 기반 제어를 직접 호출하는 계열의 출발점입니다."
+  },
+  {
+    title: "VoxPoser: Composable 3D Value Maps for Robotic Manipulation with Language Models",
+    authors: "Wenlong Huang 외 5명",
+    arxiv_id: "2307.05973",
+    url: "https://arxiv.org/abs/2307.05973",
+    date: "2023-07-12",
+    categories: "cs.RO, cs.AI, cs.CL, cs.CV, cs.LG",
+    topics: ["표2 · D. 규칙·최적화만 (학습 정책 없음)", "VoxPoser", "3D 가치 지도 합성", "6자유도 궤적 영점 합성", "동적 교란에 강건"],
+    image: "images/2307.05973.png",
+    figcap: "Fig. 개요 — 지시문을 받은 LLM이 코드를 써서 VLM과 상호작용하며 3D 가치 지도(끌림·회피)를 만들고, 모션 플래너가 그 위에서 궤적을 합성. 오른쪽은 실제 일상 조작 과제 사례",
+    rating: 4.0,
+    rating_reason: "프리미티브 의존이라는 병목을 정면으로 다루고 시뮬레이션·실기 대규모 평가를 했습니다. 다만 초록에 정량 수치가 없고 인식 모델 품질에 성능이 좌우됩니다.",
+    background: "대형 언어 모델에는 로봇 조작에 쓸 수 있는 지식이 풍부하지만, 대부분의 연구는 환경과의 물리적 상호작용을 미리 정의한 동작 프리미티브에 맡겨 왔고 이것이 큰 병목이었습니다. 프리미티브 목록에 없는 동작은 할 수 없기 때문입니다.",
+    solution: "저자들은 개방된 지시문과 개방된 물체 집합에 대해 6자유도 엔드이펙터 경유점의 조밀한 열, 즉 궤적 자체를 합성하는 것을 목표로 했습니다. LLM이 자유 형식 지시에서 어포던스와 제약을 추론하는 데 능하다는 점, 그리고 코드 작성 능력으로 VLM과 상호작용해 3D 가치 지도를 합성함으로써 그 지식을 관측 공간에 접지할 수 있다는 점을 이용했습니다. 합성된 가치 지도는 모델 기반 계획 틀에서 쓰여, 추가 학습 없이 동적 교란에 강건한 폐루프 궤적을 만들어 냅니다. 접촉이 많은 장면에서는 동역학 모델을 온라인으로 효율적으로 학습해 보완할 수 있음도 보였고, 시뮬레이션과 실제 로봇에서 대규모로 평가했습니다. 언어 모델이 만든 제약을 최적화기가 푸는 D 유형의 대표 사례입니다."
+  },
+  {
+    title: "ReKep: Spatio-Temporal Reasoning of Relational Keypoint Constraints for Robotic Manipulation",
+    authors: "Wenlong Huang 외 4명",
+    arxiv_id: "2409.01652",
+    url: "https://arxiv.org/abs/2409.01652",
+    date: "2024-09-03",
+    categories: "cs.RO, cs.AI, cs.CV",
+    topics: ["표2 · D. 규칙·최적화만 (학습 정책 없음)", "ReKep", "관계형 키포인트 제약", "계층 최적화 · 실시간", "양팔·다단계·반응형"],
+    image: "images/2409.01652.png",
+    figcap: "Fig. 개요 — '컵에 차 따르기' 지시에서 대형 시각 모델이 키포인트를 뽑고 VLM이 관계형 키포인트 제약(파이썬 비용 함수)을 작성, 최적화 솔버가 행동을 계산. 오른쪽은 다단계·야외·양팔·반응형 사례",
+    rating: 4.0,
+    rating_reason: "표현·최적화·자동 생성을 일관된 틀로 묶고 두 플랫폼에서 시연했습니다. 다만 초록에 성공률 수치가 없고 키포인트 추적 실패에 취약할 수 있습니다.",
+    background: "로봇 조작 과제를 로봇과 환경을 잇는 제약으로 표현하는 것은 유망하지만, 그 제약을 어떻게 써야 다양한 과제에 통하고, 사람이 일일이 라벨링하지 않아도 되며, 기성 솔버로 실시간에 풀 수 있는지는 분명하지 않았습니다.",
+    solution: "저자들은 관계형 키포인트 제약(ReKep)을 제안했습니다. ReKep은 환경의 3D 키포인트 집합을 수치 비용으로 사상하는 파이썬 함수로 표현됩니다. 조작 과제를 ReKep의 열로 나타내면 계층적 최적화로 엔드이펙터 자세의 열을 풀 수 있고, 인식–행동 루프를 실시간 주파수로 돌릴 수 있습니다. 새 과제마다 ReKep을 손으로 쓰지 않도록, 대형 시각 모델과 VLM이 자유 형식 지시와 RGB-D 관측에서 ReKep을 자동 생성하는 절차도 고안했습니다. 바퀴 달린 단팔 플랫폼과 고정식 양팔 플랫폼에 구현해, 과제별 데이터나 환경 모델 없이 다단계·야외·양팔·반응형 조작을 수행했습니다. 조사 문서의 D 유형이면서 양팔까지 다뤄 표 4와도 이어집니다."
+  },
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.date} · ${p.categories}${p.arxiv_id ? ' · arXiv:' + p.arxiv_id : ''}${p.doi ? ' · DOI:' + p.doi : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      <div class="figwrap">
+        <div class="fig">
+          ${p.image
+            ? `<img src="${p.image}" alt="${p.title}">`
+            : `<div class="noimg">대표 그림 없음</div>`}
+        </div>
+        ${p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``}
+      </div>
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+  el.innerHTML = '<h3>지난 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physical AI 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Physical AI 논문 팔로우업</h1>
+    <div class="sub">최근 arXiv 신규 논문 · 대표 그림 + 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="keep.html">⭐ 보관함</a> <a href="skin-brief.html">🧫 FT 피부</a> <a href="cocult-brief.html">🧪 공배양 제어</a> <a href="liquid-brief.html">💧 액체 핸들링</a> <a href="rss-brief.html">🏛 RSS 학회</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>follow-config.md 설정을 기반으로 자동 생성 · arXiv 데이터</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-16c";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "한 팔은 붙잡고 한 팔은 작업 — 양팔 역할 분담 4편 (표 4)", "keywords": ["BUDS", "Stabilize to Act", "VoxAct-B", "BiPreManip", "YUBI", "stabilizing arm", "acting arm"], "note": "사용자 조사 문서 『VLA·UMI·피펫팅 조사 표 총정리』(2026-11-15)의 arXiv 논문을 유형별로 나눈 특집입니다. 문서의 arXiv ID 30개를 arXiv API로 모두 대조해 제목·저자가 일치함을 확인했습니다. 이 중 15편은 이전 회차에 이미 실려 기존 요약·그림을 그대로 재사용했고(첫 태그에 표·유형 라벨만 추가), 새 15편은 초록을 읽고 작성했습니다. 문서가 '확인 못함'·'기억'으로 표시한 항목 중 arXiv 번호가 없는 것(HYDRA, SPHINX, HDCNet, ACT/ALOHA, π0.7, 산업계 사례)은 싣지 않았습니다. 구성: A(붙잡는 팔은 제어기) 1편 / B(둘 다 학습) 1편 / C(준비 후 작업) 1편 / D(한 정책, 대조군) 1편. 4편 모두 신규입니다. 문서가 '양팔 준비 조작 연구'로만 적은 2603.21679의 논문명은 **BiPreManip**입니다. BUDS의 수치(시연 20개·76.9%·기준선 대비 +56.0%)는 초록에서 직접 확인했고, 분포 밖 물체 52.7%도 초록에 있습니다. D 유형의 RDT2는 조사표 ①에, E 유형의 SkipVLA·Pigey는 조사표 ②에 실려 있어 여기서는 중복 수록하지 않았습니다. 문서의 결론대로 '양손으로 자유롭게 수집하되 실행 때 한 손만 규칙 기반'에 정확히 해당하는 논문은 이번 확인에서도 나오지 않았습니다."};
+/* 보관된 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-16c", t:"조사표 ③ 양팔 역할 분담"}, {d:"2026-11-16b", t:"조사표 ② 혼합형 VLA"}, {d:"2026-11-16", t:"조사표 ① UMI→VLA 계보"}, {d:"2026-10-18b", t:"자동화·CV 한계 극복 학습 조작"}, {d:"2026-10-18", t:"CLIP/ViT + Diffusion Policy + RLinf"}, {d:"2026-10-06", t:"학습 없는 비전 제어 vs 행동 학습"}, {d:"2026-10-01", t:"VLA + 강화학습 · 정답 감독"}, {d:"2026-09-30c", t:"텔레센트릭 카메라 활용"}, {d:"2026-09-30b", t:"거울(mirror) 활용"}, {d:"2026-09-30", t:"조명(lighting) 활용"}, {d:"2026-09-29", t:"다중 신호 동기화 · 지연"}, {d:"2026-09-28", t:"파이펫팅 조작 특집"}, {d:"2026-09-21", t:"정밀도·정확도·재현성"}, {d:"2026-09-10", t:"Diffusion/Flow 정책 · ACT · 접촉 저널"}, {d:"2026-08-12", t:"UMI 계보 특집"}, {d:"2026-08-10", t:"투명 물체 특집"}, {d:"2026-08-08", t:"일일 · follow-config 주제"}, {d:"2026-08-06", t:"일일 · 주제 5개로 축소"}, {d:"2026-08-04", t:"일일 · follow-config 주제"}, {d:"2026-08-03", t:"일일 브리핑"}, {d:"2026-07-31", t:"일일 브리핑"}, {d:"2026-07-30", t:"일일 브리핑"}, {d:"2026-07-29", t:"일일 브리핑"}, {d:"2026-07-28", t:"일일 브리핑"}, {d:"2026-07-27", t:"일일 브리핑"}, {d:"2026-07-24", t:"일일 브리핑"}, {d:"2026-07-23", t:"일일 브리핑"}, {d:"2026-07-22", t:"일일 브리핑"}, {d:"2026-07-21", t:"일일 브리핑"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     arxiv_id: "2507.xxxxx",
+     url:      "https://arxiv.org/abs/2507.xxxxx",
+     date:     "2026-07-15",           // arXiv 최초 제출일
+     categories: "cs.RO, cs.CV",
+     topics:   ["VLA","robot arm"],     // follow-config의 세부 주제 태그
+     image:    "images/2507xxxxx.png",  // 대표 그림 (없으면 "")
+     figcap:   "Figure 1. ...",         // 그림 설명 (선택)
+     background: "배경·기존 문제 2~3문장 (설명/소개 문투)",
+     solution:   "해결·방법과 결과 2~3문장 (설명/소개 문투)",
+     rating:     4.5,                  // 논문 전체 논리 + 근거 견고함 (0~5, 0.5 단위)
+     rating_reason: "그 점수를 준 근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "Stabilize to Act: Learning to Coordinate for Bimanual Manipulation",
+    authors: "Jennifer Grannen 외 3명",
+    arxiv_id: "2309.01087",
+    url: "https://arxiv.org/abs/2309.01087",
+    date: "2023-09-03",
+    categories: "cs.RO, cs.AI, cs.LG",
+    topics: ["표4 · A. 붙잡는 팔은 제어기, 작업 팔만 학습", "BUDS / Stabilize to Act", "고정 지점 예측 + 재고정 분류기", "시연 20개 · 76.9%", "BC 대비 +56.0%"],
+    image: "images/2309.01087.png",
+    figcap: "Fig. 구조 — (1) 고정 위치 모델이 붙잡을 키포인트를 예측, (2) 비순응 제어로 유지, (3) 작업 팔은 시연으로 학습한 BC-RNN 정책, (5) 재고정 분류기가 다시 잡을 시점을 판단",
+    rating: 4.5,
+    rating_reason: "역할 분담 가설을 실제 로봇 4과제에서 검증하고 붙잡는 팔까지 학습한 기준선과 직접 비교해 수치를 냈습니다. 다만 과제 수가 적고 고정 지점이 영상에서 잘 보인다는 전제가 있습니다.",
+    background: "풍부하고 정교한 조작에는 두 손의 협응이 핵심이지만, 양팔 시스템의 제어 정책을 만드는 일은 본질적으로 어렵습니다. 가장 큰 이유는 양팔 행동 공간의 높은 차원으로, 모델 기반 방법과 데이터 기반 방법 모두를 복잡하게 만듭니다.",
+    solution: "저자들은 사람의 방식에서 착안해 역할 분담 틀을 제안했습니다. 붙잡는 팔(stabilizing arm)은 물체를 제자리에 고정해 환경을 단순화하고, 작업 팔(acting arm)이 과제를 수행합니다. 이를 구현한 BUDS는 학습된 재고정 분류기를 써서, 환경이 변하지 않도록 고정 위치를 갱신하는 일과 시연으로 학습한 작업 정책으로 과제를 수행하는 일을 번갈아 합니다. 재킷 지퍼 올리기, 채소 썰기 등 복잡도가 다른 실제 로봇 양팔 과제 4종에서 시연 20개만으로 평균 성공률 76.9%를 얻었고, 같은 종류의 분포 밖 물체에도 52.7%로 일반화했습니다. 붙잡는 팔까지 행동 복제로 학습시킨 비구조 기준선보다 56.0% 더 성공적이었습니다. 조사 문서가 '피펫팅처럼 한 손이 고정 역할인 과제에 가장 가깝다'고 본 A 유형의 원전입니다."
+  },
+  {
+    title: "VoxAct-B: Voxel-Based Acting and Stabilizing Policy for Bimanual Manipulation",
+    authors: "I-Chun Arthur Liu 외 3명",
+    arxiv_id: "2407.04152",
+    url: "https://arxiv.org/abs/2407.04152",
+    date: "2024-07-04",
+    categories: "cs.RO, cs.AI, cs.CV, cs.LG",
+    topics: ["표4 · B. 역할은 나누되 두 팔 모두 학습", "VoxAct-B", "VLM이 핵심 영역 선택", "복셀 기반 정책", "UR5 2대 실기"],
+    image: "images/2407.04152.png",
+    figcap: "Fig. 개요 — VLM이 물체를 찾아 복셀 격자를 잘라내고 확대한 뒤 양팔 조작 정책에 넘기는 구조. 오른쪽은 서랍 열기·병 열기 등 과제의 시뮬레이션과 실제 장면",
+    rating: 3.5,
+    rating_reason: "VLM으로 주목 영역을 좁혀 표본 효율을 높인 설계가 명확하고 실기 시연이 있습니다. 다만 초록에 수치가 없고 실기 과제가 두 가지에 그칩니다.",
+    background: "양팔 조작은 단팔보다 행동 공간의 차원이 높아 어렵습니다. 기존 연구는 대량의 데이터와 프리미티브 동작으로 이 문제에 접근했지만, 표본 효율이 낮고 여러 과제로의 일반화가 제한적일 수 있었습니다.",
+    solution: "VoxAct-B는 언어 조건부 복셀 기반 방법으로, VLM을 이용해 장면에서 핵심 영역을 우선하고 복셀 격자를 재구성합니다. 이 복셀 격자를 양팔 조작 정책에 넣어 작업(acting) 행동과 붙잡기(stabilizing) 행동을 학습시킵니다. 이 접근은 복셀로부터의 정책 학습을 더 효율적으로 만들고 여러 과제로 일반화됩니다. 시뮬레이션의 세밀한 양팔 과제에서 강한 기준선들을 앞섰고, UR5 두 대로 실제 서랍 열기와 병 열기를 시연했습니다. BUDS와 달리 붙잡는 팔도 학습 정책이 맡는다는 점이 차이로, 조사 문서 기준 과제당 10~100개의 시연이 필요합니다."
+  },
+  {
+    title: "BiPreManip: Learning Affordance-Based Bimanual Preparatory Manipulation through Anticipatory Collaboration",
+    authors: "Yan Shen 외 7명",
+    arxiv_id: "2603.21679",
+    url: "https://arxiv.org/abs/2603.21679",
+    date: "2026-03-23",
+    categories: "cs.RO",
+    topics: ["표4 · C. 순차적 비대칭 (준비 후 작업)", "BiPreManip", "협업적 준비 조작", "어포던스 기반 예견", "시뮬레이션+실기"],
+    image: "images/2603.21679.png",
+    figcap: "Fig. 개요 — '펜 뚜껑 열기'에서 먼저 최종 목표 동작의 어포던스를 예견하고(a), 한 팔이 펜 몸통을 들어 올리는 준비 조작을 수행한 뒤(b), 다른 팔이 뚜껑을 여는 목표 조작을 수행(c)",
+    rating: 3.5,
+    rating_reason: "과제군을 새로 정의하고 '끝에서부터 거꾸로' 추론하는 틀이 일관됩니다. 다만 초록에 정량 수치와 필요한 시연 수가 제시되지 않습니다.",
+    background: "납작한 태블릿처럼 바로 잡기 어렵거나, 책상에 놓인 펜의 뚜껑 열기처럼 그대로는 기능적으로 다루기 어려운 물체가 많습니다. 이런 과제에는 순차적이고 비대칭적인 양팔 협응이 필요합니다. 한 팔이 준비 조작을 해 주어야 다른 팔의 목표 동작이 가능해집니다.",
+    solution: "저자들은 이를 '협업적 준비 조작'이라는 과제군으로 정의했습니다. 물체의 의미와 기하를 이해하고, 공간 관계를 예견하며, 두 팔 사이의 긴 협응 행동을 계획해야 하는 과제입니다. 제안한 시각 어포던스 기반 틀은 먼저 최종 목표 동작을 그려 본 다음, 한 팔이 다른 팔의 후속 조작을 돕는 준비 조작의 열을 수행하도록 이끕니다. 어포던스 중심 표현 덕분에 팔 사이의 예견적 추론과 협응이 가능해지고 여러 범주의 다양한 물체로 일반화됩니다. 시뮬레이션과 실제 환경의 광범위한 실험에서 경쟁 기준선보다 성공률과 일반화가 크게 높았습니다. 조사 문서가 '일부 확인'으로 표시한 C 유형이며, 실제 논문명은 BiPreManip입니다."
+  },
+  {
+    title: "YUBI: Yielding Universal Bidigital Interface for Bimanual Dexterous Manipulation at Scale",
+    authors: "Takehiko Ohkawa 외 18명",
+    arxiv_id: "2606.10244",
+    url: "https://arxiv.org/abs/2606.10244",
+    date: "2026-06-08",
+    categories: "cs.RO, cs.AI",
+    topics: ["표4 · D. 두 팔을 하나의 정책으로 (대조군)", "YUBI", "손가락 구동 집게", "8,434시간 · 120만 에피소드 · 119과제", "UR·Franka·ELEY 전이"],
+    image: "images/2606.10244.png",
+    figcap: "Fig. 개요 — 왼쪽: 손가락 움직임이 집게 턱으로 직접 전달되는 YUBI 장치와 VR 기반 추적. 오른쪽: 같은 정책을 단팔 UR, 양팔 UR, 양팔 Franka, ELEY 로봇에 배치한 장면",
+    rating: 4.0,
+    rating_reason: "장치 설계·대규모 데이터·다중 로봇 전이를 함께 제시하고 전부 공개했습니다. 다만 초록에 UMI 대비 우위의 정량 수치가 없습니다.",
+    background: "UMI 같은 휴대형 수집 장치는 저렴하게 데이터를 모을 수 있게 했지만, 부피 큰 권총 손잡이형 설계는 세밀하고 정교한 조작 과제에서 인체공학과 사용성 문제를 일으킬 수 있습니다. 양손으로 정밀 작업을 오래 수집하려면 손에 더 자연스럽게 맞는 장치가 필요합니다.",
+    solution: "YUBI는 손가락에 정렬된 집게로, 사람의 손가락 움직임을 집게 턱 운동에 직접 사상하는 'yielding' 손가락 구동 원리를 씁니다. 이 장치에 VR 기반 6자유도 추적을 통합한 수집 시스템을 구축하고, UMI 계열로는 전례 없는 규모인 8,434시간, 120만 에피소드, 119개 과제의 데이터셋을 만들었습니다. 실험에서 YUBI는 복잡한 양팔 과제의 범용성, 정교함, 작업 효율에서 UMI 집게보다 나았습니다. 이 데이터로 학습한 단일 정책이 집게를 각 플랫폼에 다는 것만으로 여러 양팔 로봇(UR, Franka, ELEY)에 전이되어, 수집 데이터가 정책 지도 신호로 바로 실행 가능함을 확인했습니다. 하드웨어·수집 소프트웨어·데이터셋을 하나의 스택으로 공개했습니다. 표 4에서는 두 팔을 한 정책이 함께 내는 대조군(D)이지만, 표 1의 UMI 계보에서 '규모' 단계의 최신 사례이기도 합니다."
+  },
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.date} · ${p.categories}${p.arxiv_id ? ' · arXiv:' + p.arxiv_id : ''}${p.doi ? ' · DOI:' + p.doi : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      <div class="figwrap">
+        <div class="fig">
+          ${p.image
+            ? `<img src="${p.image}" alt="${p.title}">`
+            : `<div class="noimg">대표 그림 없음</div>`}
+        </div>
+        ${p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``}
+      </div>
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+  el.innerHTML = '<h3>지난 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>

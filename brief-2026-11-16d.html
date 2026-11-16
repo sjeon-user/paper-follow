@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physical AI 논문 팔로우업</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+    --bgtag:#3a2a12; --bgtagtext:#ffcf96;   /* 배경·문제 */
+    --soltag:#12291d; --soltagtext:#9ff0c4;  /* 해결·방법 */
+    --star:#f5b301; --starempty:#39404d;      /* 별점 */
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8;
+      --bgtag:#fdeede; --bgtagtext:#9a5a12; --soltag:#e5f6ec; --soltagtext:#1c7a45;
+      --star:#e0a400; --starempty:#d7dbe2; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;
+    line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;margin-bottom:22px}
+  .figwrap{margin:14px 0 4px}
+  .fig{background:#000;border-radius:10px;overflow:hidden;display:flex;
+    align-items:center;justify-content:center}
+  .fig img{max-width:100%;max-height:440px;width:auto;height:auto;display:block}
+  .fig .noimg{color:var(--muted);font-size:.85rem;padding:28px;text-align:center}
+  .ptitle{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+  .ptitle a{color:var(--text);text-decoration:none}
+  .ptitle a:hover{color:var(--accent);text-decoration:underline}
+  .meta{color:var(--muted);font-size:.83rem;margin-bottom:10px}
+  .tags{margin:10px 0}
+  .tag{display:inline-block;background:var(--tag);color:var(--tagtext);
+    font-size:.75rem;padding:3px 9px;border-radius:999px;margin:0 6px 6px 0}
+  .section{margin-top:13px}
+  .slabel{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    padding:2px 9px;border-radius:6px;margin-bottom:6px}
+  .slabel.bg{background:var(--bgtag);color:var(--bgtagtext)}
+  .slabel.sol{background:var(--soltag);color:var(--soltagtext)}
+  .stext{margin:0;font-size:.95rem}
+  .rating{display:flex;align-items:center;gap:9px;margin-top:16px}
+  .rlabel{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .stars{position:relative;display:inline-block;font-size:1.1rem;line-height:1;
+    letter-spacing:2px;color:var(--starempty)}
+  .stars::before{content:"\2605\2605\2605\2605\2605"}
+  .stars .fill{position:absolute;top:0;left:0;height:100%;overflow:hidden;
+    white-space:nowrap;color:var(--star)}
+  .stars .fill::before{content:"\2605\2605\2605\2605\2605"}
+  .rnum{font-size:.8rem;color:var(--muted);font-weight:600}
+  .rreason{color:var(--muted);font-size:.8rem;margin-top:5px}
+  .figcap{color:var(--muted);font-size:.75rem;padding:6px 4px 0}
+  .theme{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.86rem;line-height:1.7}
+  .theme .tlabel{font-weight:700;color:var(--muted);margin-right:6px}
+  .theme .ttitle{font-weight:650}
+  .theme .kw{display:inline-block;background:var(--tag);color:var(--tagtext);font-size:.75rem;padding:2px 8px;border-radius:999px;margin:2px 4px 2px 0}
+  .theme .tnote{color:var(--muted);font-size:.8rem;margin-top:2px}
+  .archive{border-top:1px solid var(--line);margin-top:30px;padding-top:18px}
+  .archive h3{font-size:.9rem;margin:0 0 12px}
+  .archive a{display:inline-block;margin:0 8px 8px 0;padding:5px 11px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .archive a:hover{border-color:var(--accent)}
+  .archive a.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .archive .none{color:var(--muted);font-size:.85rem}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
+  .empty{color:var(--muted);text-align:center;padding:60px 0}
+  .topnav{margin-top:12px}
+  .topnav a{display:inline-block;padding:5px 12px;border:1px solid var(--line);
+    border-radius:8px;color:var(--accent);text-decoration:none;font-size:.85rem}
+  .topnav a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Physical AI 논문 팔로우업</h1>
+    <div class="sub">최근 arXiv 신규 논문 · 대표 그림 + 한국어 요약(배경/해결) · ★ 논리·근거 견고함 평가 · 생성일 <span id="brief-date"></span></div>
+    <div class="topnav"><a href="keep.html">⭐ 보관함</a> <a href="skin-brief.html">🧫 FT 피부</a> <a href="cocult-brief.html">🧪 공배양 제어</a> <a href="liquid-brief.html">💧 액체 핸들링</a> <a href="rss-brief.html">🏛 RSS 학회</a></div>
+    <div id="theme" class="theme" hidden></div>
+  </header>
+  <main id="papers"></main>
+  <nav id="archive" class="archive"></nav>
+  <footer>follow-config.md 설정을 기반으로 자동 생성 · arXiv 데이터</footer>
+</div>
+
+<script>
+/* ====== 코워크가 채웁니다 (BRIEF_DATE / ARCHIVE) ====== */
+const BRIEF_DATE = "2026-11-16d";
+/* 이번 회차 주제·검색 키워드 (themes.json에서 채움) */
+const BRIEF_THEME = {"title": "투명 물체를 정면에서 다루는 인식·파지 4편 (표 5·6)", "keywords": ["TransGraspNet", "ClearDepth", "ReMake", "TranspareNet", "depth completion", "transparent object grasping"], "note": "사용자 조사 문서 『VLA·UMI·피펫팅 조사 표 총정리』(2026-11-15)의 arXiv 논문을 유형별로 나눈 특집입니다. 문서의 arXiv ID 30개를 arXiv API로 모두 대조해 제목·저자가 일치함을 확인했습니다. 이 중 15편은 이전 회차에 이미 실려 기존 요약·그림을 그대로 재사용했고(첫 태그에 표·유형 라벨만 추가), 새 15편은 초록을 읽고 작성했습니다. 문서가 '확인 못함'·'기억'으로 표시한 항목 중 arXiv 번호가 없는 것(HYDRA, SPHINX, HDCNet, ACT/ALOHA, π0.7, 산업계 사례)은 싣지 않았습니다. 3편 재수록, 1편(ReMake) 신규입니다. HDCNet은 arXiv 번호가 확인되지 않아 제외했습니다. ReMake는 문서에서 '수치 확인 못함'이었는데 초록에도 구체 수치가 없습니다. 문서의 관찰대로 인식 연구는 전용 데이터·네트워크로 투명함을 정면에서 다루고, 정책 연구(조사표 ⑤)는 증강 같은 간접 대응에 그칩니다."};
+/* 보관된 브리핑 날짜 목록(최신순, 최대 30회). 각 항목은 brief-<날짜>.html 로 링크됨 */
+const ARCHIVE = [{d:"2026-11-16d", t:"조사표 ④ 투명 물체 인식·파지"}, {d:"2026-11-16c", t:"조사표 ③ 양팔 역할 분담"}, {d:"2026-11-16b", t:"조사표 ② 혼합형 VLA"}, {d:"2026-11-16", t:"조사표 ① UMI→VLA 계보"}, {d:"2026-10-18b", t:"자동화·CV 한계 극복 학습 조작"}, {d:"2026-10-18", t:"CLIP/ViT + Diffusion Policy + RLinf"}, {d:"2026-10-06", t:"학습 없는 비전 제어 vs 행동 학습"}, {d:"2026-10-01", t:"VLA + 강화학습 · 정답 감독"}, {d:"2026-09-30c", t:"텔레센트릭 카메라 활용"}, {d:"2026-09-30b", t:"거울(mirror) 활용"}, {d:"2026-09-30", t:"조명(lighting) 활용"}, {d:"2026-09-29", t:"다중 신호 동기화 · 지연"}, {d:"2026-09-28", t:"파이펫팅 조작 특집"}, {d:"2026-09-21", t:"정밀도·정확도·재현성"}, {d:"2026-09-10", t:"Diffusion/Flow 정책 · ACT · 접촉 저널"}, {d:"2026-08-12", t:"UMI 계보 특집"}, {d:"2026-08-10", t:"투명 물체 특집"}, {d:"2026-08-08", t:"일일 · follow-config 주제"}, {d:"2026-08-06", t:"일일 · 주제 5개로 축소"}, {d:"2026-08-04", t:"일일 · follow-config 주제"}, {d:"2026-08-03", t:"일일 브리핑"}, {d:"2026-07-31", t:"일일 브리핑"}, {d:"2026-07-30", t:"일일 브리핑"}, {d:"2026-07-29", t:"일일 브리핑"}, {d:"2026-07-28", t:"일일 브리핑"}, {d:"2026-07-27", t:"일일 브리핑"}, {d:"2026-07-24", t:"일일 브리핑"}, {d:"2026-07-23", t:"일일 브리핑"}, {d:"2026-07-22", t:"일일 브리핑"}, {d:"2026-07-21", t:"일일 브리핑"}];
+/* ====== 코워크가 채웁니다 (PAPERS 배열) ======
+   각 항목 형식:
+   {
+     title:    "논문 제목",
+     authors:  "저자 외",
+     arxiv_id: "2507.xxxxx",
+     url:      "https://arxiv.org/abs/2507.xxxxx",
+     date:     "2026-07-15",           // arXiv 최초 제출일
+     categories: "cs.RO, cs.CV",
+     topics:   ["VLA","robot arm"],     // follow-config의 세부 주제 태그
+     image:    "images/2507xxxxx.png",  // 대표 그림 (없으면 "")
+     figcap:   "Figure 1. ...",         // 그림 설명 (선택)
+     background: "배경·기존 문제 2~3문장 (설명/소개 문투)",
+     solution:   "해결·방법과 결과 2~3문장 (설명/소개 문투)",
+     rating:     4.5,                  // 논문 전체 논리 + 근거 견고함 (0~5, 0.5 단위)
+     rating_reason: "그 점수를 준 근거 한 줄"
+   }
+*/
+const PAPERS = [
+  {
+    title: "TransGraspNet: Physically and Geometrically Consistent Manipulation of Transparent Labware",
+    authors: "Hailing Hu 외 5명",
+    arxiv_id: "2607.29567",
+    url: "https://arxiv.org/abs/2607.29567",
+    date: "2026-08-01",
+    categories: "cs.RO",
+    topics: ["표5 · 인식·파지", "transparent object", "liquid manipulation"],
+    image: "images/2607.29567.png",
+    figcap: "Figure. 투명 유리기구 장면(왼쪽 RGB, 오른쪽은 결손이 많은 원본 깊이) → 검출·분할 → 깊이 복원 → 6D 파지 자세 생성으로 이어지는 TransGraspNet 파이프라인과 실기기 실행 장면",
+    rating: 4.0,
+    rating_reason: "'단계별로 따로 최적화하기 때문에 경계 오차가 깊이로, 깊이 왜곡이 법선으로, 다시 파지 자세로 번진다'는 문제 진단과 경계·표면·물리 세 가지 일관성을 명시적으로 거는 해법이 곧게 이어집니다. 공개 벤치마크, 자체 유리기구 데이터셋, 실제 로봇 플랫폼까지 세 층으로 검증했고 '고속 액체 이송 중 유출 0회'라는 과제 수준의 결과를 제시한 점이 설득력 있습니다. 다만 세 가지 일관성 각각의 기여를 가르는 소거 실험이나 성공률의 구체적 수치가 초록 수준에서 드러나지 않아, 어느 요소가 결정적이었는지는 판단하기 어렵습니다.",
+    background: "액체가 담긴 투명한 실험용 유리기구를 로봇이 다루는 일은 그 자체로 안전이 걸린 작업입니다. 기하 오차가 조금만 생겨도 파지가 불안정해지고 내용물이 쏟아질 수 있기 때문입니다. 투명 물체 인식과 로봇 파지 각각에서는 진전이 있었지만, 기존 시스템 대부분은 검출·깊이 복원·파지 계획을 따로 최적화해 단계 사이가 어긋났습니다. 경계가 부정확하면 깊이가 물체 밖으로 번지고, 표면이 왜곡되면 법선 추정이 망가지며, 과제를 고려하지 않은 파지 점수는 기울어지거나 중심에서 벗어난 파지를 골라 로봇이 움직이는 도중 실패하게 만들었습니다.",
+    solution: "저자들은 인식에서 실행까지 일관성을 명시적으로 강제하는 기하-물리 일관 프레임워크 TransGraspNet을 제안했습니다. 서로 맞물린 세 가지 원칙으로 구성되는데, 먼저 경계 일관성으로 구조적으로 믿을 만한 물체 윤곽을 만들어 이후 단계의 사전지식으로 넘기고, 표면 일관성으로 깊이 복원 과정에서 기하 충실도와 표면 법선 정확도를 지키며, 물리 일관성으로 무게중심 정렬과 렌치 공간 안정성을 따져 파지 선택을 다듬습니다. 마지막 원칙 덕분에 물체를 똑바로 세운 채 동적인 움직임에도 견디는 파지를 고를 수 있습니다. 공개 벤치마크와 전용 투명 유리기구 데이터셋, 그리고 실제 로봇 플랫폼에서 평가한 결과 경계 품질과 표면 법선 충실도가 개선됐고, 어수선한 투명 물체 장면에서도 과제 수준의 성능이 좋았습니다. 무엇보다 실환경에서 안정적으로 동작해, 물체가 뒤섞인 상황에서 높은 파지 성공률을 보였고 빠른 속도로 액체를 옮기는 동안 유출이 한 번도 발생하지 않았습니다."
+  },
+  {
+    title: "ClearDepth: Enhanced Stereo Perception of Transparent Objects for Robotic Manipulation",
+    authors: "Kaixin Bai 외 6명",
+    arxiv_id: "2409.08926",
+    url: "https://arxiv.org/abs/2409.08926",
+    date: "2024-09-14",
+    categories: "cs.RO, cs.CV",
+    topics: ["표5 · 인식·파지", "transparent object"],
+    image: "images/2409.08926.png",
+    figcap: "좌우 이미지를 겹침 패치 임베딩과 특징·문맥 인코더로 처리하고 상관 피라미드와 Conv-GRU로 반복 정제해 투명체 깊이를 복원하는 구조",
+    rating: 3.5,
+    rating_reason: "데이터 수집 비용이라는 이 분야의 실질적 병목을 정면으로 다루면서, 파라미터 정합·도메인 적응·물리적 사실성을 갖춘 Sim2Real 시뮬레이션으로 해결하려는 방향이 분명합니다. 구조 특징을 활용하는 특징 후융합 모듈이라는 구체적 기여도 있고, 실제 환경에서의 Sim2Real 일반화를 실험으로 보였습니다. 다만 초록에 정량 수치나 비교 대상이 제시되지 않아 개선 폭을 가늠하기 어렵습니다.",
+    background: "투명 물체의 깊이 인식은 일상과 물류 현장 모두에서 난제입니다. 표준적인 3차원 센서가 투명하거나 반사가 심한 표면에서는 깊이를 정확히 잡아내지 못하기 때문입니다. 이 한계는 깊이 맵과 점군에 의존하는 응용, 특히 로봇 조작에 큰 영향을 줍니다.",
+    solution: "저자들은 투명 물체의 스테레오 깊이 복원을 위한 비전 트랜스포머 기반 알고리즘을 개발했습니다. 여기에 이미지 안의 구조적 특징으로 깊이 복원 정확도를 높이는 특징 후융합(feature post-fusion) 모듈을 더했습니다. 스테레오 카메라 기반 투명 물체 인식은 데이터셋 수집 비용이 높다는 문제가 있는데, 이를 위해 파라미터가 정합되고 도메인 적응이 이뤄진 물리적으로 사실적인 Sim2Real 시뮬레이션을 도입해, AI 알고리즘으로 가속한 효율적인 데이터 생성을 수행했습니다. 실험 결과 실제 환경에서 뛰어난 Sim2Real 일반화 성능을 보이며, 투명 물체의 정밀한 깊이 맵을 만들어 로봇 조작을 돕는 것으로 나타났습니다."
+  },
+  {
+    title: "Rethinking Transparent Object Grasping: Depth Completion with Monocular Depth Estimation and Instance Mask",
+    authors: "Yaofeng Cheng 외 6명",
+    arxiv_id: "2508.02507",
+    url: "https://arxiv.org/abs/2508.02507",
+    date: "2025-08-04",
+    categories: "cs.CV",
+    topics: ["표5 · 인식·파지", "ReMake", "인스턴스 마스크 유도", "단안 깊이 추정 결합", "깊이 완성 → 6자유도 파지"],
+    image: "images/2508.02507.png",
+    figcap: "Fig. 개요 — 위: RGB와 결손된 깊이 영상에서 완성된 깊이를 얻어 로봇 파지로 연결. 아래: 원본 점군, 대상 물체 점군, 파지 예측",
+    rating: 3.5,
+    rating_reason: "암묵 추론을 명시적 마스크로 대체한 논리가 분명하고 실기 검증을 포함합니다. 다만 초록에 정량 수치가 없고 마스크 품질에 의존합니다.",
+    background: "투명 물체는 광학 특성 때문에 깊이 카메라가 불완전하거나 무효한 깊이를 내게 만들고, 이것이 로봇 파지의 정확도와 신뢰성을 떨어뜨립니다. 기존 방법은 RGB-D 영상을 네트워크에 그대로 넣고 모델이 깊이 값의 신뢰도를 암묵적으로 추론하길 기대하는데, 학습 데이터에서는 통해도 빛의 상호작용이 복잡한 실제 환경에서는 유효·무효 깊이의 분포가 크게 달라져 일반화에 실패하곤 합니다.",
+    solution: "ReMake는 인스턴스 마스크와 단안 깊이 추정이 이끄는 깊이 완성 틀입니다. 마스크로 투명 영역과 비투명 영역을 명시적으로 구분해, 모델이 학습 중 그 영역의 정확한 깊이 추정에 집중하게 합니다. 이 표적 지도가 암묵적 추론 의존을 줄이고 실제 환경으로의 일반화를 높입니다. 여기에 단안 깊이 추정이 투명 물체와 주변 사이의 깊이 맥락을 제공해 예측 정확도를 더합니다. 광범위한 실험에서 벤치마크 데이터셋과 실제 시나리오 모두 기존 방법을 앞섰습니다. 조사 문서 표 5에서 '수치 확인 못함'으로 남아 있던 항목이며, 초록에도 구체 수치는 없습니다."
+  },
+  {
+    title: "Seeing Glass: Joint Point Cloud and Depth Completion for Transparent Objects",
+    authors: "Haoping Xu 외 5명",
+    arxiv_id: "2110.00087",
+    url: "https://arxiv.org/abs/2110.00087",
+    date: "2021-10-01",
+    categories: "cs.CV, cs.AI, cs.LG, cs.RO",
+    topics: ["표5 · 인식·파지", "transparent object"],
+    image: "",
+    figcap: "",
+    rating: 4.0,
+    rating_reason: "점군 완성과 깊이 완성을 따로 두지 않고 함께 푼다는 설계가 명확하고, 어수선한 장면과 '액체가 일부 채워진 용기'라는 까다로운 조건까지 범위에 넣은 점이 실제 실험실 환경과 맞닿아 있습니다. 데이터 수집 방식의 한계를 지적하는 데 그치지 않고 로봇 제어 촬영과 비전 기반 자동 주석으로 이뤄진 자동화 워크플로를 제안해 1만 5천 장 규모의 TODD를 만든 점이 기여로 분명합니다. ClearGrasp를 포함한 여러 데이터셋에서 비교했습니다.",
+    background: "많은 물체 조작 알고리즘의 출발점은 RGB-D 입력입니다. 그런데 보급형 RGB-D 센서는 빛의 굴절과 흡수 때문에, 폭넓은 종류의 투명 물체에 대해 왜곡된 깊이 맵밖에 제공하지 못합니다. 투명 물체가 만들어 내는 이 인식 문제를 풀어야 조작으로 넘어갈 수 있습니다.",
+    solution: "저자들은 점군 완성과 깊이 완성을 함께 수행하는 방법 TranspareNet을 제안했습니다. 어수선하고 복잡한 장면에서, 심지어 용기 안에 액체가 일부 채워져 있는 상황에서도 투명 물체의 깊이를 완성할 수 있습니다. 기존 문헌의 투명 물체 데이터 수집 방식이 지닌 한계를 보완하기 위해, 로봇으로 제어하는 이미지 촬영과 비전 기반 자동 주석으로 구성된 자동 데이터셋 생성 워크플로도 함께 제안했습니다. 이 워크플로로 약 1만 5천 장의 RGB-D 이미지로 이뤄진 토론토 투명 물체 깊이 데이터셋(TODD)을 만들었습니다. 실험 평가 결과 TranspareNet은 ClearGrasp를 비롯한 여러 데이터셋에서 기존 최고 수준의 깊이 완성 방법들을 앞섰고, TODD로 학습했을 때 어수선한 장면도 처리했습니다."
+  },
+];
+/* ====== 여기까지 ====== */
+
+(function render(){
+  document.getElementById("brief-date").textContent = BRIEF_DATE || "-";
+  const root = document.getElementById("papers");
+  if(!PAPERS.length){
+    root.innerHTML = '<div class="empty">아직 채워진 논문이 없습니다.</div>';
+    return;
+  }
+  root.innerHTML = PAPERS.map(p => `
+    <article class="card">
+      <h2 class="ptitle"><a href="${p.url}" target="_blank" rel="noopener">${p.title}</a></h2>
+      <div class="meta">${p.authors} · ${p.date} · ${p.categories}${p.arxiv_id ? ' · arXiv:' + p.arxiv_id : ''}${p.doi ? ' · DOI:' + p.doi : ''}</div>
+      <div class="tags">${(p.topics||[]).map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      <div class="figwrap">
+        <div class="fig">
+          ${p.image
+            ? `<img src="${p.image}" alt="${p.title}">`
+            : `<div class="noimg">대표 그림 없음</div>`}
+        </div>
+        ${p.figcap ? `<div class="figcap">${p.figcap}</div>` : ``}
+      </div>
+      <div class="section">
+        <span class="slabel bg">배경 · 기존 문제</span>
+        <p class="stext">${p.background || ""}</p>
+      </div>
+      <div class="section">
+        <span class="slabel sol">해결 · 방법과 결과</span>
+        <p class="stext">${p.solution || ""}</p>
+      </div>
+      ${p.rating != null ? `
+      <div class="rating" title="논문 전체 논리와 근거의 견고함 평가 (별 5점)">
+        <span class="rlabel">논리·근거</span>
+        <span class="stars"><span class="fill" style="width:${Math.max(0,Math.min(5,p.rating))/5*100}%"></span></span>
+        <span class="rnum">${Number(p.rating).toFixed(1)} / 5</span>
+      </div>
+      ${p.rating_reason ? `<div class="rreason">${p.rating_reason}</div>` : ``}` : ``}
+    </article>`).join("");
+})();
+
+(function renderTheme(){
+  const el = document.getElementById("theme");
+  if(!el || typeof BRIEF_THEME === "undefined" || !BRIEF_THEME || !(BRIEF_THEME.title || (BRIEF_THEME.keywords||[]).length)) return;
+  const kws = (BRIEF_THEME.keywords||[]).map(k=>`<span class="kw">${k}</span>`).join("");
+  el.innerHTML = `<div><span class="tlabel">🔎 이번 회차 주제</span><span class="ttitle">${BRIEF_THEME.title||""}</span></div>`
+    + (kws ? `<div><span class="tlabel">검색 키워드</span>${kws}</div>` : ``)
+    + (BRIEF_THEME.note ? `<div class="tnote">※ ${BRIEF_THEME.note}</div>` : ``);
+  el.hidden = false;
+})();
+
+(function renderArchive(){
+  const el = document.getElementById("archive");
+  if(!el) return;
+  const list = (typeof ARCHIVE !== "undefined" && ARCHIVE.length) ? ARCHIVE : [];
+  el.innerHTML = '<h3>지난 브리핑 (최근 30회)</h3>' +
+    (list.length
+      ? list.map((x,i)=>{const d=(typeof x==="string")?x:x.d; const t=(typeof x==="string")?"":(x.t||""); return `<a class="${i===0?'cur':''}" href="brief-${d}.html">${d}${t?` (${t})`:``}</a>`}).join("")
+      : '<span class="none">아직 보관된 이전 브리핑이 없습니다.</span>');
+})();
+</script>
+</body>
+</html>
