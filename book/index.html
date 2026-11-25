@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Physical AI 지식 책</title>
-<link rel="stylesheet" href="book.css?v=20261125f">
+<link rel="stylesheet" href="book.css?v=20261125g">
 </head>
 <body>
 
@@ -2527,6 +2527,1032 @@
 <!-- ▲▲▲ Isaac Sim 장 끝 ▲▲▲ -->
 </div><!-- /part-isaac -->
 
+<div class="part" id="part-trans" data-title="투명 물체 깊이" data-desc="투명한 물체의 깊이를 재기 어려운 이유와 해결 방법의 분류, 각 방법의 원리와 모델 구조, 그리고 VLA에 결합하는 자리">
+
+<!-- ═══════════ 투명 물체 1장 ═══════════ -->
+<section class="chapter" id="ch-tr-bg" data-added="2026-11-25">
+  <h2>배경: 왜 어렵고 왜 필요한가</h2>
+  <p class="lead">깊이 센서가 투명한 물체 앞에서 틀리는 물리적 이유와, 그럼에도 로봇이 투명한 물체의 깊이를 알아야 하는 이유를 정리한 장이다.</p>
+
+  <div class="note"><p>이 주제는 투명 물체 조작 연구를 모은 목록<a class="cite" href="#src-tr-awesome"></a>, 서베이 논문<a class="cite" href="#src-tr-review"></a>, 대표 모델의 논문과 저장소를 바탕으로 정리하였다. 논문 전문이 길어서 뒤쪽은 요약으로만 확인한 것이 있고, 수치는 논문마다 평가 조건이 달라서 서로 직접 견주기 어렵다. 깊이 센서의 일반 원리와 평가 지표의 식처럼 읽은 자료에 정의가 없는 부분은 널리 알려진 내용으로 보충하였고 본문에 그렇게 표시하였다.</p></div>
+
+  <section class="topic" id="tb-depth" data-added="2026-11-25">
+    <h3>깊이 추정과 깊이 보완</h3>
+    <p><a class="t" href="#g-depth">깊이(depth)</a>는 카메라에서 장면의 각 지점까지의 거리이다. 영상의 화소마다 그 거리를 적어 놓은 것을 깊이 지도(depth map)라고 부른다. 로봇은 깊이 지도가 있어야 물체가 3차원 공간의 어디에 있는지를 알고 손을 뻗을 수 있다.</p>
+    <figure>
+      <b class="fig-t">색 영상과 깊이 지도, 그리고 그것으로 하는 일</b>
+      <div class="flow">
+        <span class="bx vis">색 영상<small>화소마다 색</small></span>
+        <span class="bx lang">깊이 지도<small>화소마다 거리</small></span><i class="arh"></i>
+        <span class="bx aux">3차원 점군<small>화소를 공간의 점으로 되돌림</small></span><i class="arh"></i>
+        <span class="bx act">파지 자세 계산,<br>충돌 회피, 조작</span>
+      </div>
+      <figcaption>색 영상과 깊이를 함께 내는 카메라를 RGB-D 카메라라고 부른다. RGB는 빨강, 초록, 파랑의 세 색을, D는 깊이(Depth)를 뜻한다.</figcaption>
+    </figure>
+    <div class="cols">
+      <div><b>깊이 추정(Depth Estimation)</b><p>영상만 보고 깊이를 새로 계산해 내는 일이다. 카메라 한 대의 영상으로 하면 단안(monocular) 깊이 추정이고, 두 대로 하면 스테레오(stereo) 깊이 추정이다.</p></div>
+      <div><b>깊이 보완(Depth Completion)</b><p>깊이 센서가 낸 깊이 지도에서 빠졌거나 틀린 부분을 고쳐 채우는 일이다. 색 영상을 길잡이로 삼는다. 깊이 복원(depth restoration)이라고도 한다.</p></div>
+    </div>
+    <div class="key"><p>투명 물체 문제는 대부분 깊이 보완의 형태로 다루어진다. 센서의 깊이가 장면 대부분에서는 맞고 투명한 물체 위에서만 틀리기 때문에, 틀린 곳만 골라 고치는 것이 자연스럽다.</p></div>
+  </section>
+
+  <section class="topic" id="tb-sensor" data-added="2026-11-25">
+    <h3>깊이 센서의 원리와 숨은 가정</h3>
+    <p>널리 쓰이는 깊이 센서는 세 가지 방식으로 나뉜다. 아래의 설명은 읽은 자료에 따로 정의되어 있지 않아 널리 알려진 원리로 보충한 것이다.</p>
+    <figure>
+      <b class="fig-t">깊이 센서의 세 가지 방식</b>
+      <div class="dg-grid">
+        <div class="dg-panel"><b>구조광과 능동 스테레오</b><div class="dg">
+          <span class="bx aux">적외선 투사기<small>알려진 무늬를 쏜다</small></span><i class="ar"></i>
+          <span class="bx">물체 표면에 무늬가 맺힘</span><i class="ar"></i>
+          <span class="bx vis">적외선 카메라 한 대 또는 두 대<small>무늬의 어긋남을 본다</small></span><i class="ar"></i>
+          <span class="bx lang">삼각 측량으로 거리 계산</span></div>
+          <p>무늬가 표면에 맺히고 그대로 되돌아온다고 가정한다. Intel RealSense D400 계열이 능동 스테레오 방식이다.</p></div>
+        <div class="dg-panel"><b>비행 시간(ToF, Time-of-Flight)</b><div class="dg">
+          <span class="bx aux">빛을 쏜다</span><i class="ar"></i>
+          <span class="bx">표면에서 되돌아옴</span><i class="ar"></i>
+          <span class="bx vis">돌아오는 데 걸린 시간을 잰다</span><i class="ar"></i>
+          <span class="bx lang">시간에 빛의 속도를 곱해 거리 계산</span></div>
+          <p>쏜 빛이 처음 만난 표면에서 되돌아온다고 가정한다. 라이다(LiDAR)도 같은 원리이다.</p></div>
+        <div class="dg-panel"><b>수동 스테레오</b><div class="dg">
+          <div class="dg-row"><span class="bx vis">왼쪽 카메라</span><span class="bx vis">오른쪽 카메라</span></div><i class="ar"></i>
+          <span class="bx">두 영상에서 같은 점을 찾는다</span><i class="ar"></i>
+          <span class="bx lang">두 점의 위치 차이로 거리 계산</span></div>
+          <p>같은 점이 두 영상에서 비슷하게 보인다고 가정한다. 두 점의 위치 차이를 시차(disparity)라고 부른다.</p></div>
+      </div>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">실제 사진: 능동 스테레오 깊이 카메라</b>
+      <div class="shots one"><a href="https://commons.wikimedia.org/wiki/Special:FilePath/Intel%20Realsense%20depth%20camera%20D435.jpg?width=800" target="_blank" rel="noopener"><img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Intel%20Realsense%20depth%20camera%20D435.jpg?width=800" alt="능동 스테레오 깊이 카메라"></a></div>
+      <figcaption>적외선 투사기 하나와 적외선 카메라 두 대, 색 카메라 하나가 한 몸에 들어 있다. 투명 물체 연구의 대부분이 이 계열의 카메라를 쓴다. 사진: 위키미디어 공용, Marc Auledas(CC BY-SA 4.0). 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <p>세 방식에는 공통된 숨은 가정이 있다. 물체의 표면이 받은 빛을 모든 방향으로 고르게 흩어 되돌려 보낸다는 가정이다. 이것을 <a class="t" href="#g-lambert">램버트 가정(Lambertian assumption)</a>이라고 부른다. 이 가정이 맞으면 어느 방향에서 보아도 표면의 밝기가 같아서 무늬가 잘 맺히고 두 카메라에서 같은 점이 같게 보인다.</p>
+    <div class="key"><p>투명한 물체는 램버트 가정을 정면으로 어긴다. 빛을 흩어 되돌리지 않고, 대부분은 통과시키고 일부는 거울처럼 한 방향으로만 튕겨 낸다.</p></div>
+  </section>
+
+  <section class="topic" id="tb-optics" data-added="2026-11-25">
+    <h3>투명한 표면에서 빛에 일어나는 일</h3>
+    <figure>
+      <b class="fig-t">불투명한 표면과 투명한 표면</b>
+      <div class="dg-grid">
+        <div class="dg-panel"><b>불투명하고 거친 표면</b><div class="dg">
+          <span class="bx aux">들어온 빛</span><i class="ar"></i>
+          <span class="bx act wide">표면</span><i class="ar"></i>
+          <span class="bx">모든 방향으로 고르게 흩어짐</span></div>
+          <p>센서가 어디에 있든 되돌아온 빛을 받는다. 램버트 가정이 성립한다.</p></div>
+        <div class="dg-panel"><b>투명한 표면</b><div class="dg">
+          <span class="bx aux">들어온 빛</span><i class="ar"></i>
+          <span class="bx vis wide">유리나 플라스틱의 표면</span><i class="ar"></i>
+          <div class="dg-row"><span class="bx lang">투과<small>대부분이 그대로 통과</small></span><span class="bx lang">굴절<small>통과하며 방향이 꺾임</small></span><span class="bx wm">정반사<small>일부가 한 방향으로만 튕김</small></span></div></div>
+          <p>센서로 되돌아오는 빛은 물체 뒤의 배경에서 온 것이거나, 특정 각도에서만 보이는 번쩍임이다.</p></div>
+      </div>
+    </figure>
+    <div class="tbl"><table>
+      <tr><th>현상</th><th>뜻</th><th>센서에 미치는 영향</th></tr>
+      <tr><td class="m">투과(transmission)</td><td>빛의 대부분이 물체를 그대로 지나간다. 투명한 물체는 받은 빛의 많은 부분을 통과시키고 조금만 반사한다.</td><td>물체 표면이 아니라 그 뒤의 배경까지의 거리가 재어진다.</td></tr>
+      <tr><td class="m"><a class="t" href="#g-refraction">굴절(refraction)</a></td><td>빛이 공기에서 유리로, 유리에서 공기로 넘어갈 때 방향이 꺾인다.</td><td>배경의 모습이 일그러져 보인다. 두 카메라에서 같은 점을 찾기 어렵다.</td></tr>
+      <tr><td class="m">정반사(specular reflection)</td><td>표면이 매끄러워서 빛이 거울처럼 한 방향으로만 튕겨 나간다. 밝은 번쩍임으로 보인다.</td><td>투사한 무늬가 망가지거나 포화된다. 그 화소의 깊이가 빠진다.</td></tr>
+    </table></div>
+    <figure class="shot">
+      <b class="fig-t">실제 사진: 굴절</b>
+      <div class="shots one"><a href="https://commons.wikimedia.org/wiki/Special:FilePath/Pencil%20in%20glass%20of%20water%20showing%20refraction%20%28cropped%29.JPG?width=800" target="_blank" rel="noopener"><img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Pencil%20in%20glass%20of%20water%20showing%20refraction%20%28cropped%29.JPG?width=800" alt="물컵 속 연필의 굴절"></a></div>
+      <figcaption>물컵에 꽂은 연필이 수면에서 꺾이고 어긋나 보인다. 빛이 물과 유리를 지나며 꺾이기 때문이다. 깊이 센서의 빛도 같은 일을 겪는다. 사진: 위키미디어 공용, Meganbeckett27(CC BY-SA 3.0). 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+  </section>
+
+  <section class="topic" id="tb-error" data-added="2026-11-25">
+    <h3>두 가지 깊이 오류</h3>
+    <p>앞의 광학 현상은 깊이 지도에 두 종류의 오류로 나타난다. 서베이와 ClearGrasp 논문이 모두 이 두 가지를 구분하는데 번호를 붙이는 순서는 서로 반대이다. 그래서 이 책에서는 번호 대신 이름으로 부른다.</p>
+    <figure>
+      <b class="fig-t">배경 깊이 오류와 빠진 깊이 오류</b>
+      <div class="dg-grid">
+        <div class="dg-panel"><b>배경 깊이 오류</b><div class="dg">
+          <span class="bx vis">깊이 카메라</span><i class="ar"></i>
+          <span class="bx aux">투명 물체<small>빛이 굴절하며 통과</small></span><i class="ar"></i>
+          <span class="bx act">뒤의 탁자나 벽<small>여기에서 되돌아옴</small></span></div>
+          <p>값은 있지만 틀렸다. 물체 자리에 배경까지의 거리가 적힌다. 깊이 지도만 보면 물체가 없는 것처럼 보인다.</p></div>
+        <div class="dg-panel"><b>빠진 깊이 오류</b><div class="dg">
+          <span class="bx vis">깊이 카메라</span><i class="ar"></i>
+          <span class="bx wm">투명 물체의 번쩍이는 부분<small>무늬가 망가짐</small></span><i class="ar"></i>
+          <span class="bx aux">같은 점을 찾지 못함</span></div>
+          <p>값이 아예 없다. 깊이 지도에 구멍이 난다.</p></div>
+      </div>
+    </figure>
+    <div class="warn"><p>둘 가운데 더 위험한 것은 배경 깊이 오류이다. 빠진 깊이는 구멍으로 드러나서 모른다는 사실이라도 알 수 있지만, 배경 깊이는 그럴듯한 값이 들어 있어서 틀렸다는 표시가 없다. 그래서 대부분의 방법이 먼저 투명한 영역이 어디인지를 찾는 단계를 둔다.</p></div>
+    <figure class="shot">
+      <b class="fig-t">실제 예시: 센서의 깊이가 틀리는 모습</b>
+      <div class="shots"><a href="https://raw.githubusercontent.com/Shreeyak/cleargrasp/master/data/readme_images/task.png" target="_blank" rel="noopener"><img loading="lazy" src="https://raw.githubusercontent.com/Shreeyak/cleargrasp/master/data/readme_images/task.png" alt="ClearGrasp의 과제"></a><a href="https://arxiv.org/html/2209.08455v1/over.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2209.08455v1/over.png" alt="투명 물체 깊이의 어려움"></a></div>
+      <figcaption>첫째 그림은 흡착 그리퍼와 평행 그리퍼로 투명 물체를 집는 모습과, 센서의 깊이를 올바른 형상으로 고친 결과이다. 둘째 그림의 왼쪽은 깊이 카메라의 빛이 투명 물체에서 굴절해 실제 깊이가 아닌 깊이가 재어지는 모습이고, 오른쪽은 이 기술이 쓰일 수 있는 응용의 예이다. 출처: ClearGrasp 공개 저장소<a class="cite" href="#src-tr-cleargrasp"></a>, Apache-2.0. 출처: TODE-Trans 논문(arXiv 2209.08455), CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">실제 예시: 원래 깊이와 보완한 깊이</b>
+      <div class="shots one"><a href="https://arxiv.org/html/2104.00622v1/images/teaser.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2104.00622v1/images/teaser.png" alt="LIDF의 결과 예시"></a></div>
+      <figcaption>위에서부터 색 영상, 센서가 낸 깊이로 만든 점군, 예측한 깊이로 만든 점군이다. 센서의 점군에서는 투명한 물체가 사라지거나 일그러져 있다. 출처: LIDF 논문<a class="cite" href="#src-tr-lidf"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+  </section>
+
+  <section class="topic" id="tb-rgb" data-added="2026-11-25">
+    <h3>색 영상만으로도 어려운 이유</h3>
+    <p>깊이 센서를 버리고 색 영상으로만 풀면 되지 않느냐는 물음이 나올 수 있다. 그러나 투명한 물체는 색 영상에서도 까다롭다.</p>
+    <div class="cols">
+      <div><b>고유한 색과 무늬가 없다</b><p>투명한 물체의 겉모습은 그 뒤의 배경이 결정한다. 같은 컵도 배경이 바뀌면 전혀 다르게 보인다.</p></div>
+      <div><b>가장자리 단서가 약하다</b><p>유리 가장자리의 안쪽과 바깥쪽이 같은 배경이어서 경계가 흐리다. 어두우면 배경에 섞이고, 밝으면 번쩍임이 생긴다.</p></div>
+      <div><b>빛이 거짓 단서를 만든다</b><p>물체를 지난 빛이 바닥에 모여 만드는 밝은 무늬를 집광 무늬(caustics)라고 부른다. 이것과 강한 방향성 조명이 표면 방향과 영역의 예측을 그르친다.</p></div>
+      <div><b>겹치면 더 어렵다</b><p>투명한 물체 뒤에 또 다른 투명한 물체가 비쳐 보인다. 어디까지가 어느 물체인지 가르기 어렵다.</p></div>
+    </div>
+    <figure class="shot">
+      <b class="fig-t">실제 사진: 겹쳐 보이는 투명 물체와 어수선한 장면</b>
+      <div class="shots"><a href="https://arxiv.org/html/2203.03890v2/figure/multilayer_segmentation.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2203.03890v2/figure/multilayer_segmentation.png" alt="겹쳐 보이는 투명 물체"></a><a href="https://arxiv.org/html/2203.03890v2/figure/dataset_sample.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2203.03890v2/figure/dataset_sample.png" alt="ClearPose 데이터셋 예시"></a></div>
+      <figcaption>첫째 그림은 투명한 물체가 여러 겹으로 겹쳐 보이는 예이다. 둘째 그림은 ClearPose 데이터셋의 실제 장면으로, 여러 종류의 투명 용기가 다양한 배경과 조명 아래에 놓여 있다. 출처: ClearPose 논문(arXiv 2203.03890), CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+  </section>
+
+  <section class="topic" id="tb-why" data-added="2026-11-25">
+    <h3>왜 필요한가</h3>
+    <p>투명한 물체는 일상과 산업 곳곳에 있다. 서베이<a class="cite" href="#src-tr-review"></a>는 의료, 서비스, 제조, 생명 공학을 주요 분야로 든다.</p>
+    <div class="tbl"><table>
+      <tr><th>분야</th><th>투명한 물체의 예와 로봇이 하는 일</th></tr>
+      <tr><td class="m">가정과 서비스</td><td>유리컵과 그릇을 집어 식기세척기에 넣고, 음료를 따르고, 마시는 것을 돕는다.</td></tr>
+      <tr><td class="m">실험실 자동화</td><td>비커, 플라스크, 시험관을 옮기고 액체를 다룬다. 용기에 액체가 담겨 있으면 겉모습이 또 달라진다.</td></tr>
+      <tr><td class="m">재활용과 물류</td><td>컨베이어 위의 플라스틱 병을 골라낸다. 투명한 포장재에 싸인 상품을 집는다.</td></tr>
+      <tr><td class="m">이동과 안내</td><td>유리벽과 유리문을 알아보고 부딪히지 않는다. 시각 장애인의 보행을 돕는다.</td></tr>
+    </table></div>
+    <figure class="shot">
+      <b class="fig-t">실제 사진: 실험실의 유리 기구</b>
+      <div class="shots one"><a href="https://commons.wikimedia.org/wiki/Special:FilePath/Laboratory%20Glasswares.jpg?width=800" target="_blank" rel="noopener"><img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Laboratory%20Glasswares.jpg?width=800" alt="실험실 유리 기구"></a></div>
+      <figcaption>실험실 자동화에서 로봇이 다루어야 하는 물체의 대부분이 이런 투명한 용기이다. 사진: 위키미디어 공용, Ajay Kumar Chaurasiya(CC BY-SA 4.0). 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <h4>깊이를 고치면 파지가 얼마나 달라지는가</h4>
+    <div class="tbl"><table>
+      <tr><th>연구</th><th>센서의 깊이를 그대로 쓴 경우</th><th>깊이를 고쳐 쓴 경우</th></tr>
+      <tr><td class="m">ClearGrasp, 흡착 그리퍼</td><td>성공률 64퍼센트</td><td>성공률 86퍼센트</td></tr>
+      <tr><td class="m">ClearGrasp, 평행 그리퍼</td><td>성공률 12퍼센트</td><td>성공률 72퍼센트</td></tr>
+      <tr><td class="m">SwinDRNet</td><td>성공률 38.78퍼센트</td><td>성공률 96.15퍼센트</td></tr>
+      <tr><td class="m">Dex-NeRF</td><td>고급 깊이 센서로 물체마다 10번 가운데 0번 성공</td><td>물체마다 10번 가운데 9번 또는 10번 성공</td></tr>
+      <tr><td class="m">D3RoMa</td><td>성공률 0.45</td><td>성공률 0.77</td></tr>
+    </table></div>
+    <p>표의 수치는 각 논문이 보고한 것이며 실험 조건이 서로 다르다. SwinDRNet과 D3RoMa의 수치는 논문 뒤쪽의 요약에서 확인한 값이다.</p>
+    <div class="key"><p>투명한 물체를 못 다루는 로봇은 부엌과 실험실에서 일할 수 없다. 그리고 그 원인의 큰 부분은 손이 아니라 눈, 곧 깊이에 있다.</p></div>
+  </section>
+</section>
+
+<!-- ═══════════ 투명 물체 2장 ═══════════ -->
+<section class="chapter" id="ch-tr-tax" data-added="2026-11-25">
+  <h2>해결 방법의 분류</h2>
+  <p class="lead">투명 물체의 깊이 문제를 푸는 방법을 여섯 갈래로 나누고, 입력 조건과 속도에 따라 견주어 본 장이다.</p>
+
+  <section class="topic" id="tt-map" data-added="2026-11-25">
+    <h3>여섯 갈래의 분류 지도</h3>
+    <p>방법들은 무엇을 입력으로 받는가와 깊이를 어디에서 얻는가에 따라 나뉜다. 아래 그림의 항목을 누르면 해당 설명으로 이동한다.</p>
+    <figure>
+      <b class="fig-t">투명 물체 깊이 문제의 해결 방법</b>
+      <div class="tax">
+        <div><b style="background:var(--d-vis)">가. RGB-D 깊이 보완</b><ul>
+          <li><a href="#tr-cleargrasp">기하 예측과 전역 최적화</a></li>
+          <li><a href="#tr-lidf">국소 암시적 함수</a></li>
+          <li><a href="#tr-transparenet">점군과 깊이의 결합</a></li>
+          <li><a href="#tr-dfnet">가벼운 엔드투엔드 회귀</a></li>
+          <li><a href="#tr-swindr">두 흐름과 신뢰도 섞기</a></li>
+          <li><a href="#tr-fdct">빠른 모델과 병렬 이중 가지</a></li></ul></div>
+        <div><b style="background:var(--d-lang)">나. 스테레오와 센서 모사</b><ul>
+          <li><a href="#to-sim">능동 스테레오 센서의 모사</a></li>
+          <li><a href="#to-stereo">학습 기반 스테레오 정합</a></li>
+          <li><a href="#to-diff">시차 공간의 확산 모델</a></li></ul></div>
+        <div><b style="background:var(--d-act)">다. 다시점 신경장</b><ul>
+          <li><a href="#to-nerf">장면마다 학습하는 NeRF</a></li>
+          <li><a href="#to-nerf">일반화 NeRF와 파지 결합</a></li>
+          <li><a href="#to-nerf">배경을 미리 배우는 방식</a></li></ul></div>
+        <div><b style="background:var(--d-plan)">라. 단안 깊이 파운데이션 모델</b><ul>
+          <li><a href="#to-mono">칠해서 만든 가짜 정답</a></li>
+          <li><a href="#to-mono">합성 교사와 대규모 가짜 정답</a></li></ul></div>
+        <div><b style="background:var(--d-wm)">마. 깊이를 건너뛰는 방법</b><ul>
+          <li><a href="#to-skip">키포인트와 자세 추정</a></li></ul></div>
+        <div><b style="background:var(--d-io)">바. 다른 감각의 활용</b><ul>
+          <li><a href="#to-modal">편광</a></li>
+          <li><a href="#to-modal">열화상</a></li>
+          <li><a href="#to-modal">라이트 필드</a></li>
+          <li><a href="#to-modal">촉각</a></li></ul></div>
+      </div>
+      <figcaption>서베이의 분류(다시점, 최적화, 엔드투엔드)와 목록 저장소의 분류를 바탕으로, 2023년 이후의 방법을 더해 이 책에서 다시 묶은 것이다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><th>갈래</th><th>기본 생각</th></tr>
+      <tr><td class="m">가. RGB-D 깊이 보완</td><td>센서의 깊이 가운데 투명한 영역만 색 영상을 길잡이로 고쳐 채운다.</td></tr>
+      <tr><td class="m">나. 스테레오와 센서 모사</td><td>센서가 깊이를 계산하는 과정 자체를 학습으로 바꾸거나, 센서의 오류를 모사한 데이터로 학습한다.</td></tr>
+      <tr><td class="m">다. 다시점 신경장</td><td>여러 방향에서 찍은 영상으로 장면의 3차원 표현을 만들고 거기에서 깊이를 뽑는다.</td></tr>
+      <tr><td class="m">라. 단안 깊이 파운데이션 모델</td><td>대량의 데이터로 학습한 범용 깊이 모델이 색 영상 한 장으로 깊이를 낸다.</td></tr>
+      <tr><td class="m">마. 깊이를 건너뛰는 방법</td><td>깊이 지도를 만들지 않고 물체의 키포인트나 자세를 영상에서 바로 구한다.</td></tr>
+      <tr><td class="m">바. 다른 감각의 활용</td><td>투명한 물체가 불투명하게 보이거나 다른 단서를 주는 감각을 쓴다.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="topic" id="tt-compare" data-added="2026-11-25">
+    <h3>입력 조건과 속도에 따른 비교</h3>
+    <div class="tbl"><table>
+      <tr><th>모델</th><th>갈래</th><th>필요한 입력</th><th>실시간성</th><th>장면마다 학습</th></tr>
+      <tr><td class="m">ClearGrasp<small>2020</small></td><td>가</td><td>색 영상과 센서 깊이</td><td>느림. 초당 약 1장</td><td>필요 없음</td></tr>
+      <tr><td class="m">LIDF<small>2021</small></td><td>가</td><td>색 영상과 센서 깊이</td><td>장당 약 0.09초</td><td>필요 없음</td></tr>
+      <tr><td class="m">TranspareNet<small>2021</small></td><td>가</td><td>색 영상, 센서 깊이, 물체 마스크</td><td>장당 약 0.035초</td><td>필요 없음</td></tr>
+      <tr><td class="m">DFNet<small>2022</small></td><td>가</td><td>색 영상과 센서 깊이</td><td>장당 약 0.017초</td><td>필요 없음</td></tr>
+      <tr><td class="m">SwinDRNet<small>2022</small></td><td>가, 나</td><td>색 영상과 센서 깊이</td><td>초당 30장</td><td>필요 없음</td></tr>
+      <tr><td class="m">ClearDepth<small>2024</small></td><td>나</td><td>좌우 스테레오 영상</td><td>초당 50장이라고 주장</td><td>필요 없음</td></tr>
+      <tr><td class="m">D3RoMa<small>2024</small></td><td>나</td><td>좌우 스테레오 영상과 초기 시차</td><td>느림. 10단계에 약 0.67초</td><td>필요 없음</td></tr>
+      <tr><td class="m">Dex-NeRF<small>2021</small></td><td>다</td><td>자세를 아는 여러 장의 색 영상</td><td>매우 느림</td><td>필요함</td></tr>
+      <tr><td class="m">GraspNeRF<small>2023</small></td><td>다</td><td>자세를 아는 색 영상 6장</td><td>초당 11장</td><td>필요 없음</td></tr>
+      <tr><td class="m">Depth4ToM<small>2023</small></td><td>라</td><td>색 영상 한 장</td><td>보고되지 않음</td><td>필요 없음</td></tr>
+      <tr><td class="m">Depth Anything V2<small>2024</small></td><td>라</td><td>색 영상 한 장</td><td>모델 크기에 따라 다름</td><td>필요 없음</td></tr>
+      <tr><td class="m">KeyPose<small>2020</small></td><td>마</td><td>좌우 스테레오 영상</td><td>확인되지 않음</td><td>물체별 학습이 필요함</td></tr>
+    </table></div>
+    <p>속도는 각 논문이 서로 다른 장비에서 잰 값이다. DFNet, TranspareNet의 값은 TransCG 논문이 같은 장비에서 다시 잰 것이다. ClearDepth와 D3RoMa의 값은 논문 뒤쪽의 요약에서 확인한 값이다.</p>
+    <div class="key"><p>고를 때의 기준은 세 가지이다. 어떤 센서를 쓸 수 있는가, 로봇의 제어 주기에 맞출 만큼 빠른가, 그리고 미터 단위의 절대 깊이가 필요한가 상대적인 앞뒤 관계만 있으면 되는가이다.</p></div>
+  </section>
+
+  <section class="topic" id="tt-flow" data-added="2026-11-25">
+    <h3>흐름의 변화</h3>
+    <figure>
+      <b class="fig-t">2019년부터 2026년까지의 큰 흐름</b>
+      <div class="tl">
+        <div class="tl-row"><b style="background:var(--d-vis)">2019년에서 2021년</b><div class="tl-chips">
+          <span class="chip"><b>ClearGrasp</b>지우고 최적화로 채움</span><span class="chip"><b>KeyPose</b>깊이 없이 키포인트</span><span class="chip"><b>LIDF</b>암시적 함수</span><span class="chip"><b>TranspareNet</b>점군과 깊이의 결합</span><span class="chip"><b>Dex-NeRF</b>장면마다 NeRF</span></div></div>
+        <div class="tl-row"><b style="background:var(--d-lang)">2022년에서 2023년</b><div class="tl-chips">
+          <span class="chip"><b>TransCG</b>대규모 실제 데이터</span><span class="chip"><b>DREDS</b>센서를 모사한 합성 데이터</span><span class="chip"><b>GraspNeRF</b>일반화 NeRF</span><span class="chip"><b>FDCT</b>빠른 보완</span><span class="chip"><b>Depth4ToM</b>가짜 정답으로 미세조정</span></div></div>
+        <div class="tl-row"><b style="background:var(--d-plan)">2024년 이후</b><div class="tl-chips">
+          <span class="chip"><b>Depth Anything V2</b>합성 교사와 대규모 학습</span><span class="chip"><b>D3RoMa</b>확산 모델</span><span class="chip"><b>ClearDepth</b>구조 단서를 쓰는 스테레오</span><span class="chip"><b>TDCNet</b>병렬 이중 가지</span><span class="chip"><b>Residual-NeRF</b>배경을 미리 학습</span></div></div>
+      </div>
+      <figcaption>단계의 구분은 읽은 자료들을 바탕으로 이 책에서 정리한 것이다.</figcaption>
+    </figure>
+    <ol class="steps">
+      <li><b>물체나 장면마다 정답을 만들어 배우던 시기.</b> 소수의 물체로 만든 합성 데이터나 소규모 실제 데이터로 학습하였다.</li>
+      <li><b>센서의 물리를 모사하는 시기.</b> 깊이 센서가 틀리는 방식까지 흉내 낸 합성 데이터로 학습해 현실과의 격차를 줄였다. 실제 데이터도 커졌다.</li>
+      <li><b>범용 모델과 생성 모델의 시기.</b> 대량의 데이터로 학습한 단안 깊이 모델과 확산 모델이 들어왔다. 정답의 질이 모델의 크기보다 중요하다는 인식이 자리 잡았다.</li>
+    </ol>
+  </section>
+
+  <section class="topic" id="tt-data" data-added="2026-11-25">
+    <h3>정답 깊이를 얻는 방법과 데이터셋</h3>
+    <p>이 분야의 가장 큰 걸림돌은 정답을 얻기 어렵다는 점이다. 센서가 틀리는 바로 그 물체의 올바른 깊이를 알아야 하기 때문이다. 연구자들이 찾아낸 방법은 다섯 가지이다.</p>
+    <figure>
+      <b class="fig-t">정답 깊이를 얻는 다섯 가지 방법</b>
+      <div class="dg-grid">
+        <div class="dg-panel"><b>불투명한 쌍둥이</b><div class="dg"><span class="bx vis">투명 물체를 찍는다</span><i class="ar"></i><span class="bx aux">같은 모양의 칠한 물체로 바꿔 놓는다</span><i class="ar"></i><span class="bx lang">칠한 물체의 깊이가 정답</span></div><p>ClearGrasp의 실제 평가 데이터 286장이 이렇게 만들어졌다. 손이 많이 간다.</p></div>
+        <div class="dg-panel"><b>추적기와 3차원 모형</b><div class="dg"><span class="bx vis">물체에 표식을 붙이고 추적한다</span><i class="ar"></i><span class="bx aux">물체의 3차원 모형을 그 자세로 놓는다</span><i class="ar"></i><span class="bx lang">모형을 렌더링한 깊이가 정답</span></div><p>TransCG는 광학 추적기를, TODD는 인쇄한 표식을 썼다. 자동화하기 좋다.</p></div>
+        <div class="dg-panel"><b>시뮬레이션 렌더링</b><div class="dg"><span class="bx vis">가상 장면을 만든다</span><i class="ar"></i><span class="bx aux">광선 추적으로 투명 재질을 그린다</span><i class="ar"></i><span class="bx lang">시뮬레이터가 아는 깊이가 정답</span></div><p>ClearGrasp, DREDS, HISS가 이 방식이다. 양은 많지만 현실과의 격차가 생긴다.</p></div>
+        <div class="dg-panel"><b>여러 시점의 삼각 측량</b><div class="dg"><span class="bx vis">여러 방향에서 찍는다</span><i class="ar"></i><span class="bx aux">사람이 몇 장에 점을 찍는다</span><i class="ar"></i><span class="bx lang">기하로 나머지 영상의 정답을 계산</span></div><p>KeyPose가 이 방식으로 깊이 센서 없이 정답을 만들었다.</p></div>
+        <div class="dg-panel"><b>칠해서 만든 가짜 정답</b><div class="dg"><span class="bx vis">영상에서 투명 영역을 단색으로 칠한다</span><i class="ar"></i><span class="bx aux">기존의 깊이 모델에 넣는다</span><i class="ar"></i><span class="bx lang">그 출력을 정답으로 삼는다</span></div><p>Depth4ToM의 방식이다. 깊이 정답이 전혀 필요 없다.</p></div>
+      </div>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">실제 사진: TransCG가 정답을 만든 방법</b>
+      <div class="shots"><a href="https://arxiv.org/html/2202.08471v2/annotation.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2202.08471v2/annotation.png" alt="TransCG의 정답 표시 장치"></a><a href="https://arxiv.org/html/2202.08471v2/methodology.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2202.08471v2/methodology.png" alt="TransCG 데이터 구축 방법"></a></div>
+      <figcaption>첫째 그림은 투명 물체에 추적용 표식을 단 고정구를 붙이고 물체의 3차원 모형을 얻는 과정이다. 둘째 그림은 로봇 팔로 여러 시점에서 찍으면서 추적한 자세로 정답 깊이, 마스크, 표면 법선을 렌더링하는 전체 과정이다. 출처: TransCG 논문<a class="cite" href="#src-tr-transcg"></a>, CC BY-NC-ND 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><th>데이터셋</th><th>종류</th><th>규모</th><th>정답을 얻은 방법</th></tr>
+      <tr><td class="m">ClearGrasp<small>2020</small></td><td>합성과 실제</td><td>합성 약 5만 장, 실제 286장</td><td>렌더링, 칠한 쌍둥이</td></tr>
+      <tr><td class="m">TODD<small>2021</small></td><td>실제</td><td>약 1만 5천 장. 액체가 담긴 용기 포함</td><td>인쇄 표식과 3차원 모형</td></tr>
+      <tr><td class="m">TransCG<small>2022</small></td><td>실제</td><td>57,715장, 130개 장면, 투명 물체 51종</td><td>광학 추적기와 3차원 모형</td></tr>
+      <tr><td class="m">ClearPose<small>2022</small></td><td>실제</td><td>약 35만 장, 물체 63종</td><td>자세 표시 도구</td></tr>
+      <tr><td class="m">DREDS<small>2022</small></td><td>합성</td><td>13만 장, 물체 1,861종</td><td>센서를 모사한 렌더링</td></tr>
+      <tr><td class="m">STD<small>2022</small></td><td>실제</td><td>2만 7천 장, 물체 50종</td><td>사진 측량으로 만든 모형</td></tr>
+      <tr><td class="m">HISS<small>2024</small></td><td>합성</td><td>스테레오 쌍 약 1만 개</td><td>Isaac Sim의 두 번 렌더링</td></tr>
+    </table></div>
+    <p>분할용 데이터셋으로는 실제 영상 1만 장의 Trans10K가 대표적이다. 투명한 영역이 어디인지를 찾는 모델의 학습에 쓰인다.</p>
+  </section>
+
+  <section class="topic" id="tt-metric" data-added="2026-11-25">
+    <h3>평가 지표</h3>
+    <p>깊이 보완 논문들은 투명한 영역의 화소에 대해 아래의 지표를 보고한다. 서베이에는 식이 정의되어 있지 않아, 깊이 추정 분야에서 널리 쓰이는 정의를 적었다. 예측한 깊이를 d, 정답 깊이를 d*라고 한다.</p>
+    <div class="tbl"><table>
+      <tr><th>지표</th><th>뜻</th><th>좋은 방향</th></tr>
+      <tr><td class="m">RMSE<small>Root Mean Squared Error</small></td><td>오차를 제곱해 평균한 뒤 제곱근을 취한 값. 큰 오차에 민감하다. 단위는 미터이다.</td><td>작을수록 좋다.</td></tr>
+      <tr><td class="m">REL<small>Absolute Relative Difference</small></td><td>오차의 절댓값을 정답 깊이로 나누어 평균한 값. 거리에 대한 비율이다.</td><td>작을수록 좋다.</td></tr>
+      <tr><td class="m">MAE<small>Mean Absolute Error</small></td><td>오차의 절댓값을 평균한 값. 단위는 미터이다.</td><td>작을수록 좋다.</td></tr>
+      <tr><td class="m">임계 정확도<small>1.05, 1.10, 1.25</small></td><td>예측과 정답의 비율이 기준 안에 드는 화소의 비율. 기준이 1.05이면 5퍼센트 이내로 맞은 화소의 비율이다.</td><td>클수록 좋다.</td></tr>
+    </table></div>
+    <div class="formula">RMSE = √( 평균( (d − d*)² ) ) &nbsp;&nbsp; REL = 평균( |d − d*| ÷ d* )<small>임계 정확도는 d ÷ d*와 d* ÷ d 가운데 큰 값이 기준보다 작은 화소의 비율이다.</small></div>
+    <div class="warn"><p>깊이 지표가 좋다고 조작이 잘 되는 것은 아니다. 그래서 많은 논문이 파지 성공률을 함께 보고한다. 스테레오 계열의 논문은 깊이 대신 시차의 오차를 보고하기도 하므로 지표의 종류를 먼저 확인해야 한다.</p></div>
+  </section>
+</section>
+
+<!-- ═══════════ 투명 물체 3장 ═══════════ -->
+<section class="chapter" id="ch-tr-rgbd" data-added="2026-11-25">
+  <h2>RGB-D 깊이 보완의 원리와 모델 구조</h2>
+  <p class="lead">색 영상과 센서의 깊이를 받아 투명한 영역의 깊이를 고쳐 채우는 여섯 가지 모델의 원리와 구조를 정리한 장이다.</p>
+
+  <section class="topic" id="tr-common" data-added="2026-11-25">
+    <h3>공통 원리</h3>
+    <p>이 갈래의 모델은 모두 같은 물음에 답한다. 센서의 깊이 가운데 믿을 수 있는 부분은 살리고, 믿을 수 없는 부분은 색 영상의 단서로 새로 채우려면 어떻게 해야 하는가이다. 답하는 방식은 두 가지로 갈린다.</p>
+    <figure>
+      <b class="fig-t">깊이 보완의 두 가지 접근</b>
+      <div class="dg-grid">
+        <div class="dg-panel"><b>기하를 예측한 뒤 계산으로 채운다</b><div class="dg">
+          <span class="bx vis">색 영상</span><i class="ar"></i>
+          <span class="bx lang">신경망이 표면의 방향과 경계를 예측</span><i class="ar"></i>
+          <span class="bx aux">투명 영역의 깊이를 지움</span><i class="ar"></i>
+          <span class="bx act">최적화 계산으로 깊이를 채움</span></div>
+          <p>신경망은 깊이를 직접 내지 않는다. 물리적으로 해석하기 쉽지만 느리다.</p></div>
+        <div class="dg-panel"><b>신경망이 깊이를 직접 낸다</b><div class="dg">
+          <div class="dg-row"><span class="bx vis">색 영상</span><span class="bx lang">센서 깊이</span></div><i class="ar"></i>
+          <span class="bx act">하나의 신경망</span><i class="ar"></i>
+          <span class="bx">완성된 깊이</span></div>
+          <p>엔드투엔드 회귀이다. 빠르고 단순하지만 학습 데이터의 질과 양에 크게 기댄다.</p></div>
+      </div>
+    </figure>
+    <p>두 접근 모두 색 영상에서 읽어 내는 단서는 비슷하다. 물체의 윤곽, 표면이 휘어지는 방향, 그리고 물체가 탁자에 닿는 자리이다.</p>
+  </section>
+
+  <section class="topic" id="tr-cleargrasp" data-added="2026-11-25">
+    <h3>ClearGrasp: 기하 예측과 전역 최적화</h3>
+    <p>ClearGrasp<a class="cite" href="#src-tr-cleargrasp"></a>는 이 분야의 출발점이다. 핵심 생각은 깊이를 직접 맞히려 하지 말고, 색 영상에서 더 맞히기 쉬운 것들을 먼저 맞힌 다음 그것으로 깊이를 계산하자는 것이다.</p>
+    <figure>
+      <b class="fig-t">ClearGrasp의 구조</b>
+      <div class="dg">
+        <span class="bx vis wide">색 영상</span><i class="ar"></i>
+        <div class="dg-row">
+          <span class="bx lang">신경망 1<small>표면 법선 예측</small></span>
+          <span class="bx lang">신경망 2<small>가림 경계와 접촉 경계 예측</small></span>
+          <span class="bx lang">신경망 3<small>투명 영역 마스크 예측</small></span>
+        </div>
+        <span class="dg-note">세 신경망 모두 DeepLabv3+ 구조이다</span><i class="ar"></i>
+        <div class="dg-row"><span class="bx aux">센서 깊이</span><span class="bx wm">마스크로 투명 영역의 깊이를 지움</span></div><i class="ar"></i>
+        <span class="bx act wide">전역 최적화<small>남은 깊이, 법선, 경계 가중치로 빈 곳의 깊이를 계산</small></span><i class="ar"></i>
+        <span class="bx wide">완성된 깊이</span>
+      </div>
+    </figure>
+    <div class="tbl"><table>
+      <tr><th>중간 예측</th><th>뜻</th><th>쓰임</th></tr>
+      <tr><td class="m"><a class="t" href="#g-normal">표면 법선(surface normal)</a></td><td>표면의 각 점에서 표면에 수직인 방향</td><td>표면이 어떻게 휘어 있는지를 알려 준다. 깊이의 기울기를 정한다.</td></tr>
+      <tr><td class="m"><a class="t" href="#g-occ">가림 경계(occlusion boundary)</a></td><td>깊이가 갑자기 끊어지는 윤곽선</td><td>이 선을 넘어서는 깊이가 이어지지 않아도 된다고 알려 준다.</td></tr>
+      <tr><td class="m">접촉 경계(contact edge)</td><td>물체가 탁자에 닿는 선</td><td>최적화에는 쓰이지 않지만, 함께 예측하면 경계 예측이 좋아진다.</td></tr>
+      <tr><td class="m">투명 영역 마스크</td><td>어느 화소가 투명한 물체인지</td><td>틀린 깊이를 골라 지운다.</td></tr>
+    </table></div>
+    <h4>전역 최적화의 세 항</h4>
+    <p>전역 최적화(global optimization)는 영상 전체의 깊이를 한꺼번에 미지수로 놓고, 아래 세 가지 요구를 가장 잘 만족하는 값을 찾는 계산이다.</p>
+    <div class="cols">
+      <div><b>관측 항</b><p>깊이가 남아 있는 화소에서는 결과가 센서의 값에서 멀어지지 않아야 한다. 가장 큰 가중치를 준다. 닻의 역할을 한다.</p></div>
+      <div><b>법선 항</b><p>결과 깊이가 이루는 표면이 예측한 법선과 맞아야 한다. 가림 경계일 가능성이 높은 곳에서는 이 항을 약하게 한다.</p></div>
+      <div><b>매끄러움 항</b><p>이웃한 화소의 깊이는 비슷해야 한다. 아주 작은 가중치를 준다.</p></div>
+    </div>
+    <div class="analogy"><p>천막을 치는 일과 같다. 깊이가 남아 있는 탁자와 배경이 땅에 박은 말뚝이고, 예측한 법선이 천막 천의 기울기이다. 말뚝에서 시작해 기울기를 따라 천을 이어 붙이면 가운데의 높이가 정해진다. 가림 경계는 천을 잘라도 되는 자리이다.</p></div>
+    <figure class="shot">
+      <b class="fig-t">실제 화면: ClearGrasp의 단계별 결과</b>
+      <div class="shots one"><a href="https://raw.githubusercontent.com/Shreeyak/cleargrasp/master/data/readme_images/eval-000000000-result-viz.png" target="_blank" rel="noopener"><img loading="lazy" src="https://raw.githubusercontent.com/Shreeyak/cleargrasp/master/data/readme_images/eval-000000000-result-viz.png" alt="ClearGrasp의 단계별 결과"></a></div>
+      <figcaption>색 영상, 예측한 법선, 예측한 경계, 가림 가중치, 센서 깊이, 지운 깊이, 완성한 깊이, 정답 깊이가 차례로 보인다. 지운 깊이에서 물체 자리가 비어 있다가 완성한 깊이에서 채워진다. 출처: ClearGrasp 공개 저장소<a class="cite" href="#src-tr-cleargrasp"></a>, Apache-2.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">원본 구조도</b>
+      <div class="shots one"><a href="https://raw.githubusercontent.com/Shreeyak/cleargrasp/master/data/readme_images/cleargrasp_approach_overview.png" target="_blank" rel="noopener"><img loading="lazy" src="https://raw.githubusercontent.com/Shreeyak/cleargrasp/master/data/readme_images/cleargrasp_approach_overview.png" alt="ClearGrasp 구조 원본"></a></div>
+      <figcaption>저자들이 그린 구조도이다. 출처: ClearGrasp 공개 저장소<a class="cite" href="#src-tr-cleargrasp"></a>, Apache-2.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><th>항목</th><th>내용</th></tr>
+      <tr><td class="m">학습 데이터</td><td>투명한 플라스틱 물체 9종의 합성 영상. 블렌더(Blender)의 광선 추적으로 렌더링하였다.</td></tr>
+      <tr><td class="m">정확도</td><td>실제 영상의 처음 보는 물체에서 RMSE 0.028미터</td></tr>
+      <tr><td class="m">속도</td><td>초당 약 1장. 최적화가 중앙 처리 장치에서 돌기 때문이다.</td></tr>
+      <tr><td class="m">한계</td><td>물체가 가림 경계로 완전히 둘러싸이면 닻이 없어 깊이가 정해지지 않는다. 어수선한 장면과 강한 조명에 약하다.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="topic" id="tr-lidf" data-added="2026-11-25">
+    <h3>LIDF: 국소 암시적 함수</h3>
+    <p>LIDF(Local Implicit Depth Function)<a class="cite" href="#src-tr-lidf"></a>는 깊이 지도를 화소 단위로 고치지 않고, 3차원 공간을 작은 칸으로 나누어 카메라에서 나간 광선이 어느 칸에서 멈추는지를 맞힌다. 칸 하나 안의 표면 모양은 물체가 달라도 비슷하므로, 처음 보는 물체에도 잘 통한다는 것이 핵심 생각이다.</p>
+    <figure>
+      <b class="fig-t">LIDF의 구조</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx vis">색 영상</span><span class="bx lang">빠진 곳이 있는 깊이</span></div><i class="ar"></i>
+        <span class="bx aux wide">깊이를 3차원 점으로 되돌리고, 점이 있는 복셀과 그것을 지나는 광선의 쌍을 만든다</span><i class="ar"></i>
+        <div class="dg-row">
+          <span class="bx vis">색 특징<small>영상 인코더에서 해당 위치의 특징</small></span>
+          <span class="bx lang">복셀 특징<small>복셀 안의 점들을 요약</small></span>
+          <span class="bx wm">광선 특징<small>방향과 교차 위치의 부호화</small></span>
+        </div><i class="ar"></i>
+        <span class="bx act wide">다층 퍼셉트론<small>광선이 이 복셀에서 멈출 확률과, 멈춘다면 복셀 안의 어느 위치인지를 예측</small></span><i class="ar"></i>
+        <span class="bx aux wide">광선마다 확률이 가장 높은 복셀을 고름</span><i class="ar"></i>
+        <span class="bx wide">깊이<small>별도의 정제 신경망이 두 번 다듬는다</small></span>
+      </div>
+    </figure>
+    <p>암시적 함수(implicit function)는 형상을 점이나 격자로 저장하지 않고, 위치를 넣으면 그곳이 표면인지를 답하는 함수로 나타내는 방식이다. 복셀(voxel)은 3차원 공간을 나눈 작은 정육면체 칸이다.</p>
+    <figure class="shot">
+      <b class="fig-t">원본 구조도와 결과 비교</b>
+      <div class="shots"><a href="https://arxiv.org/html/2104.00622v1/images/pipeline.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2104.00622v1/images/pipeline.png" alt="LIDF 구조 원본"></a><a href="https://arxiv.org/html/2104.00622v1/images/sota.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2104.00622v1/images/sota.png" alt="깊이 보완 방법의 정성 비교"></a></div>
+      <figcaption>첫째 그림은 저자들이 그린 구조도이다. 둘째 그림은 색 영상, 센서 깊이의 점군, 여러 방법으로 보완한 점군을 나란히 놓은 비교이다. 출처: LIDF 논문<a class="cite" href="#src-tr-lidf"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><th>항목</th><th>내용</th></tr>
+      <tr><td class="m">정확도</td><td>ClearGrasp의 실제 영상, 처음 보는 물체에서 RMSE 0.025미터. 같은 조건의 ClearGrasp는 0.034미터이다.</td></tr>
+      <tr><td class="m">속도</td><td>장당 0.09초. ClearGrasp의 1.82초보다 약 20배 빠르다.</td></tr>
+      <tr><td class="m">한계</td><td>갈라진 흔적과 떠 있는 조각이 생기며 복셀 수에 민감하다고 요약에서 확인하였다.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="topic" id="tr-transparenet" data-added="2026-11-25">
+    <h3>TranspareNet: 점군과 깊이의 결합</h3>
+    <p>TranspareNet<a class="cite" href="#src-tr-transparenet"></a>은 ClearGrasp와 반대되는 관찰에서 출발한다. 투명한 영역의 센서 깊이는 틀렸지만 완전히 쓸모없지는 않고, 일그러진 채로도 물체의 모양에 대한 단서를 담고 있다는 것이다. 그래서 지우지 않고 먼저 고친다.</p>
+    <figure>
+      <b class="fig-t">TranspareNet의 구조</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx lang">센서 깊이</span><span class="bx wm">물체 마스크</span></div><i class="ar"></i>
+        <span class="bx aux wide">마스크 안의 깊이를 물체별 점군으로 되돌림</span><i class="ar"></i>
+        <span class="bx act wide">점군 보완 모듈<small>점군을 격자로 바꾸어 3차원 합성곱 신경망으로 고치고 다시 점군으로 되돌린다</small></span><i class="ar"></i>
+        <span class="bx aux wide">고친 점군을 깊이 지도로 투영<small>듬성듬성한 깊이가 된다</small></span><i class="ar"></i>
+        <div class="dg-row"><span class="bx vis">색 영상</span><span class="bx lang">듬성듬성한 깊이</span><span class="bx wm">물체 마스크<small>디코더를 조절</small></span></div><i class="ar"></i>
+        <span class="bx act wide">깊이 보완 모듈<small>인코더와 디코더 구조. 마스크가 디코더의 정규화 값을 조절한다</small></span><i class="ar"></i>
+        <span class="bx wide">촘촘한 완성 깊이</span>
+      </div>
+    </figure>
+    <div class="key"><p>점군 보완은 물체의 3차원 모양을 대강 바로잡고, 깊이 보완은 그것을 화소 단위로 촘촘하게 채운다. 3차원에서 한 번, 2차원에서 한 번 고치는 두 단계 구조이다.</p></div>
+    <div class="tbl"><table>
+      <tr><th>항목</th><th>내용</th></tr>
+      <tr><td class="m">학습 데이터</td><td>TODD. 비커와 플라스크 6종을 비워 두거나 다섯 가지 액체로 채워 찍은 실제 영상 약 1만 5천 장</td></tr>
+      <tr><td class="m">정확도</td><td>TODD의 처음 보는 물체 조합에서 RMSE 0.0213미터. 같은 조건의 ClearGrasp는 0.0563미터이다.</td></tr>
+      <tr><td class="m">한계</td><td>물체 마스크가 입력으로 필요하다. 예측한 마스크를 쓰면 결과가 나빠진다. 다른 투명 물체에 심하게 가려지면 실패한다.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="topic" id="tr-dfnet" data-added="2026-11-25">
+    <h3>DFNet: 가벼운 엔드투엔드 회귀</h3>
+    <p>TransCG 논문<a class="cite" href="#src-tr-transcg"></a>은 실제 데이터 57,715장과 함께 DFNet(Depth Filler Net)이라는 작은 신경망을 내놓았다. 좋은 실제 데이터가 있으면 단순한 구조로도 충분하다는 것을 보인 모델이다.</p>
+    <figure>
+      <b class="fig-t">DFNet의 구조</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx vis">색 영상</span><span class="bx lang">센서 깊이</span></div><i class="ar"></i>
+        <span class="bx act wide">인코더 블록 여러 개<small>합성곱, 조밀 블록, 합성곱, 내려 줄이기</small></span><i class="ar"></i>
+        <span class="bx act wide">병목 블록<small>합성곱, 조밀 블록, 합성곱</small></span><i class="ar"></i>
+        <span class="bx act wide">디코더 블록 여러 개<small>합성곱, 조밀 블록, 합성곱, 올려 키우기</small></span><i class="ar"></i>
+        <span class="bx wide">완성된 깊이</span>
+        <div style="height:8px"></div>
+        <div class="dg-row"><span class="bx aux">센서 깊이를 모든 블록에 다시 넣어 준다</span><span class="bx aux">인코더의 특징을 같은 크기의 디코더로 건너 보낸다</span></div>
+      </div>
+      <figcaption>유넷(U-Net) 구조에 조밀 블록(dense block)을 넣은 형태이다. 조밀 블록은 앞선 모든 층의 출력을 이어 받아 쓰는 층 묶음이다.</figcaption>
+    </figure>
+    <ul>
+      <li><b>깊이의 반복 주입.</b> 센서 깊이를 입력에서 한 번만 넣지 않고 모든 블록에 다시 넣는다. 깊은 층에서도 원래의 깊이 정보를 잊지 않게 한다.</li>
+      <li><b>손실 함수.</b> 깊이의 제곱 오차에, 예측 깊이에서 구한 법선과 정답 깊이에서 구한 법선이 얼마나 다른지를 재는 매끄러움 항을 작은 가중치로 더한다.</li>
+    </ul>
+    <figure class="shot">
+      <b class="fig-t">원본 구조도와 보완 결과</b>
+      <div class="shots"><a href="https://arxiv.org/html/2202.08471v2/network.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2202.08471v2/network.png" alt="DFNet 구조 원본"></a><a href="https://arxiv.org/html/2202.08471v2/vis.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2202.08471v2/vis.png" alt="DFNet의 보완 결과와 오차"></a></div>
+      <figcaption>첫째 그림은 저자들이 그린 DFNet의 구조도이다. 둘째 그림은 색 영상, 센서 깊이, 보완한 깊이, 오차 지도를 나란히 놓은 결과이다. 출처: TransCG 논문<a class="cite" href="#src-tr-transcg"></a>, CC BY-NC-ND 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">실제 사진: 보완한 깊이로 투명 물체를 집는 실험</b>
+      <div class="shots one"><a href="https://arxiv.org/html/2202.08471v2/real-robot.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2202.08471v2/real-robot.png" alt="TransCG 실제 로봇 실험"></a></div>
+      <figcaption>보완한 깊이를 점군으로 바꾸어 파지 자세 추정 모델에 넣고 로봇이 물체를 집는다. 출처: TransCG 논문<a class="cite" href="#src-tr-transcg"></a>, CC BY-NC-ND 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><th>항목</th><th>내용</th></tr>
+      <tr><td class="m">모델 크기</td><td>5.2메가바이트. 같은 표의 ClearGrasp는 934메가바이트이다.</td></tr>
+      <tr><td class="m">정확도</td><td>TransCG에서 RMSE 0.018미터</td></tr>
+      <tr><td class="m">속도</td><td>장당 0.0166초</td></tr>
+      <tr><td class="m">로봇 실험</td><td>물체 37개, 46번 시도에서 파지 성공률 80.4퍼센트</td></tr>
+    </table></div>
+  </section>
+
+  <section class="topic" id="tr-swindr" data-added="2026-11-25">
+    <h3>SwinDRNet: 두 흐름과 신뢰도 섞기</h3>
+    <p>SwinDRNet<a class="cite" href="#src-tr-dreds"></a>은 색 영상과 깊이를 따로 읽는 두 흐름을 두고, 마지막에 센서의 깊이를 얼마나 믿을지를 화소마다 정한다.</p>
+    <figure>
+      <b class="fig-t">SwinDRNet의 구조</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx vis">색 영상</span><span class="bx lang">센서 깊이</span></div><i class="ar"></i>
+        <div class="dg-row"><span class="bx vis">스윈 트랜스포머 흐름<small>색 특징</small></span><span class="bx lang">스윈 트랜스포머 흐름<small>깊이 특징</small></span></div><i class="ar"></i>
+        <span class="bx aux wide">양방향 교차 주의로 두 특징을 크기 단계마다 섞음</span><i class="ar"></i>
+        <div class="dg-row"><span class="bx act">깊이 디코더<small>새 깊이를 예측</small></span><span class="bx wm">신뢰도 디코더<small>화소마다 신뢰도 지도를 예측</small></span></div><i class="ar"></i>
+        <span class="bx wide">최종 깊이<small>신뢰도가 높은 곳은 예측 깊이를, 낮은 곳은 센서 깊이를 쓴다</small></span>
+      </div>
+    </figure>
+    <div class="formula">최종 깊이 = C × 예측 깊이 + (1 − C) × 센서 깊이<small>C는 신뢰도 지도이다. 센서가 맞는 곳에서는 센서의 값을 그대로 살린다.</small></div>
+    <div class="key"><p>이 구조는 ClearGrasp의 마스크로 지우기를 부드럽게 바꾼 것으로 볼 수 있다. 지울지 말지를 둘 중 하나로 정하지 않고, 화소마다 섞는 비율을 배운다.</p></div>
+    <p>이 모델의 더 중요한 기여는 학습 데이터를 만드는 방법에 있다. 그 내용은 <a href="#to-sim">능동 스테레오 센서의 모사</a>에서 다룬다.</p>
+  </section>
+
+  <section class="topic" id="tr-fdct" data-added="2026-11-25">
+    <h3>FDCT와 TDCNet: 색과 깊이를 섞는 자리</h3>
+    <p>그 뒤의 모델들은 색 영상과 깊이를 어느 단계에서 어떻게 섞을지를 다듬는다. TDCNet 논문<a class="cite" href="#src-tr-tdcnet"></a>은 그 설계를 세 가지로 구분한다.</p>
+    <figure>
+      <b class="fig-t">색과 깊이를 섞는 세 가지 설계</b>
+      <div class="dg-grid">
+        <div class="dg-panel"><b>단일 가지</b><div class="dg">
+          <div class="dg-row"><span class="bx vis">색</span><span class="bx lang">깊이</span></div><span class="dg-note">입력에서 바로 이어 붙임</span>
+          <span class="bx act">하나의 인코더와 디코더</span><i class="ar"></i><span class="bx">깊이</span></div>
+          <p>DFNet이 이 형태이다. 단순하지만 얕은 층에서 색과 깊이가 섞여 버린다.</p></div>
+        <div class="dg-panel"><b>융합 가지를 둔 구조</b><div class="dg">
+          <div class="dg-row"><span class="bx vis">색</span><span class="bx lang">깊이</span></div><i class="ar"></i>
+          <span class="bx act">주 가지</span><span class="dg-note">지름길 융합 모듈이 얕은 특징을 깊은 층으로 건넴</span>
+          <span class="bx">깊이</span></div>
+          <p>FDCT가 이 형태이다. 가볍고 빠르지만 깊이 특징의 영향이 약해질 수 있다.</p></div>
+        <div class="dg-panel"><b>병렬 이중 가지</b><div class="dg">
+          <div class="dg-row"><span class="bx lang">합성곱 신경망 가지<small>깊이만 입력</small></span><span class="bx vis">트랜스포머 가지<small>색과 깊이 입력</small></span></div><span class="dg-note">크기 단계마다 두 특징을 더함</span>
+          <span class="bx act">다중 크기 융합 모듈과 디코더</span><i class="ar"></i><span class="bx">깊이</span></div>
+          <p>TDCNet이 이 형태이다. 깊이에 전용 인코더를 주어 균형을 맞춘다.</p></div>
+      </div>
+    </figure>
+    <h4>FDCT의 구조</h4>
+    <figure>
+      <b class="fig-t">FDCT의 구조</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx vis">색 영상</span><span class="bx lang">센서 깊이</span></div><span class="dg-note">이어 붙여 4개 채널로 만들고 절반 크기로 줄임</span><i class="ar"></i>
+        <span class="bx act wide">인코더 4단계<small>단계마다 줄인 깊이를 다시 이어 붙이고, 한 번에 모으는 합성곱 블록을 지난다</small></span><i class="ar"></i>
+        <span class="bx act wide">디코더 4단계<small>단계마다 인코더 특징과 깊이, 지름길 특징을 이어 붙이고 화소 재배열로 키운다</small></span><i class="ar"></i>
+        <span class="bx wide">완성된 깊이</span>
+      </div>
+      <figcaption>FDCT의 논문 본문은 읽지 못하였고, 이 그림은 공개된 코드를 바탕으로 그린 것이다.<a class="cite" href="#src-tr-fdct"></a></figcaption>
+    </figure>
+    <p>FDCT(Fast Depth Completion for Transparent Objects)는 다섯 개의 합성곱 층을 차례로 지난 뒤 그 출력을 모두 한 번에 모아 쓰는 블록을 쓴다. 조밀 블록보다 계산이 가볍다. 깊이는 크기를 줄여 가며 모든 단계에 다시 넣는다.</p>
+    <h4>TDCNet의 구조</h4>
+    <figure>
+      <b class="fig-t">TDCNet의 구조</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx lang">센서 깊이</span><span class="bx vis">색과 깊이를 합친 4개 채널</span></div><i class="ar"></i>
+        <div class="dg-row"><span class="bx lang">합성곱 신경망 가지 4단계<small>국소적인 깊이 구조를 읽는다</small></span><span class="bx vis">스윈 트랜스포머 가지 4단계<small>넓은 범위의 문맥을 읽는다</small></span></div>
+        <span class="dg-note">단계마다 두 가지의 특징을 더한다</span><i class="ar"></i>
+        <span class="bx aux wide">다중 크기 융합 모듈<small>공간 주의와 채널 주의로 얕은 특징과 깊은 특징을 섞는 비율을 정한다</small></span><i class="ar"></i>
+        <span class="bx act wide">디코더</span><i class="ar"></i>
+        <span class="bx wide">완성된 깊이</span>
+      </div>
+    </figure>
+    <p>TDCNet은 학습 방법에도 장치를 둔다. 매끄러움 손실이 충분히 줄어들면 그 가중치를 10분의 1로 낮추어, 뒤쪽 학습에서는 깊이 자체의 정확도에 집중하게 한다.</p>
+  </section>
+
+  <section class="topic" id="tr-table" data-added="2026-11-25">
+    <h3>모델 사이의 성능 비교</h3>
+    <p>아래는 TransCG 데이터셋에서 여러 모델을 견준 표이다. 값은 TDCNet 논문과 TransCG 논문이 보고한 것이다.</p>
+    <div class="tbl"><table>
+      <tr><th>모델</th><th>RMSE</th><th>REL</th><th>MAE</th><th>임계 정확도 1.05</th></tr>
+      <tr><td class="m">ClearGrasp</td><td>0.054</td><td>0.083</td><td>0.037</td><td>50.48</td></tr>
+      <tr><td class="m">LIDF</td><td>0.019</td><td>0.034</td><td>0.015</td><td>78.22</td></tr>
+      <tr><td class="m">TranspareNet</td><td>0.026</td><td>0.023</td><td>0.013</td><td>88.45</td></tr>
+      <tr><td class="m">DFNet</td><td>0.018</td><td>0.027</td><td>0.012</td><td>83.76</td></tr>
+      <tr><td class="m">FDCT</td><td>0.015</td><td>0.022</td><td>0.010</td><td>88.18</td></tr>
+      <tr><td class="m">TDCNet</td><td>0.012</td><td>0.017</td><td>0.008</td><td>92.25</td></tr>
+    </table></div>
+    <figure class="shot">
+      <b class="fig-t">실제 결과: 여러 방법의 깊이 보완 비교</b>
+      <div class="shots one"><a href="https://arxiv.org/html/2203.03890v2/figure/depth_completion_compare.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2203.03890v2/figure/depth_completion_compare.png" alt="깊이 보완 결과 비교"></a></div>
+      <figcaption>ClearPose 데이터셋의 장면에서 색 영상, 센서 깊이, 여러 방법으로 보완한 깊이, 정답 깊이를 나란히 놓은 것이다. 출처: ClearPose 논문(arXiv 2203.03890), CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <div class="warn"><p>이 표를 순위표로 읽으면 안 된다. 같은 기준 모델의 값이 논문마다 다르게 적혀 있고, 해상도와 학습 데이터도 다르다. 한 논문 안에서도 지표에 따라 순위가 바뀐다. 5년 사이에 오차가 수 센티미터에서 약 1센티미터로 줄었다는 큰 흐름만 읽는 것이 안전하다.</p></div>
+  </section>
+</section>
+
+
+<!-- ═══════════ 투명 물체 4장 ═══════════ -->
+<section class="chapter" id="ch-tr-other" data-added="2026-11-25">
+  <h2>스테레오, 신경장, 파운데이션 모델</h2>
+  <p class="lead">센서의 깊이를 고치는 대신 깊이를 얻는 방식 자체를 바꾸는 방법들의 원리와 모델 구조를 정리한 장이다.</p>
+
+  <section class="topic" id="to-sim" data-added="2026-11-25">
+    <h3>능동 스테레오 센서의 모사</h3>
+    <p>합성 데이터로 학습한 모델이 실제에서 약한 까닭은 합성 데이터의 깊이가 너무 깨끗하기 때문이다. 실제 센서는 특유의 방식으로 틀린다. DREDS<a class="cite" href="#src-tr-dreds"></a>는 센서가 깊이를 계산하는 과정 전체를 시뮬레이터 안에서 흉내 내어, 실제와 같은 방식으로 틀린 깊이를 만들어 낸다.</p>
+    <figure>
+      <b class="fig-t">깊이 센서를 통째로 모사한다</b>
+      <div class="dg">
+        <span class="bx aux wide">가상 장면<small>재질, 조명, 배경, 물체 자세를 무작위로 바꾼다</small></span><i class="ar"></i>
+        <span class="bx wm wide">가상의 적외선 투사기가 무늬를 쏜다</span><i class="ar"></i>
+        <div class="dg-row"><span class="bx vis">가상의 왼쪽 적외선 영상<small>광선 추적으로 렌더링</small></span><span class="bx vis">가상의 오른쪽 적외선 영상<small>광선 추적으로 렌더링</small></span></div><i class="ar"></i>
+        <span class="bx lang wide">스테레오 정합 알고리즘</span><i class="ar"></i>
+        <div class="dg-row"><span class="bx">실제처럼 틀린 깊이<small>모델의 입력</small></span><span class="bx act">시뮬레이터가 아는 깊이<small>정답</small></span></div>
+      </div>
+    </figure>
+    <div class="key"><p>광선 추적이 투명한 재질에서의 굴절과 반사를 계산해 주기 때문에, 가상의 적외선 영상에서도 무늬가 망가지고 정합이 실패한다. 그래서 실제 센서와 같은 자리에 같은 종류의 오류가 생긴다.</p></div>
+    <p>이 방식은 <a href="#ib-sdg">도메인 랜덤화</a>와 짝을 이룬다. Isaac Sim 주제에서 본 합성 데이터 생성의 원리가 그대로 쓰인다. 2024년의 D3RoMa는 Isaac Sim으로 같은 종류의 데이터를 만들었다. 투명한 재질을 흩어지는 재질로 바꾸어 정답 깊이를 한 번 렌더링하고, 무늬를 투사한 상태로 스테레오 영상을 한 번 더 렌더링하는 두 번 렌더링 방식이다.</p>
+  </section>
+
+  <section class="topic" id="to-stereo" data-added="2026-11-25">
+    <h3>학습 기반 스테레오 정합</h3>
+    <p>스테레오 방식의 핵심은 두 영상에서 같은 점을 찾는 정합이다. 투명한 표면에서는 굴절 때문에 뒤의 배경 무늬가 일그러져서, 겉모습이 비슷한 곳을 찾는 방식으로는 정합이 틀린다. ClearDepth<a class="cite" href="#src-tr-cleardepth"></a>는 겉모습 대신 물체의 구조적 윤곽을 단서로 넣는다.</p>
+    <figure>
+      <b class="fig-t">ClearDepth의 구조</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx vis">왼쪽 영상</span><span class="bx vis">오른쪽 영상</span></div><i class="ar"></i>
+        <div class="dg-row"><span class="bx lang">겉모습 특징 인코더<small>두 영상 모두에 적용</small></span><span class="bx wm">구조 문맥 인코더<small>왼쪽 영상에만 적용하는<br>여러 단계의 비전 트랜스포머</small></span></div><i class="ar"></i>
+        <span class="bx aux wide">상관 피라미드<small>두 영상의 특징이 위치마다 얼마나 닮았는지를 담은 표</small></span><i class="ar"></i>
+        <span class="bx act wide">반복 갱신 모듈<small>상관 값에 구조 문맥을 더해 시차를 조금씩 고쳐 나간다</small></span><i class="ar"></i>
+        <span class="bx aux wide">거친 단계에서 세밀한 단계로 가는 디코더</span><i class="ar"></i>
+        <span class="bx wide">시차<small>초점 거리와 카메라 사이 거리로 깊이로 바꾼다</small></span>
+      </div>
+    </figure>
+    <div class="formula">깊이 = 초점 거리 × 두 카메라 사이의 거리 ÷ 시차<small>시차가 클수록 가깝고 작을수록 멀다.</small></div>
+    <p>ClearDepth는 일반 스테레오 데이터로 먼저 학습한 뒤, 투명 용기와 유리 제품으로 만든 합성 스테레오 데이터 14,091묶음으로 미세조정한다. 논문 초록은 파지 성공률이 적어도 18퍼센트 높아졌다고 적는다. 다만 논문의 표에서 모든 지표가 가장 좋은 것은 아니다.</p>
+  </section>
+
+  <section class="topic" id="to-diff" data-added="2026-11-25">
+    <h3>시차 공간의 확산 모델</h3>
+    <p>D3RoMa<a class="cite" href="#src-tr-d3roma"></a>는 스테레오 깊이 추정을 영상에서 영상으로의 변환 문제로 바꾸어 확산 모델로 푼다. 투명한 표면에서는 앞 표면의 깊이와 뒤 배경의 깊이라는 두 가지 그럴듯한 답이 공존한다. 평균을 내는 회귀 모델은 그 사이의 어중간한 값을 내기 쉽지만, 확산 모델은 여러 답 가운데 하나를 온전하게 골라 낼 수 있다.</p>
+    <figure>
+      <b class="fig-t">D3RoMa의 구조</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx vis">왼쪽 영상</span><span class="bx vis">오른쪽 영상</span><span class="bx lang">센서가 낸 초기 시차</span></div>
+        <span class="dg-note">세 가지가 조건으로 들어간다</span><i class="ar"></i>
+        <div class="dg-row"><span class="bx aux">무작위 잡음</span><span class="bx act">조건부 확산 모델의 잡음 제거기<small>유넷 구조</small></span></div><i class="ar"></i>
+        <span class="bx wm wide">스테레오 기하 안내<small>매 단계에서, 지금의 시차로 오른쪽 영상을 옮겨 왼쪽 영상과 맞는지를 보고 맞는 방향으로 민다</small></span>
+        <span class="dg-note">잡음 제거와 안내를 여러 번 되풀이한다</span><i class="ar"></i>
+        <span class="bx wide">시차와 깊이</span>
+      </div>
+    </figure>
+    <div class="key"><p>학습한 생성 모델의 그럴듯함과 스테레오 기하라는 물리적 제약을 함께 쓴다. VLA 주제의 <a href="#ctl-diff">확산 기반 제어 정책</a>이 여러 정답 가운데 하나를 고르는 것과 같은 원리가 깊이에 적용된 것이다.</p></div>
+    <figure class="shot">
+      <b class="fig-t">원본 원리 그림과 실제 환경 결과</b>
+      <div class="shots"><a href="https://arxiv.org/html/2409.14365v2/grad.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2409.14365v2/grad.png" alt="D3RoMa의 원리 그림"></a><a href="https://arxiv.org/html/2409.14365v2/in-the-wild-new.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2409.14365v2/in-the-wild-new.png" alt="D3RoMa의 실제 환경 결과"></a></div>
+      <figcaption>첫째 그림은 저자들이 그린 원리 그림으로, 확산 과정의 각 단계에 스테레오 기하의 안내가 더해지는 모습이다. 둘째 그림은 실제 환경의 투명하고 번쩍이는 물체에 대해 센서 깊이와 이 방법의 깊이를 견준 것이다. 출처: D3RoMa 논문<a class="cite" href="#src-tr-d3roma"></a>, CC BY-SA 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">실제 사진: 고친 깊이로 하는 로봇 조작</b>
+      <div class="shots one"><a href="https://arxiv.org/html/2409.14365v2/robot2.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2409.14365v2/robot2.png" alt="D3RoMa의 로봇 조작 실험"></a></div>
+      <figcaption>고친 깊이를 점군으로 바꾸어 탁자 위 파지와 이동 로봇의 파지에 쓴다. 출처: D3RoMa 논문<a class="cite" href="#src-tr-d3roma"></a>, CC BY-SA 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><th>항목</th><th>내용</th></tr>
+      <tr><td class="m">정확도</td><td>DREDS의 평가 묶음에서 RMSE 0.0040미터. 같은 표의 SwinDRNet은 0.010미터이다.</td></tr>
+      <tr><td class="m">속도</td><td>10단계에 약 0.67초로 요약에서 확인하였다. 되풀이 계산 때문에 느리다.</td></tr>
+      <tr><td class="m">저자들의 단서</td><td>RMSE가 평가 데이터 정답의 잡음을 반영한 것일 수 있다고 스스로 적는다.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="topic" id="to-nerf" data-added="2026-11-25">
+    <h3>다시점 신경장</h3>
+    <p><a class="t" href="#g-nerf">NeRF(Neural Radiance Field)</a>는 여러 방향에서 찍은 영상으로부터 장면의 3차원 표현을 신경망에 담는 기법이다. 공간의 각 위치에 밀도와 색을 배우고, 광선을 따라 그것을 쌓아 영상을 그린다. 여러 방향에서 보면 한 방향에서는 보이지 않던 번쩍임과 윤곽이 드러나므로, 투명한 물체의 형상을 잡아내는 데 유리하다.</p>
+    <figure>
+      <b class="fig-t">Dex-NeRF의 구조와 깊이를 뽑는 방법</b>
+      <div class="dg">
+        <span class="bx vis wide">자세를 아는 여러 장의 색 영상<small>조명을 여러 개 두어 번쩍임이 많은 방향에서 보이게 한다</small></span><i class="ar"></i>
+        <span class="bx act wide">장면마다 NeRF를 학습</span><i class="ar"></i>
+        <span class="bx wm wide">투명도를 고려한 깊이 렌더링<small>광선을 따라가다가 밀도가 기준값을 처음 넘는 지점을 표면으로 본다</small></span><i class="ar"></i>
+        <span class="bx lang wide">깊이 지도</span><i class="ar"></i>
+        <span class="bx aux wide">기존의 파지 계획 모델<small>고치지 않고 그대로 쓴다</small></span>
+      </div>
+    </figure>
+    <div class="cols">
+      <div><b>보통의 깊이 렌더링</b><p>광선 위의 모든 지점을 밀도로 가중 평균한다. 투명한 물체는 밀도가 낮아서 평균이 뒤의 배경 쪽으로 끌려간다.</p></div>
+      <div><b>Dex-NeRF의 깊이 렌더링</b><p>밀도가 기준값을 처음 넘는 지점에서 멈춘다. 희미한 표면이라도 처음 만난 곳을 표면으로 잡는다.</p></div>
+    </div>
+    <div class="tbl"><table>
+      <tr><th>모델</th><th>핵심 내용</th><th>조건</th></tr>
+      <tr><td class="m">Dex-NeRF<small>CoRL 2021</small></td><td>밀도 기준값으로 투명 물체의 깊이를 뽑아 기존 파지 계획 모델에 넣는다.<a class="cite" href="#src-tr-dexnerf"></a></td><td>장면마다 긴 학습이 필요하다. 저자들이 주된 단점으로 꼽는다.</td></tr>
+      <tr><td class="m">Evo-NeRF<small>CoRL 2022</small></td><td>빠른 NeRF 구현을 써서, 물체를 하나씩 집어내는 동안 표현을 이어서 갱신한다.</td><td>서베이의 소개에 따른 내용이다.</td></tr>
+      <tr><td class="m">GraspNeRF<small>ICRA 2023</small></td><td>장면마다 학습하지 않는 일반화 NeRF로 6장의 영상에서 형상을 만들고 파지 자세까지 한 번에 낸다.<a class="cite" href="#src-tr-graspnerf"></a></td><td>초당 11장. 합성 데이터만으로 학습한다.</td></tr>
+      <tr><td class="m">Residual-NeRF<small>ICRA 2024</small></td><td>거의 변하지 않는 배경을 미리 배워 두고, 투명 물체가 놓인 뒤에는 달라진 부분만 배운다.</td><td>배경이 고정된 작업대에 맞는다.</td></tr>
+    </table></div>
+    <figure>
+      <b class="fig-t">GraspNeRF의 구조</b>
+      <div class="dg">
+        <span class="bx vis wide">자세를 아는 색 영상 6장</span><i class="ar"></i>
+        <span class="bx lang wide">공유하는 2차원 인코더</span><i class="ar"></i>
+        <span class="bx aux wide">3차원 격자의 각 칸을 여러 영상에 투영해 특징을 모음</span><i class="ar"></i>
+        <div class="dg-row"><span class="bx act">표면 거리 예측<small>각 칸에서 표면까지의 거리</small></span><span class="bx wm">렌더링 가지<small>학습할 때 색 영상을 다시 그려 보게 한다</small></span></div><i class="ar"></i>
+        <span class="bx act wide">3차원 합성곱 파지 예측<small>파지의 품질, 회전, 벌림 폭</small></span><i class="ar"></i>
+        <span class="bx wide">6자유도 파지 자세</span>
+      </div>
+      <figcaption>깊이 지도를 따로 만들지 않고 형상 표현에서 파지 자세로 바로 간다.</figcaption>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">원본 그림: 배경을 미리 배우는 방식과 깊이 비교</b>
+      <div class="shots"><a href="https://arxiv.org/html/2405.06181v1/figure_1.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2405.06181v1/figure_1.png" alt="Residual-NeRF 개요"></a><a href="https://arxiv.org/html/2405.06181v1/real_qualitative_cropped.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2405.06181v1/real_qualitative_cropped.png" alt="Dex-NeRF와 Residual-NeRF의 깊이 비교"></a></div>
+      <figcaption>첫째 그림은 Residual-NeRF의 개요이다. 둘째 그림은 실제 장면에서 Dex-NeRF와 Residual-NeRF가 낸 깊이 지도를 견준 것이다. 출처: Residual-NeRF 논문(arXiv 2405.06181), CC BY-NC-SA 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+  </section>
+
+  <section class="topic" id="to-mono" data-added="2026-11-25">
+    <h3>단안 깊이 파운데이션 모델</h3>
+    <p>대량의 영상으로 학습한 범용 단안 깊이 모델은 색 영상 한 장으로 깊이를 낸다. 특별한 센서가 필요 없다는 큰 장점이 있다. 다만 대부분 상대 깊이, 곧 어느 것이 앞이고 뒤인지의 관계를 내며, 미터 단위의 절대 깊이를 얻으려면 별도의 보정이 필요하다.</p>
+    <h4>칠해서 만든 가짜 정답</h4>
+    <p>Depth4ToM<a class="cite" href="#src-tr-depth4tom"></a>은 깊이 정답 없이 기존의 단안 깊이 모델을 투명 물체에 맞게 고치는 방법이다. 발상은 단순하다. 투명한 영역을 불투명한 색으로 칠해 버리면 기존 모델도 그 자리의 표면 깊이를 맞게 낸다는 것이다.</p>
+    <figure>
+      <b class="fig-t">Depth4ToM의 학습 방법</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx vis">색 영상</span><span class="bx wm">투명 영역 마스크</span></div><i class="ar"></i>
+        <span class="bx aux wide">투명 영역을 무작위 단색으로 칠한다<small>색을 바꾸어 다섯 번 되풀이</small></span><i class="ar"></i>
+        <span class="bx lang wide">고정한 교사 모델이 칠한 영상의 깊이를 예측</span><i class="ar"></i>
+        <span class="bx aux wide">다섯 결과의 중앙값을 가짜 정답으로 삼는다</span><i class="ar"></i>
+        <span class="bx act wide">칠하지 않은 원래 영상으로 대상 모델을 미세조정<small>목표는 가짜 정답</small></span>
+      </div>
+    </figure>
+    <div class="analogy"><p>유리컵에 페인트를 칠하면 누구나 그 모양을 알아본다. 이 방법은 영상 속에서만 페인트를 칠해 선생님에게 보여 주고, 학생에게는 칠하지 않은 원래 영상을 보여 주면서 선생님의 답을 맞히게 한다.</p></div>
+    <h4>합성 교사와 대규모 가짜 정답</h4>
+    <p>Depth Anything V2<a class="cite" href="#src-tr-dav2"></a>는 모델의 구조가 아니라 정답의 질이 강건함을 좌우한다고 본다. 실제 센서로 얻은 정답은 투명한 표면에서 틀려 있기 때문에, 그것으로 배운 모델도 투명한 표면에서 틀린다.</p>
+    <figure>
+      <b class="fig-t">Depth Anything V2의 학습 방법</b>
+      <div class="dg">
+        <span class="bx aux wide">정밀한 합성 영상 약 59만 장<small>시뮬레이터의 깊이는 투명한 표면에서도 정확하다</small></span><i class="ar"></i>
+        <span class="bx lang wide">큰 교사 모델을 학습</span><i class="ar"></i>
+        <span class="bx aux wide">교사가 실제 영상 약 6천 2백만 장에 가짜 정답을 붙인다</span><i class="ar"></i>
+        <span class="bx act wide">학생 모델들을 가짜 정답으로 학습<small>DINOv2 인코더와 DPT 디코더</small></span><i class="ar"></i>
+        <span class="bx wide">상대 깊이를 내는 범용 모델<small>절대 깊이용은 따로 미세조정</small></span>
+      </div>
+    </figure>
+    <p>논문은 투명 표면 평가에서 추가 학습 없이 83.6퍼센트의 정확도를 보고한다. 이전 판은 53.5퍼센트였다. 로봇 조작에 대한 실험은 논문에 없다.</p>
+    <figure class="shot">
+      <b class="fig-t">실제 비교: 단안 깊이 모델과 스테레오 확산 모델</b>
+      <div class="shots one"><a href="https://arxiv.org/html/2409.14365v2/mde.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2409.14365v2/mde.png" alt="단안 깊이 모델과의 비교"></a></div>
+      <figcaption>투명하고 번쩍이는 물체가 있는 장면에서 최신 단안 깊이 모델들과 D3RoMa의 결과를 견준 것이다. 단안 모델은 겉보기에는 그럴듯하지만 절대 거리가 맞지 않을 수 있다. 출처: D3RoMa 논문<a class="cite" href="#src-tr-d3roma"></a>, CC BY-SA 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <div class="warn"><p>단안 파운데이션 모델을 투명 물체의 깊이 보완에 결합하는 흐름은 최근에 뚜렷하지만, 그것만을 모아 정리한 목록은 찾지 못하였다. 이 항목은 대표 논문 두 편만을 바탕으로 한다.</p></div>
+  </section>
+
+  <section class="topic" id="to-skip" data-added="2026-11-25">
+    <h3>깊이를 건너뛰는 방법</h3>
+    <p>물체를 집는 데 필요한 것이 결국 물체의 위치와 자세라면, 깊이 지도를 꼭 거쳐야 하는 것은 아니다. KeyPose<a class="cite" href="#src-tr-keypose"></a>는 스테레오 영상에서 물체의 <a class="t" href="#g-keypoint">키포인트</a>의 3차원 위치를 바로 구한다.</p>
+    <figure>
+      <b class="fig-t">KeyPose의 구조</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx vis">왼쪽 영상의 물체 부분</span><span class="bx vis">오른쪽 영상의 물체 부분</span></div>
+        <span class="dg-note">입력 단계에서 두 영상을 겹쳐 쌓는다</span><i class="ar"></i>
+        <span class="bx act wide">합성곱 신경망<small>두 영상의 어긋남에서 거리를 스스로 읽어 낸다</small></span><i class="ar"></i>
+        <span class="bx lang wide">키포인트마다 영상 위의 위치와 시차를 예측</span><i class="ar"></i>
+        <span class="bx aux wide">카메라 값으로 3차원 좌표로 변환</span><i class="ar"></i>
+        <span class="bx wide">키포인트의 3차원 위치<small>물체의 3차원 모형에 맞추면 자세가 나온다</small></span>
+      </div>
+    </figure>
+    <div class="tbl"><table>
+      <tr><th>항목</th><th>내용</th></tr>
+      <tr><td class="m">정확도</td><td>물체별 모델의 평균 오차 9.9밀리미터. 불투명한 물체의 깊이를 쓴 기존 자세 추정 방법은 약 35밀리미터였다.</td></tr>
+      <tr><td class="m">장점</td><td>깊이 센서가 전혀 필요 없다. 정답도 여러 시점의 삼각 측량으로 만든다.</td></tr>
+      <tr><td class="m">한계</td><td>물체 또는 물체 종류마다 학습해야 한다. 처음 보는 종류의 물체에는 쓸 수 없다.</td></tr>
+    </table></div>
+    <p>같은 계열로, 물체 종류 수준의 자세를 추정하는 방법들이 있다. 깊이 보완 결과를 자세 추정 모델에 넣는 방식과, 스테레오 영상에서 물체의 앞면과 뒷면의 좌표를 함께 예측하는 방식이 연구되었다.</p>
+  </section>
+
+  <section class="topic" id="to-modal" data-added="2026-11-25">
+    <h3>다른 감각의 활용</h3>
+    <p>가시광과 근적외선에서 투명한 물체가 다른 감각에서는 다르게 보인다는 점을 이용하는 방법들이다.</p>
+    <div class="tbl"><table>
+      <tr><th>감각</th><th>원리</th><th>장점과 한계</th></tr>
+      <tr><td class="m">편광(polarization)</td><td>빛이 매끄러운 표면에서 반사되면 진동 방향이 한쪽으로 치우친다. 그 치우친 정도와 각도가 표면의 방향을 알려 준다.</td><td>투명한 표면에서 단서가 오히려 강하다. 전용 카메라가 필요하다.</td></tr>
+      <tr><td class="m">열화상(thermal)</td><td>유리와 플라스틱은 긴 파장의 적외선을 통과시키지 않는다. 열화상에서는 불투명한 물체로 보인다.</td><td>배경의 무늬에 속지 않는다. 해상도가 낮고 온도 차이에 기댄다.</td></tr>
+      <tr><td class="m">라이트 필드(light field)</td><td>한 번에 여러 방향의 빛을 기록한다. 투명한 물체를 지난 빛은 방향에 따른 변화가 일그러진다.</td><td>한 번의 촬영으로 다시점 단서를 얻는다. 계산이 무겁다.</td></tr>
+      <tr><td class="m">촉각(tactile)</td><td>손끝의 센서로 직접 닿아 표면의 위치를 잰다.</td><td>빛의 영향을 받지 않는다. 한 번에 좁은 영역만 잰다.</td></tr>
+    </table></div>
+    <p>촉각은 시각과 함께 쓰이는 방향으로 발전하고 있다. 몇 번의 접촉으로 깊이 추정을 바로잡거나, 접촉으로 얻은 점을 3차원 표현의 학습에 함께 쓰는 연구가 목록<a class="cite" href="#src-tr-awesome"></a>에 여럿 올라 있다.</p>
+  </section>
+</section>
+
+<!-- ═══════════ 투명 물체 5장 ═══════════ -->
+<section class="chapter" id="ch-tr-vla" data-added="2026-11-25">
+  <h2>VLA에 결합하기</h2>
+  <p class="lead">VLA 모델에서 깊이가 들어가는 자리를 정리하고, 투명 물체의 깊이 모듈을 어느 자리에 어떤 형태로 넣어야 하는지를 정리한 장이다.</p>
+
+  <div class="note"><p>이 장의 틀은 읽은 논문들을 바탕으로 이 책에서 종합한 것이다. 깊이를 쓰는 VLA 논문 여덟 편을 읽었으나 투명하거나 반사가 심한 물체를 평가한 논문은 하나도 없었다. 따라서 투명 물체의 깊이 모듈을 VLA에 넣는 방법은 검증된 사실이 아니라 두 분야를 이어 본 설계 제안이다.</p></div>
+
+  <section class="topic" id="tv-slots" data-added="2026-11-25">
+    <h3>VLA에서 깊이가 들어가는 일곱 자리</h3>
+    <p>VLA 주제에서 본 <a href="#vla-arch">기본 구조</a>에 깊이가 들어갈 수 있는 자리를 표시하면 다음과 같다.</p>
+    <figure>
+      <b class="fig-t">VLA의 구조와 깊이가 들어가는 자리</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx vis">카메라<small>색 영상과 깊이</small></span><span class="bx lang">언어 지시</span></div>
+        <span class="bx wm">자리 1. 센서 단계의 전처리<small>깊이를 고친 뒤에 넘긴다</small></span><i class="ar"></i>
+        <span class="bx wm">자리 2. 입력 표현<small>점군이나 복셀로 바꾸어 넣는다</small></span><i class="ar"></i>
+        <div class="dg-row"><span class="bx vis">비전 인코더</span><span class="bx lang">언어 인코더</span></div>
+        <span class="bx wm">자리 3. 비전 토큰의 기하 부호화<small>토큰마다 3차원 위치를 더한다</small></span><i class="ar"></i>
+        <span class="bx vlm wide">시각-언어 모델의 몸통</span>
+        <span class="bx wm">자리 5. 보조 예측 목표<small>미래의 깊이를 예측하게 한다</small></span><i class="ar"></i>
+        <span class="bx act wide">행동 디코더 또는 행동 전문가</span>
+        <span class="bx wm">자리 4. 행동 쪽에 붙이는 3차원 가지<small>점군 특징을 행동 생성에 주입한다</small></span><i class="ar"></i>
+        <span class="bx">행동</span>
+        <div style="height:10px"></div>
+        <div class="dg-row"><span class="bx wm">자리 6. 계획기를 위한 중간 표현<small>가치 지도, 키포인트, 파지 자세</small></span><span class="bx wm">자리 7. 학습 데이터의 생성<small>시뮬레이션과 가짜 깊이</small></span></div>
+      </div>
+      <figcaption>분홍색 상자가 깊이가 들어가는 자리이다. 자리 6과 자리 7은 모델의 안이 아니라 둘레에 있다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><th>자리</th><th>깊이가 쓰이는 방식</th><th>사례</th><th>필요한 깊이의 성질</th></tr>
+      <tr><td class="m">1. 센서 단계의 전처리</td><td>깊이를 점군이나 복셀로 바꾸기 전에 다듬는다.</td><td>DP3, PerAct, PointVLA의 앞 단계</td><td>절대 거리가 맞고 구멍이 없어야 한다.</td></tr>
+      <tr><td class="m">2. 입력 표현</td><td>깊이를 점군이나 복셀로 바꾸어 모델의 입력으로 삼는다.</td><td>DP3의 점군, PerAct의 복셀</td><td>절대 거리와 시점 사이의 일관성</td></tr>
+      <tr><td class="m">3. 비전 토큰의 기하 부호화</td><td>영상 토큰마다 3차원 위치의 부호를 더한다.</td><td>SpatialVLA</td><td>상대적인 배치만 맞아도 된다.</td></tr>
+      <tr><td class="m">4. 행동 쪽의 3차원 가지</td><td>따로 둔 점군 인코더의 특징을 행동 생성부에 주입한다.</td><td>PointVLA</td><td>형상을 잡을 만큼의 정확도</td></tr>
+      <tr><td class="m">5. 보조 예측 목표</td><td>깊이를 입력으로 넣지 않고, 모델이 예측해야 하는 대상으로 삼는다.</td><td>DreamVLA, 3D-VLA</td><td>앞뒤의 순서가 맞으면 된다. 시간에 따른 일관성</td></tr>
+      <tr><td class="m">6. 계획기를 위한 중간 표현</td><td>깊이로 물체나 키포인트의 3차원 위치를 구해 계획기에 넘긴다.</td><td>VoxPoser, ReKep, PerAct</td><td>국소적으로 정확한 3차원 위치</td></tr>
+      <tr><td class="m">7. 학습 데이터의 생성</td><td>깊이가 없는 데이터에 깊이를 만들어 붙이거나 시뮬레이션에서 깊이를 얻는다.</td><td>3D-VLA, DP3, PerAct</td><td>정답의 질이 모델의 한계를 정한다.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="topic" id="tv-models" data-added="2026-11-25">
+    <h3>자리별 사례 모델의 구조</h3>
+    <figure>
+      <b class="fig-t">깊이를 쓰는 VLA와 정책의 구조</b>
+      <div class="dg-grid">
+        <div class="dg-panel"><b>DP3, 자리 1과 2</b><div class="dg">
+          <span class="bx lang">깊이 카메라의 깊이</span><i class="ar"></i>
+          <span class="bx aux">점군으로 변환, 작업 영역만 자름, 점을 골라 줄임</span><i class="ar"></i>
+          <span class="bx vis">점 인코더<small>작은 다층 퍼셉트론</small></span><i class="ar"></i>
+          <span class="bx act">확산 정책</span><i class="ar"></i><span class="bx">행동 묶음</span></div>
+          <p>색을 버리고 점의 위치만 쓴다. 점군을 쓴 경우의 성공률이 색 영상이나 깊이 영상을 쓴 경우보다 크게 높았다.</p></div>
+        <div class="dg-panel"><b>PerAct, 자리 2와 6</b><div class="dg">
+          <span class="bx lang">여러 카메라의 색과 깊이</span><i class="ar"></i>
+          <span class="bx aux">하나의 복셀 격자로 합침</span><i class="ar"></i>
+          <span class="bx vis">복셀 묶음 토큰과 언어 토큰</span><i class="ar"></i>
+          <span class="bx act">퍼시버 트랜스포머</span><i class="ar"></i>
+          <span class="bx">다음에 손이 갈 복셀과 회전, 그리퍼 상태</span></div>
+          <p>행동을 복셀 위의 위치로 낸다. 실제 실험에서 깊이 카메라 여러 대가 서로 간섭해 구멍 난 깊이가 나와서 한 대만 썼다고 요약에서 확인하였다.</p></div>
+        <div class="dg-panel"><b>SpatialVLA, 자리 3</b><div class="dg">
+          <span class="bx vis">색 영상 한 장</span><i class="ar"></i>
+          <div class="dg-row"><span class="bx vis">영상 토큰</span><span class="bx lang">단안 깊이 모델<small>고정</small></span></div>
+          <span class="dg-note">깊이로 구한 3차원 위치의 부호를 토큰에 더한다</span><i class="ar"></i>
+          <span class="bx vlm">시각-언어 모델</span><i class="ar"></i><span class="bx">공간 행동 토큰</span></div>
+          <p>깊이 센서 없이 추정한 깊이를 쓴다. 저자들은 센서 깊이가 잡음이 많다고 보고 상대적인 배치가 더 중요하다고 주장한다.</p></div>
+        <div class="dg-panel"><b>PointVLA, 자리 4</b><div class="dg">
+          <div class="dg-row"><span class="bx vis">색 영상과 지시</span><span class="bx lang">깊이 카메라의 점군</span></div><i class="ar"></i>
+          <div class="dg-row"><span class="bx vlm">시각-언어 모델</span><span class="bx vis">점군 인코더</span></div><i class="ar"></i>
+          <span class="bx act">행동 전문가<small>일부 블록에만 점군 특징을 더한다</small></span><i class="ar"></i><span class="bx">행동</span></div>
+          <p>이미 학습된 2차원 VLA를 흔들지 않도록, 건너뛰어도 되는 블록에만 3차원 특징을 주입한다.</p></div>
+        <div class="dg-panel"><b>DreamVLA, 자리 5</b><div class="dg">
+          <span class="bx vis">색 영상, 지시, 로봇 상태</span><i class="ar"></i>
+          <span class="bx vlm">트랜스포머 몸통<small>꿈 질의와 행동 질의</small></span><i class="ar"></i>
+          <div class="dg-row"><span class="bx lang">미래 깊이 예측<small>학습할 때만. 교사는 단안 깊이 모델</small></span><span class="bx act">확산 행동 머리</span></div><i class="ar"></i><span class="bx">행동</span></div>
+          <p>깊이는 입력이 아니라 숙제이다. 깊이를 예측해 보게 하면 행동이 좋아진다.</p></div>
+        <div class="dg-panel"><b>VoxPoser와 ReKep, 자리 6</b><div class="dg">
+          <span class="bx lang">깊이 카메라의 색과 깊이</span><i class="ar"></i>
+          <span class="bx vis">물체 검출과 분할, 추적</span><i class="ar"></i>
+          <span class="bx aux">물체의 점군 또는 키포인트의 3차원 위치</span><i class="ar"></i>
+          <span class="bx plan">대형 언어 모델이 가치 지도나 제약을 코드로 작성</span><i class="ar"></i>
+          <span class="bx act">모션 플래너와 최적화</span></div>
+          <p>깊이는 신경망의 입력이 아니라 영상 위의 점을 3차원으로 들어 올리는 데 쓰인다.</p></div>
+      </div>
+      <figcaption>각 모델의 자세한 설명은 VLA 주제의 <a href="#ctl-3d">3D 비전을 쓰는 제어 정책</a>, <a href="#ctl-diff">확산 기반 제어 정책</a>, <a href="#ctl-motion">모션 플래닝과 점 기반 행동</a>, <a href="#ctl-large">대형 VLA</a>에 있다.</figcaption>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">원본 구조도: PointVLA와 PerAct</b>
+      <div class="shots"><a href="https://arxiv.org/html/2503.07511v1/pointvla_framework.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2503.07511v1/pointvla_framework.png" alt="PointVLA 구조 원본"></a><a href="https://arxiv.org/html/2209.05451v2/peract_main_fig_v6.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2209.05451v2/peract_main_fig_v6.png" alt="PerAct 구조 원본"></a></div>
+      <figcaption>첫째 그림은 2차원 영상은 시각-언어 모델로, 점군은 별도의 인코더로 들어가 행동 전문가에서 만나는 PointVLA의 구조이다. 둘째 그림은 복셀로 바꾼 관측과 언어를 트랜스포머에 넣고 복셀 위의 행동을 내는 PerAct의 구조이다. 출처: PointVLA 논문<a class="cite" href="#src-tr-pointvla"></a>, CC BY 4.0. 출처: PerAct 논문<a class="cite" href="#src-tr-peract"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">원본 구조도: DP3</b>
+      <div class="shots one"><a href="https://arxiv.org/html/2403.03954v7/method_v3.png" target="_blank" rel="noopener"><img loading="lazy" src="https://arxiv.org/html/2403.03954v7/method_v3.png" alt="DP3 구조 원본"></a></div>
+      <figcaption>깊이에서 얻은 점군을 작은 인코더로 요약해 확산 정책의 조건으로 넣는다. 출처: DP3 논문<a class="cite" href="#src-tr-dp3"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <div class="key"><p>깊이를 쓰는 VLA는 모두 깊이가 맞다는 전제 위에 서 있다. 투명한 물체 앞에서는 그 전제가 무너진다. 점군에서 물체가 사라지고, 복셀이 비고, 키포인트가 배경으로 떨어진다.</p></div>
+  </section>
+
+  <section class="topic" id="tv-design" data-added="2026-11-25">
+    <h3>투명 물체 깊이 모듈을 넣는 세 가지 설계</h3>
+    <p>투명 물체의 깊이 모듈이 들어갈 수 있는 자리는 세 곳으로 좁혀진다.</p>
+    <figure>
+      <b class="fig-t">세 가지 설계</b>
+      <div class="dg-grid">
+        <div class="dg-panel"><b>설계 1. 센서 뒤의 전처리 모듈</b><div class="dg">
+          <span class="bx lang">깊이 카메라</span><i class="ar"></i>
+          <span class="bx wm">투명 물체 깊이 보완<small>자리 1</small></span><i class="ar"></i>
+          <span class="bx aux">점군, 복셀, 키포인트</span><i class="ar"></i>
+          <span class="bx act">3차원 정책 또는 계획기</span></div>
+          <p>VLA는 고치지 않는다. 깊이 보완 모델을 카메라와 정책 사이에 끼운다. 절대 거리가 맞는 깊이가 필요하고 제어 주기에 맞게 빨라야 한다.</p></div>
+        <div class="dg-panel"><b>설계 2. 비전 토큰의 기하 부호화</b><div class="dg">
+          <span class="bx vis">색 영상</span><i class="ar"></i>
+          <span class="bx wm">투명 물체에 강한 깊이 추정<small>자리 3</small></span><i class="ar"></i>
+          <span class="bx aux">3차원 위치 부호를 영상 토큰에 더함</span><i class="ar"></i>
+          <span class="bx vlm">대형 VLA</span></div>
+          <p>단안 깊이 모델을 투명 물체에 강한 것으로 바꾸거나 보강한다. 상대적인 배치가 맞으면 되므로 요구가 가장 느슨하다.</p></div>
+        <div class="dg-panel"><b>설계 3. 보조 예측의 교사</b><div class="dg">
+          <span class="bx vis">학습용 영상</span><i class="ar"></i>
+          <span class="bx wm">투명 물체에 강한 깊이 모델이 정답을 만든다<small>자리 5와 7</small></span><i class="ar"></i>
+          <span class="bx vlm">VLA가 그 깊이를 예측하도록 학습</span><i class="ar"></i>
+          <span class="bx">실행할 때는 깊이 모듈이 필요 없음</span></div>
+          <p>깊이 모듈은 학습할 때만 쓰인다. 실행 속도에 영향이 없다. 다만 효과가 간접적이다.</p></div>
+      </div>
+    </figure>
+    <div class="tbl"><table>
+      <tr><th>항목</th><th>설계 1. 전처리</th><th>설계 2. 기하 부호화</th><th>설계 3. 보조 교사</th></tr>
+      <tr><td class="m">VLA를 다시 학습하는가</td><td>아니다.</td><td>깊이 모델만 바꾸면 미세조정으로 충분할 수 있다.</td><td>그렇다.</td></tr>
+      <tr><td class="m">필요한 깊이</td><td>절대 거리, 구멍 없음</td><td>상대 배치</td><td>앞뒤의 순서</td></tr>
+      <tr><td class="m">실행 속도의 부담</td><td>매 순간 돌아야 한다.</td><td>매 순간 돌아야 한다.</td><td>없다.</td></tr>
+      <tr><td class="m">잘 맞는 VLA</td><td>점군이나 복셀을 입력으로 쓰는 정책, 계획기 기반 방식</td><td>단안 깊이를 토큰에 더하는 대형 VLA</td><td>미래 상태를 함께 예측하는 VLA</td></tr>
+      <tr><td class="m">위험</td><td>깊이 모듈이 틀리면 그대로 전달된다.</td><td>절대 거리가 필요한 정밀 조작에는 부족할 수 있다.</td><td>깊이를 잘 예측해도 행동이 나아진다는 보장이 없다.</td></tr>
+    </table></div>
+    <div class="key"><p>가장 먼저 해 볼 만한 것은 설계 1이다. VLA를 건드리지 않고, 깊이 보완 모델만 끼우면 되며, 효과를 깊이 지표와 파지 성공률로 바로 잴 수 있다. 투명 물체 연구의 로봇 실험이 거의 모두 이 형태이다.</p></div>
+  </section>
+
+  <section class="topic" id="tv-match" data-added="2026-11-25">
+    <h3>어느 방법이 어느 자리에 맞는가</h3>
+    <p>4장까지 본 방법들을 세 가지 설계에 대어 보면 다음과 같다.</p>
+    <div class="tbl"><table>
+      <tr><th>방법</th><th>내는 깊이</th><th>속도</th><th>잘 맞는 설계</th><th>까닭</th></tr>
+      <tr><td class="m">가벼운 RGB-D 보완<small>DFNet, FDCT, TDCNet</small></td><td>절대 깊이</td><td>빠름</td><td>설계 1</td><td>기존의 깊이 카메라를 그대로 쓰고 제어 주기에 맞출 수 있다.</td></tr>
+      <tr><td class="m">센서 모사로 학습한 보완<small>SwinDRNet</small></td><td>절대 깊이</td><td>초당 30장</td><td>설계 1</td><td>신뢰도 지도가 있어서 센서가 맞는 곳은 그대로 둔다.</td></tr>
+      <tr><td class="m">학습 기반 스테레오<small>ClearDepth</small></td><td>절대 깊이</td><td>빠르다고 주장</td><td>설계 1</td><td>스테레오 카메라의 원영상을 쓸 수 있을 때 맞는다.</td></tr>
+      <tr><td class="m">확산 기반 스테레오<small>D3RoMa</small></td><td>절대 깊이</td><td>느림</td><td>설계 1 가운데 계획기 기반 방식, 설계 3</td><td>정확하지만 매 순간 돌리기에는 느리다. 한 번 보고 계획하는 방식이나 정답 생성에 맞는다.</td></tr>
+      <tr><td class="m">장면마다 학습하는 NeRF<small>Dex-NeRF</small></td><td>절대 깊이</td><td>매우 느림</td><td>설계 3</td><td>실행 중에는 쓸 수 없다. 정답을 만드는 데에는 쓸 수 있다.</td></tr>
+      <tr><td class="m">일반화 NeRF<small>GraspNeRF</small></td><td>형상과 파지</td><td>초당 11장</td><td>자리 6</td><td>여러 시점이 필요하다. 파지 자세를 바로 내므로 계획기의 중간 표현이 된다.</td></tr>
+      <tr><td class="m">단안 파운데이션 모델<small>Depth Anything V2, Depth4ToM</small></td><td>상대 깊이</td><td>모델 크기에 따라 다름</td><td>설계 2, 설계 3</td><td>센서가 필요 없다. 절대 거리가 필요한 설계 1에는 보정 없이 쓰기 어렵다.</td></tr>
+      <tr><td class="m">키포인트 추정<small>KeyPose</small></td><td>키포인트의 3차원 위치</td><td>확인되지 않음</td><td>자리 6</td><td>키포인트 제약을 쓰는 계획기에 바로 연결된다. 물체 종류가 정해져 있어야 한다.</td></tr>
+    </table></div>
+    <div class="warn"><p>이 표는 각 방법의 출력과 속도로부터 추론한 짝짓기이다. 투명 물체 깊이 모듈을 VLA에 넣어 성능을 잰 연구는 읽은 자료 가운데 없었다.</p></div>
+    <h4>행동 주기와의 관계</h4>
+    <p>대형 VLA는 <a class="t" href="#g-chunking">행동 청킹</a>으로 한 번에 여러 동작을 낸다. 깊이 모듈이 다소 느려도, 행동 묶음을 새로 낼 때에만 깊이를 고치면 부담이 줄어든다. <a href="#ctl-arch">이중 시스템 구조</a>라면 느리게 도는 쪽에 깊이 모듈을 두는 것이 자연스럽다.</p>
+  </section>
+
+  <section class="topic" id="tv-data" data-added="2026-11-25">
+    <h3>데이터와 평가, 그리고 시뮬레이션과의 연결</h3>
+    <p>깊이 모듈을 넣는 것만으로는 부족하다. VLA 자체가 투명한 물체가 나오는 시연을 보고 배워야 하고, 투명한 물체로 평가되어야 한다.</p>
+    <figure>
+      <b class="fig-t">시뮬레이션이 맡는 세 가지 일</b>
+      <div class="flow">
+        <span class="bx aux">투명 재질의 물체 자산<small>유리와 플라스틱의 굴절률</small></span><i class="arh"></i>
+        <span class="bx vis">광선 추적 렌더링<small>굴절과 반사를 계산</small></span><i class="arh"></i>
+        <div class="dg"><span class="bx lang">깊이 모듈의 학습 데이터<small>틀린 깊이와 정답 깊이의 쌍</small></span><div style="height:4px"></div><span class="bx wm">VLA의 시연 데이터<small>투명 물체를 다루는 시연</small></span><div style="height:4px"></div><span class="bx plan">VLA의 폐루프 평가<small>투명 물체 과제의 성공률</small></span></div>
+      </div>
+    </figure>
+    <ul>
+      <li><b>깊이 모듈의 학습.</b> 센서를 모사한 합성 데이터가 이미 표준적인 방법이다. D3RoMa는 Isaac Sim으로 학습 데이터를 만들었다. Isaac Sim 주제의 <a href="#ib-sdg">합성 데이터와 도메인 랜덤화</a>가 그대로 쓰인다.</li>
+      <li><b>VLA의 시연 데이터.</b> 투명 물체가 나오는 시연은 기존의 대규모 로봇 데이터에 드물다. 시뮬레이션에서 원격조작으로 모으고 <a href="#il-learn">시연 늘리기</a>로 불리는 것이 현실적인 길이다.</li>
+      <li><b>평가.</b> <a href="#iv-arena">Isaac Lab-Arena</a> 같은 틀에서 물체의 재질만 투명하게 바꾼 과제를 만들면, 같은 정책의 성공률이 재질에 따라 얼마나 떨어지는지를 잴 수 있다.</li>
+    </ul>
+    <div class="warn"><p>시뮬레이터의 깊이 센서 모형이 실제 센서의 오류를 그대로 재현하는지는 따로 확인해야 한다. 사실적인 색 영상을 그리는 것과 깊이 센서가 틀리는 방식을 재현하는 것은 다른 문제이다. DREDS와 D3RoMa가 적외선 무늬와 스테레오 정합까지 모사한 것이 바로 이 때문이다.</p></div>
+  </section>
+
+  <section class="topic" id="tv-open" data-added="2026-11-25">
+    <h3>남은 과제</h3>
+    <div class="tbl"><table>
+      <tr><th>과제</th><th>내용</th></tr>
+      <tr><td class="m">검증의 공백</td><td>깊이를 쓰는 VLA 논문 가운데 투명하거나 반사가 심한 물체를 평가한 것이 읽은 범위에는 없었다. 두 분야를 잇는 실험 자체가 비어 있다.</td></tr>
+      <tr><td class="m">절대 깊이와 상대 깊이</td><td>단안 파운데이션 모델은 상대 깊이를 내고, 점군 기반 정책은 절대 깊이를 요구한다. 그 사이를 잇는 보정이 필요하다.</td></tr>
+      <tr><td class="m">속도</td><td>정확한 방법일수록 느리다. 확산 모델과 NeRF는 로봇의 제어 주기에 맞추기 어렵다.</td></tr>
+      <tr><td class="m">움직이는 장면</td><td>대부분의 방법이 정지한 장면의 한 장을 다룬다. 로봇 손이 물체를 가리고 물체가 움직이는 동안의 깊이는 덜 연구되었다.</td></tr>
+      <tr><td class="m">내용물과 변형</td><td>액체가 담긴 용기, 여러 겹으로 겹친 용기, 비닐처럼 변형되는 투명 물체는 여전히 어렵다.</td></tr>
+      <tr><td class="m">오류의 전달</td><td>깊이 모듈이 틀렸을 때 그것을 알아채는 장치가 필요하다. 신뢰도 지도나 확산 모델의 표본 분산이 단서가 될 수 있다.</td></tr>
+      <tr><td class="m">깊이가 꼭 필요한가</td><td>대량의 시연으로 학습한 VLA가 깊이 없이 색 영상만으로 투명 물체를 다룰 수 있는지도 열린 물음이다. 깊이 모듈과의 비교가 필요하다.</td></tr>
+    </table></div>
+    <h4>전체 흐름의 요약</h4>
+    <ol class="steps">
+      <li><b>깊이 센서는 표면이 빛을 흩어 되돌린다고 가정한다.</b> 투명한 물체는 빛을 통과시키고 꺾고 한 방향으로 튕겨서 이 가정을 어긴다.</li>
+      <li><b>오류는 두 가지이다.</b> 배경의 깊이가 적히거나 깊이가 빠진다.</li>
+      <li><b>해결 방법은 여섯 갈래이다.</b> 센서 깊이를 고치거나, 스테레오 계산을 학습으로 바꾸거나, 여러 시점으로 형상을 만들거나, 범용 단안 모델을 쓰거나, 깊이를 건너뛰거나, 다른 감각을 쓴다.</li>
+      <li><b>흐름은 정답의 질로 모인다.</b> 센서의 오류까지 모사한 합성 데이터와 합성 교사가 낸 가짜 정답이 중심이 되었다.</li>
+      <li><b>VLA에는 세 자리에 들어갈 수 있다.</b> 센서 뒤의 전처리, 비전 토큰의 기하 부호화, 보조 예측의 교사이다. 어느 자리인지에 따라 필요한 깊이의 성질과 속도가 달라진다.</li>
+    </ol>
+  </section>
+</section>
+
+<!-- ═══════════ 투명 물체 6장 ═══════════ -->
+<section class="chapter" id="ch-tr-quiz" data-added="2026-11-25">
+  <h2>이해 확인 질문</h2>
+  <p class="lead">투명 물체의 깊이 문제와 해결 방법, 그리고 VLA와의 결합을 제대로 이해했는지 스스로 점검하는 질문이다.</p>
+  <section class="topic quiz" id="quiz-trans" data-added="2026-11-25">
+    <h3>투명 물체 깊이 핵심 개념 문항</h3>
+    <p>먼저 스스로 답해 본 뒤, 질문을 눌러 모범 답안과 비교한다. 답이 막히면 답안 끝의 링크로 해당 설명에 돌아간다.</p>
+
+    <h4>배경</h4>
+    <details><summary>1. 깊이 추정과 깊이 보완은 어떻게 다른가?</summary><p>깊이 추정은 영상만 보고 깊이를 새로 계산하는 일이고, 깊이 보완은 센서가 낸 깊이 지도에서 빠졌거나 틀린 부분을 색 영상을 길잡이로 고쳐 채우는 일이다. <a href="#tb-depth">깊이 추정과 깊이 보완</a></p></details>
+    <details><summary>2. 투명 물체 문제가 주로 깊이 보완의 형태로 다루어지는 까닭은 무엇인가?</summary><p>센서의 깊이가 장면 대부분에서는 맞고 투명한 물체 위에서만 틀리기 때문이다. 틀린 곳만 골라 고치는 것이 자연스럽다. <a href="#tb-depth">깊이 추정과 깊이 보완</a></p></details>
+    <details><summary>3. 깊이 센서의 세 가지 방식과 각각의 원리는 무엇인가?</summary><p>구조광과 능동 스테레오는 적외선 무늬를 쏘고 그 어긋남으로 삼각 측량을 한다. 비행 시간 방식은 빛이 되돌아오는 시간을 잰다. 수동 스테레오는 두 영상에서 같은 점을 찾아 위치 차이로 거리를 구한다. <a href="#tb-sensor">깊이 센서의 원리와 숨은 가정</a></p></details>
+    <details><summary>4. 램버트 가정이란 무엇이며, 투명한 물체는 그것을 어떻게 어기는가?</summary><p>표면이 받은 빛을 모든 방향으로 고르게 흩어 되돌려 보낸다는 가정이다. 투명한 물체는 빛을 흩어 되돌리지 않고 대부분 통과시키며 일부는 거울처럼 한 방향으로만 튕겨 낸다. <a href="#tb-sensor">깊이 센서의 원리와 숨은 가정</a></p></details>
+    <details><summary>5. 투명한 표면에서 일어나는 세 가지 광학 현상과 각각이 센서에 미치는 영향은 무엇인가?</summary><p>투과는 물체 뒤의 배경까지의 거리가 재어지게 한다. 굴절은 배경의 모습을 일그러뜨려 같은 점을 찾기 어렵게 한다. 정반사는 무늬를 망가뜨려 그 화소의 깊이가 빠지게 한다. <a href="#tb-optics">투명한 표면에서 빛에 일어나는 일</a></p></details>
+    <details><summary>6. 두 가지 깊이 오류는 무엇이며, 어느 쪽이 더 위험한가?</summary><p>배경 깊이 오류는 물체 자리에 배경까지의 거리가 적히는 것이고, 빠진 깊이 오류는 값이 아예 없는 것이다. 배경 깊이 오류가 더 위험하다. 그럴듯한 값이 들어 있어서 틀렸다는 표시가 없기 때문이다. <a href="#tb-error">두 가지 깊이 오류</a></p></details>
+    <details><summary>7. 깊이 센서를 버리고 색 영상만 쓰면 문제가 풀리는가?</summary><p>풀리지 않는다. 투명한 물체는 고유한 색과 무늬가 없어서 겉모습을 배경이 결정하고, 가장자리 단서가 약하며, 집광 무늬와 강한 조명이 거짓 단서를 만들고, 겹치면 물체를 가르기 어렵다. <a href="#tb-rgb">색 영상만으로도 어려운 이유</a></p></details>
+    <details><summary>8. 투명 물체의 깊이가 로봇에게 필요한 분야를 들어 보라.</summary><p>유리컵과 그릇을 다루는 가정과 서비스, 비커와 플라스크를 다루는 실험실 자동화, 플라스틱 병을 골라내는 재활용, 유리벽을 알아보아야 하는 이동과 안내가 있다. <a href="#tb-why">왜 필요한가</a></p></details>
+
+    <h4>분류</h4>
+    <details><summary>9. 해결 방법의 여섯 갈래는 무엇인가?</summary><p>RGB-D 깊이 보완, 스테레오와 센서 모사, 다시점 신경장, 단안 깊이 파운데이션 모델, 깊이를 건너뛰는 방법, 다른 감각의 활용이다. <a href="#tt-map">여섯 갈래의 분류 지도</a></p></details>
+    <details><summary>10. 방법을 고를 때의 세 가지 기준은 무엇인가?</summary><p>어떤 센서를 쓸 수 있는가, 로봇의 제어 주기에 맞출 만큼 빠른가, 미터 단위의 절대 깊이가 필요한가 상대적인 앞뒤 관계만 있으면 되는가이다. <a href="#tt-compare">입력 조건과 속도에 따른 비교</a></p></details>
+    <details><summary>11. 2019년부터 지금까지의 흐름은 어떻게 바뀌었는가?</summary><p>소수의 물체로 정답을 만들어 배우던 시기에서, 센서의 물리까지 모사한 합성 데이터로 배우는 시기를 거쳐, 범용 단안 모델과 생성 모델을 쓰는 시기로 넘어왔다. 정답의 질이 모델의 크기보다 중요하다는 인식이 자리 잡았다. <a href="#tt-flow">흐름의 변화</a></p></details>
+    <details><summary>12. 투명 물체의 정답 깊이를 얻는 방법 다섯 가지를 들어 보라.</summary><p>같은 모양의 칠한 물체로 바꿔 찍는 방법, 추적기와 3차원 모형을 쓰는 방법, 시뮬레이션 렌더링, 여러 시점의 삼각 측량, 영상에서 투명 영역을 칠해 기존 모델에 넣어 가짜 정답을 만드는 방법이다. <a href="#tt-data">정답 깊이를 얻는 방법과 데이터셋</a></p></details>
+    <details><summary>13. RMSE, REL, 임계 정확도는 각각 무엇을 재는가?</summary><p>RMSE는 오차의 제곱 평균의 제곱근으로 큰 오차에 민감하다. REL은 오차를 정답 깊이로 나눈 비율의 평균이다. 임계 정확도는 예측과 정답의 비율이 기준 안에 드는 화소의 비율이다. <a href="#tt-metric">평가 지표</a></p></details>
+    <details><summary>14. 깊이 지표가 좋으면 조작도 잘 된다고 볼 수 있는가?</summary><p>그렇지 않다. 그래서 많은 논문이 파지 성공률을 함께 보고한다. 지표의 종류와 평가 조건도 논문마다 달라서 수치를 직접 견주기 어렵다. <a href="#tt-metric">평가 지표</a></p></details>
+
+    <h4>RGB-D 깊이 보완</h4>
+    <details><summary>15. 깊이 보완의 두 가지 접근은 무엇인가?</summary><p>신경망이 표면의 방향과 경계 같은 기하를 예측한 뒤 계산으로 깊이를 채우는 접근과, 신경망이 색 영상과 센서 깊이를 받아 깊이를 직접 내는 엔드투엔드 접근이다. <a href="#tr-common">공통 원리</a></p></details>
+    <details><summary>16. ClearGrasp가 색 영상에서 예측하는 세 가지는 무엇이며 각각 어디에 쓰이는가?</summary><p>표면 법선은 표면의 기울기를 정한다. 가림 경계는 깊이가 끊어져도 되는 자리를 알려 준다. 투명 영역 마스크는 틀린 깊이를 골라 지우는 데 쓰인다. <a href="#tr-cleargrasp">ClearGrasp: 기하 예측과 전역 최적화</a></p></details>
+    <details><summary>17. ClearGrasp의 전역 최적화를 이루는 세 항은 각각 무엇을 요구하는가?</summary><p>관측 항은 깊이가 남아 있는 화소에서 결과가 센서 값에서 멀어지지 않기를 요구한다. 법선 항은 결과 표면이 예측한 법선과 맞기를 요구하며 가림 경계에서는 약해진다. 매끄러움 항은 이웃한 화소의 깊이가 비슷하기를 요구한다. <a href="#tr-cleargrasp">ClearGrasp: 기하 예측과 전역 최적화</a></p></details>
+    <details><summary>18. ClearGrasp는 어떤 경우에 깊이를 정하지 못하는가?</summary><p>물체가 가림 경계로 완전히 둘러싸인 경우이다. 닻이 될 알려진 깊이와 이어지지 않아서 깊이가 정해지지 않는다. <a href="#tr-cleargrasp">ClearGrasp: 기하 예측과 전역 최적화</a></p></details>
+    <details><summary>19. LIDF가 처음 보는 물체에도 잘 통하는 까닭은 무엇인가?</summary><p>물체 전체가 아니라 작은 복셀 하나 안에서 광선이 어디에서 멈추는지를 맞히기 때문이다. 칸 하나 안의 표면 모양은 물체가 달라도 비슷하다. <a href="#tr-lidf">LIDF: 국소 암시적 함수</a></p></details>
+    <details><summary>20. TranspareNet은 틀린 깊이를 어떻게 다루며, 왜 두 단계인가?</summary><p>지우지 않고 먼저 고친다. 틀린 깊이도 모양의 단서를 담고 있다고 보기 때문이다. 점군 보완이 3차원 모양을 대강 바로잡고, 깊이 보완이 그것을 화소 단위로 촘촘하게 채운다. <a href="#tr-transparenet">TranspareNet: 점군과 깊이의 결합</a></p></details>
+    <details><summary>21. DFNet이 보여 준 것은 무엇이며, 센서 깊이를 모든 블록에 다시 넣는 까닭은 무엇인가?</summary><p>좋은 실제 데이터가 있으면 작고 단순한 신경망으로도 충분하다는 점을 보였다. 깊이를 모든 블록에 다시 넣는 것은 깊은 층에서도 원래의 깊이 정보를 잊지 않게 하기 위해서이다. <a href="#tr-dfnet">DFNet: 가벼운 엔드투엔드 회귀</a></p></details>
+    <details><summary>22. SwinDRNet의 신뢰도 지도는 어떤 역할을 하는가?</summary><p>화소마다 예측 깊이와 센서 깊이를 섞는 비율을 정한다. 센서가 맞는 곳에서는 센서의 값을 그대로 살린다. 마스크로 지우는 것을 부드럽게 바꾼 것이다. <a href="#tr-swindr">SwinDRNet: 두 흐름과 신뢰도 섞기</a></p></details>
+    <details><summary>23. 색과 깊이를 섞는 세 가지 설계는 무엇인가?</summary><p>입력에서 바로 이어 붙이는 단일 가지, 지름길 융합 모듈을 둔 구조, 깊이 전용 가지와 색과 깊이를 함께 읽는 가지를 나란히 두는 병렬 이중 가지이다. <a href="#tr-fdct">FDCT와 TDCNet: 색과 깊이를 섞는 자리</a></p></details>
+    <details><summary>24. 여러 논문의 성능 표를 순위표로 읽으면 안 되는 까닭은 무엇인가?</summary><p>같은 기준 모델의 값이 논문마다 다르게 적혀 있고, 해상도와 학습 데이터가 다르며, 한 논문 안에서도 지표에 따라 순위가 바뀌기 때문이다. <a href="#tr-table">모델 사이의 성능 비교</a></p></details>
+
+    <h4>스테레오, 신경장, 파운데이션 모델</h4>
+    <details><summary>25. 깊이 센서를 통째로 모사한다는 것은 무슨 뜻이며 왜 그렇게 하는가?</summary><p>가상의 투사기가 무늬를 쏘고, 가상의 두 적외선 영상을 광선 추적으로 그리고, 스테레오 정합까지 돌려 깊이를 만든다는 뜻이다. 그래야 실제 센서와 같은 자리에 같은 종류의 오류가 생겨서 합성 데이터로 배운 모델이 실제에서도 통한다. <a href="#to-sim">능동 스테레오 센서의 모사</a></p></details>
+    <details><summary>26. 투명한 표면에서 겉모습으로 하는 스테레오 정합이 틀리는 까닭과 ClearDepth의 대응은 무엇인가?</summary><p>굴절 때문에 뒤의 배경 무늬가 일그러져 두 영상에서 다르게 보이기 때문이다. ClearDepth는 물체의 구조적 윤곽을 읽는 인코더의 특징을 시차를 고쳐 나가는 과정에 더한다. <a href="#to-stereo">학습 기반 스테레오 정합</a></p></details>
+    <details><summary>27. 시차와 깊이는 어떤 관계인가?</summary><p>깊이는 초점 거리와 두 카메라 사이의 거리를 곱한 값을 시차로 나눈 것이다. 시차가 클수록 가깝다. <a href="#to-stereo">학습 기반 스테레오 정합</a></p></details>
+    <details><summary>28. 투명 물체의 깊이에 확산 모델이 유리한 까닭은 무엇인가?</summary><p>투명한 표면에서는 앞 표면의 깊이와 뒤 배경의 깊이라는 두 가지 그럴듯한 답이 공존한다. 회귀 모델은 그 사이의 어중간한 값을 내기 쉽지만 확산 모델은 하나를 온전하게 골라 낼 수 있다. <a href="#to-diff">시차 공간의 확산 모델</a></p></details>
+    <details><summary>29. D3RoMa의 스테레오 기하 안내는 무슨 일을 하는가?</summary><p>잡음을 걷어 내는 매 단계에서, 지금의 시차로 오른쪽 영상을 옮겨 왼쪽 영상과 맞는지를 보고 맞는 방향으로 민다. 학습한 모델의 그럴듯함에 물리적 제약을 더한다. <a href="#to-diff">시차 공간의 확산 모델</a></p></details>
+    <details><summary>30. Dex-NeRF는 깊이를 뽑는 방법을 어떻게 바꾸었는가?</summary><p>광선 위의 모든 지점을 가중 평균하는 대신, 밀도가 기준값을 처음 넘는 지점에서 멈춘다. 투명한 물체는 밀도가 낮아서 평균을 내면 뒤의 배경 쪽으로 끌려가기 때문이다. <a href="#to-nerf">다시점 신경장</a></p></details>
+    <details><summary>31. GraspNeRF는 Dex-NeRF의 어떤 단점을 어떻게 풀었는가?</summary><p>장면마다 오래 학습해야 하는 단점을 풀었다. 장면마다 학습하지 않는 일반화 NeRF로 6장의 영상에서 형상을 만들고 파지 자세까지 한 번에 낸다. <a href="#to-nerf">다시점 신경장</a></p></details>
+    <details><summary>32. Depth4ToM은 깊이 정답 없이 어떻게 모델을 고치는가?</summary><p>영상에서 투명 영역을 단색으로 칠해 교사 모델에 넣으면 그 자리의 표면 깊이가 맞게 나온다. 그 출력을 가짜 정답으로 삼아, 칠하지 않은 원래 영상으로 대상 모델을 미세조정한다. <a href="#to-mono">단안 깊이 파운데이션 모델</a></p></details>
+    <details><summary>33. Depth Anything V2가 합성 영상으로 교사를 학습시키는 까닭은 무엇인가?</summary><p>실제 센서로 얻은 정답은 투명한 표면에서 틀려 있어서 그것으로 배운 모델도 틀리기 때문이다. 시뮬레이터의 깊이는 투명한 표면에서도 정확하다. <a href="#to-mono">단안 깊이 파운데이션 모델</a></p></details>
+    <details><summary>34. 단안 파운데이션 모델을 로봇에 쓸 때의 주된 제약은 무엇인가?</summary><p>대부분 상대 깊이를 낸다는 점이다. 미터 단위의 절대 깊이를 얻으려면 별도의 보정이 필요하다. <a href="#to-mono">단안 깊이 파운데이션 모델</a></p></details>
+    <details><summary>35. KeyPose의 장점과 한계는 무엇인가?</summary><p>깊이 센서가 전혀 필요 없고 정답도 여러 시점의 삼각 측량으로 만든다. 한계는 물체 또는 물체 종류마다 학습해야 해서 처음 보는 종류에는 쓸 수 없다는 점이다. <a href="#to-skip">깊이를 건너뛰는 방법</a></p></details>
+    <details><summary>36. 열화상이 투명 물체에 유리한 까닭은 무엇인가?</summary><p>유리와 플라스틱은 긴 파장의 적외선을 통과시키지 않아서 열화상에서는 불투명한 물체로 보이기 때문이다. <a href="#to-modal">다른 감각의 활용</a></p></details>
+
+    <h4>VLA에 결합하기</h4>
+    <details><summary>37. VLA에서 깊이가 들어가는 일곱 자리를 들어 보라.</summary><p>센서 단계의 전처리, 입력 표현, 비전 토큰의 기하 부호화, 행동 쪽에 붙이는 3차원 가지, 보조 예측 목표, 계획기를 위한 중간 표현, 학습 데이터의 생성이다. <a href="#tv-slots">VLA에서 깊이가 들어가는 일곱 자리</a></p></details>
+    <details><summary>38. SpatialVLA와 PointVLA는 깊이를 넣는 자리가 어떻게 다른가?</summary><p>SpatialVLA는 단안 깊이 모델로 추정한 깊이에서 3차원 위치의 부호를 만들어 영상 토큰에 더한다. PointVLA는 깊이 카메라의 점군을 별도의 인코더로 읽어 행동 전문가의 일부 블록에 주입한다. <a href="#tv-models">자리별 사례 모델의 구조</a></p></details>
+    <details><summary>39. DreamVLA에서 깊이는 입력인가?</summary><p>아니다. 깊이는 모델이 예측해야 하는 보조 목표이다. 학습할 때 미래의 깊이를 예측해 보게 하면 행동이 좋아진다. <a href="#tv-models">자리별 사례 모델의 구조</a></p></details>
+    <details><summary>40. 깊이를 쓰는 VLA가 투명한 물체 앞에서 겪는 문제는 무엇인가?</summary><p>모두 깊이가 맞다는 전제 위에 서 있는데 그 전제가 무너진다. 점군에서 물체가 사라지고, 복셀이 비고, 키포인트가 배경으로 떨어진다. <a href="#tv-models">자리별 사례 모델의 구조</a></p></details>
+    <details><summary>41. 투명 물체 깊이 모듈을 넣는 세 가지 설계는 무엇이며 각각 어떤 깊이를 요구하는가?</summary><p>센서 뒤의 전처리 모듈은 절대 거리가 맞고 구멍이 없는 깊이를 요구한다. 비전 토큰의 기하 부호화는 상대적인 배치가 맞으면 된다. 보조 예측의 교사는 앞뒤의 순서가 맞으면 된다. <a href="#tv-design">투명 물체 깊이 모듈을 넣는 세 가지 설계</a></p></details>
+    <details><summary>42. 세 설계 가운데 가장 먼저 해 볼 만한 것은 무엇이며 그 까닭은 무엇인가?</summary><p>센서 뒤의 전처리 모듈이다. VLA를 건드리지 않고 깊이 보완 모델만 끼우면 되며, 효과를 깊이 지표와 파지 성공률로 바로 잴 수 있다. <a href="#tv-design">투명 물체 깊이 모듈을 넣는 세 가지 설계</a></p></details>
+    <details><summary>43. 보조 예측의 교사로 쓰는 설계의 장점과 위험은 무엇인가?</summary><p>깊이 모듈이 학습할 때만 쓰여서 실행 속도에 영향이 없다. 위험은 효과가 간접적이어서 깊이를 잘 예측해도 행동이 나아진다는 보장이 없다는 점이다. <a href="#tv-design">투명 물체 깊이 모듈을 넣는 세 가지 설계</a></p></details>
+    <details><summary>44. 가벼운 RGB-D 보완 모델과 단안 파운데이션 모델은 각각 어느 설계에 맞는가?</summary><p>가벼운 RGB-D 보완 모델은 절대 깊이를 빠르게 내므로 전처리 모듈에 맞는다. 단안 파운데이션 모델은 상대 깊이를 내므로 기하 부호화나 보조 교사에 맞는다. <a href="#tv-match">어느 방법이 어느 자리에 맞는가</a></p></details>
+    <details><summary>45. 확산 모델이나 NeRF처럼 느린 방법은 VLA와 어떻게 결합할 수 있는가?</summary><p>매 순간 돌리기는 어렵다. 한 번 보고 계획하는 계획기 기반 방식에 쓰거나, 학습용 정답을 만드는 데에 쓸 수 있다. 행동 청킹이나 이중 시스템 구조에서 느리게 도는 쪽에 두는 방법도 있다. <a href="#tv-match">어느 방법이 어느 자리에 맞는가</a></p></details>
+    <details><summary>46. 투명 물체를 위해 시뮬레이션이 맡을 수 있는 세 가지 일은 무엇인가?</summary><p>깊이 모듈의 학습 데이터를 만드는 일, 투명 물체를 다루는 VLA 시연 데이터를 만드는 일, 투명 물체 과제로 VLA를 폐루프 평가하는 일이다. <a href="#tv-data">데이터와 평가, 그리고 시뮬레이션과의 연결</a></p></details>
+    <details><summary>47. 사실적인 색 영상을 그리는 시뮬레이터라면 깊이 센서의 오류도 재현한다고 볼 수 있는가?</summary><p>그렇지 않다. 둘은 다른 문제이다. 깊이 센서가 틀리는 방식을 재현하려면 적외선 무늬의 투사와 스테레오 정합까지 모사해야 한다. <a href="#tv-data">데이터와 평가, 그리고 시뮬레이션과의 연결</a></p></details>
+    <details><summary>48. 두 분야를 잇는 데에서 가장 큰 공백은 무엇인가?</summary><p>깊이를 쓰는 VLA 논문 가운데 투명하거나 반사가 심한 물체를 평가한 것이 읽은 범위에 없었다는 점이다. 투명 물체 깊이 모듈을 VLA에 넣어 성능을 잰 실험 자체가 비어 있다. <a href="#tv-open">남은 과제</a></p></details>
+
+  </section>
+</section>
+
+<!-- ▲▲▲ 투명 물체 장 끝 ▲▲▲ -->
+</div><!-- /part-trans -->
+
 
 <section class="chapter appendix" id="guide">
   <h2>이 책 읽는 법</h2>
@@ -2738,6 +3764,22 @@
     <dt id="g-vda5050" data-added="2026-11-25">VDA 5050</dt>
     <dd>로봇 군집과 중앙의 주 제어기 사이의 통신을 위한 공개 표준이다.</dd>
   </dl>
+  <h4>투명 물체 깊이 용어</h4>
+  <dl class="glossary">
+    <!-- 한글 가나다 순, 그 뒤에 영문 ABC 순으로 유지 -->
+    <dt id="g-occ" data-added="2026-11-25">가림 경계 <small>Occlusion Boundary</small></dt>
+    <dd>깊이가 갑자기 끊어지는 윤곽선이다. 한 물체가 다른 것을 가리는 가장자리에 생긴다.</dd>
+    <dt id="g-refraction" data-added="2026-11-25">굴절 <small>Refraction</small></dt>
+    <dd>빛이 서로 다른 물질의 경계를 지날 때 방향이 꺾이는 현상이다.</dd>
+    <dt id="g-depth" data-added="2026-11-25">깊이 <small>Depth</small></dt>
+    <dd>카메라에서 장면의 각 지점까지의 거리이다. 화소마다 적은 것을 깊이 지도라고 하고, 빠지거나 틀린 깊이를 고쳐 채우는 일을 깊이 보완(depth completion)이라고 한다.</dd>
+    <dt id="g-lambert" data-added="2026-11-25">램버트 가정 <small>Lambertian Assumption</small></dt>
+    <dd>표면이 받은 빛을 모든 방향으로 고르게 흩어 되돌려 보낸다는 가정이다. 대부분의 깊이 센서가 이 가정에 기댄다.</dd>
+    <dt id="g-normal" data-added="2026-11-25">표면 법선 <small>Surface Normal</small></dt>
+    <dd>표면의 각 점에서 표면에 수직인 방향이다. 표면이 어느 쪽으로 기울어 있는지를 나타낸다.</dd>
+    <dt id="g-nerf" data-added="2026-11-25">NeRF <small>Neural Radiance Field</small></dt>
+    <dd>여러 방향에서 찍은 영상으로부터 공간의 각 위치의 밀도와 색을 신경망에 담아 장면을 3차원으로 표현하는 기법이다.</dd>
+  </dl>
 </section>
 
 <section class="chapter appendix" id="sources">
@@ -2770,6 +3812,29 @@
     <li id="src-isaac-rosso" data-added="2026-11-25"><b>Introduction to Isaac Sim and Isaac Lab in Robot Development</b><span class="src-meta">Rosso, 2026년 5월 28일, 시스템 개발 회사의 블로그</span>기업 관점의 입문 글이다. Isaac Sim과 Isaac Lab의 구분, 기업 협력 사례, 자동 데이터 수집이 VLA 학습에 중요해지는 흐름을 짚는다. 일본어 원문의 영어 자동 번역본을 읽었다. <a href="https://note.com/rosso_blog/n/n6febb48caaca?hl=en" target="_blank" rel="noopener">note.com</a></li>
     <li id="src-isaac-unidata" data-added="2026-11-25"><b>NVIDIA Isaac Sim for Robot Training: A Complete Guide</b><span class="src-meta">Unidata, 2026년 9월 갱신, 로봇 학습 데이터 판매 회사의 글</span>산업별 쓰임, Gazebo와 MuJoCo와의 기능 비교, 학습 없이 쓰는 용도, 하드웨어 요구, 흔한 실수를 다룬다. 통계의 출처가 대부분 밝혀져 있지 않다. <a href="https://unidata.pro/blog/nvidia-isaac-sim-for-robot-training/" target="_blank" rel="noopener">unidata.pro</a></li>
     <li id="src-isaac-rc" data-added="2026-11-25"><b>Best Robot Simulators for RL 2026</b><span class="src-meta">Robotics Center, 날짜 표기 없음, 로봇 판매와 평가 서비스 회사의 글</span>시뮬레이터 열 가지를 용도별로 비교하고 선택 기준을 제시한다. 처리 속도의 수치는 없고 일부 흐름에 대한 서술은 출처가 없다. <a href="https://www.roboticscenter.ai/rl-environments/best-2026" target="_blank" rel="noopener">roboticscenter.ai</a></li>
+    <li id="src-tr-awesome" data-added="2026-11-25"><b>Awesome-Spatial-Intelligence, Transparent Object Manipulation</b><span class="src-meta">lif314, GitHub 목록</span>투명 물체 조작 연구 55건을 서베이, 데이터셋, 파지와 조작, 시각 촉각, 자세 추정, 시뮬레이션, 깊이 보완, 3차원 재구성, 분할, 인지로 나누어 정리한 목록이다. 일부 항목의 연도 표기가 어긋나 있다. <a href="https://github.com/lif314/Awesome-Spatial-Intelligence/blob/main/topics/Transparent_Object_Manipulation.md" target="_blank" rel="noopener">github.com/lif314</a></li>
+    <li id="src-tr-review" data-added="2026-11-25"><b>Robotic Perception of Transparent Objects: A Review</b><span class="src-meta">Jiaqi Jiang, Guanqun Cao, Jiankang Deng, Thanh-Toan Do, Shan Luo, IEEE Transactions on Artificial Intelligence, 2024, arXiv 2304.00157</span>투명 물체 인지가 어려운 이유, 응용 분야, 분할과 깊이 복원과 자세 추정 방법, 데이터셋, 남은 과제를 정리한 서베이이다. 본문의 뒤쪽 약 5분의 1은 요약으로만 확인하였다. 평가 지표의 식과 구조광, 비행 시간 센서의 분석은 이 논문에 없다. <a href="https://arxiv.org/abs/2304.00157" target="_blank" rel="noopener">arXiv 2304.00157</a></li>
+    <li id="src-tr-cos" data-added="2026-11-25"><b>awesome-concealed-object-segmentation</b><span class="src-meta">ChunmingHe, GitHub 목록</span>위장 물체와 함께 투명 물체 분할 논문을 표로 정리한 목록이다. 투명 물체 부분만 참고하였다. <a href="https://github.com/ChunmingHe/awesome-concealed-object-segmentation" target="_blank" rel="noopener">github.com/ChunmingHe</a></li>
+    <li id="src-tr-cleargrasp" data-added="2026-11-25"><b>ClearGrasp: 3D Shape Estimation of Transparent Objects for Manipulation</b><span class="src-meta">Shreeyak Sajjan 외, ICRA 2020, arXiv 1910.02550, 저장소는 Apache-2.0</span>표면 법선과 가림 경계를 예측한 뒤 전역 최적화로 투명 물체의 깊이를 복원하는 이 분야의 출발점이다. <a href="https://github.com/Shreeyak/cleargrasp" target="_blank" rel="noopener">github.com/Shreeyak/cleargrasp</a></li>
+    <li id="src-tr-lidf" data-added="2026-11-25"><b>RGB-D Local Implicit Function for Depth Completion of Transparent Objects</b><span class="src-meta">Luyang Zhu 외, CVPR 2021, arXiv 2104.00622, CC BY 4.0</span>광선과 복셀의 쌍마다 광선이 멈추는 위치를 예측하는 국소 암시적 함수로 깊이를 보완한다. <a href="https://arxiv.org/abs/2104.00622" target="_blank" rel="noopener">arXiv 2104.00622</a></li>
+    <li id="src-tr-transparenet" data-added="2026-11-25"><b>Seeing Glass: Joint Point Cloud and Depth Completion for Transparent Objects</b><span class="src-meta">Haoping Xu 외, CoRL 2021, arXiv 2110.00087, 저장소는 MIT</span>점군 보완과 깊이 보완을 이어 붙인 TranspareNet과 액체가 담긴 용기를 포함한 실제 데이터셋 TODD를 제시한다. <a href="https://github.com/pairlab/TranspareNet" target="_blank" rel="noopener">github.com/pairlab/TranspareNet</a></li>
+    <li id="src-tr-transcg" data-added="2026-11-25"><b>TransCG: A Large-Scale Real-World Dataset for Transparent Object Depth Completion and a Grasping Baseline</b><span class="src-meta">Hongjie Fang 외, IEEE RA-L 2022, arXiv 2202.08471, CC BY-NC-ND 4.0</span>투명 물체 51종의 실제 영상 57,715장과 가벼운 깊이 보완 모델 DFNet을 제시한다. <a href="https://github.com/Galaxies99/TransCG" target="_blank" rel="noopener">github.com/Galaxies99/TransCG</a></li>
+    <li id="src-tr-dreds" data-added="2026-11-25"><b>Domain Randomization-Enhanced Depth Simulation and Restoration for Perceiving and Grasping Specular and Transparent Objects</b><span class="src-meta">Qiyu Dai 외, ECCV 2022, arXiv 2208.03792</span>능동 스테레오 센서를 모사한 합성 데이터셋 DREDS와 깊이 복원 모델 SwinDRNet을 제시한다. 실험 수치 일부는 요약으로만 확인하였다. <a href="https://arxiv.org/abs/2208.03792" target="_blank" rel="noopener">arXiv 2208.03792</a></li>
+    <li id="src-tr-fdct" data-added="2026-11-25"><b>FDCT: Fast Depth Completion for Transparent Objects</b><span class="src-meta">Tianan Li 외, IEEE RA-L 2023, 저장소는 MIT</span>빠른 깊이 보완 모델이다. 논문 본문은 열리지 않아 읽지 못하였고, 구조는 공개된 코드만을 바탕으로 정리하였다. 성능 수치는 다른 논문이 보고한 값이다. <a href="https://github.com/Nonmy/FDCT" target="_blank" rel="noopener">github.com/Nonmy/FDCT</a></li>
+    <li id="src-tr-tdcnet" data-added="2026-11-25"><b>TDCNet: Transparent Objects Depth Completion with CNN-Transformer Dual-Branch Parallel Network</b><span class="src-meta">Xianghui Fan 외, arXiv 2412.14961, 2024년 12월</span>깊이 전용 합성곱 신경망 가지와 트랜스포머 가지를 나란히 두는 깊이 보완 모델이다. 논문의 표와 데이터셋 표기에 일관되지 않은 곳이 있다. <a href="https://github.com/XianghuiFan/TDCNet" target="_blank" rel="noopener">github.com/XianghuiFan/TDCNet</a></li>
+    <li id="src-tr-cleardepth" data-added="2026-11-25"><b>ClearDepth: Enhanced Stereo Perception of Transparent Objects for Robotic Manipulation</b><span class="src-meta">Kaixin Bai 외, arXiv 2409.08926</span>구조 단서를 읽는 비전 트랜스포머를 더한 스테레오 정합 모델과 합성 스테레오 데이터셋을 제시한다. 속도와 일부 파지 수치는 요약으로만 확인하였다. <a href="https://arxiv.org/abs/2409.08926" target="_blank" rel="noopener">arXiv 2409.08926</a></li>
+    <li id="src-tr-d3roma" data-added="2026-11-25"><b>D3RoMa: Disparity Diffusion-based Depth Sensing for Material-Agnostic Robotic Manipulation</b><span class="src-meta">Songlin Wei 외, CoRL 2024, arXiv 2409.14365, CC BY-SA 4.0</span>스테레오 깊이 추정을 시차 공간의 확산 모델로 풀고 스테레오 기하로 안내한다. 학습 데이터를 Isaac Sim으로 만들었다. <a href="https://arxiv.org/abs/2409.14365" target="_blank" rel="noopener">arXiv 2409.14365</a></li>
+    <li id="src-tr-dexnerf" data-added="2026-11-25"><b>Dex-NeRF: Using a Neural Radiance Field to Grasp Transparent Objects</b><span class="src-meta">Jeffrey Ichnowski 외, CoRL 2021, arXiv 2110.14217</span>장면마다 학습한 NeRF에서 밀도 기준값으로 투명 물체의 깊이를 뽑아 파지에 쓴다. <a href="https://arxiv.org/abs/2110.14217" target="_blank" rel="noopener">arXiv 2110.14217</a></li>
+    <li id="src-tr-graspnerf" data-added="2026-11-25"><b>GraspNeRF: Multiview-based 6-DoF Grasp Detection for Transparent and Specular Objects Using Generalizable NeRF</b><span class="src-meta">Qiyu Dai 외, ICRA 2023, arXiv 2210.06575</span>장면마다 학습하지 않는 일반화 NeRF로 6장의 영상에서 파지 자세를 낸다. <a href="https://arxiv.org/abs/2210.06575" target="_blank" rel="noopener">arXiv 2210.06575</a></li>
+    <li id="src-tr-depth4tom" data-added="2026-11-25"><b>Learning Depth Estimation for Transparent and Mirror Surfaces</b><span class="src-meta">Alex Costanzino 외, ICCV 2023, arXiv 2307.15052</span>투명 영역을 칠한 영상으로 가짜 정답을 만들어 단안 깊이 모델과 스테레오 모델을 미세조정한다. Depth4ToM이라고 불린다. 로봇 실험은 없다. <a href="https://arxiv.org/abs/2307.15052" target="_blank" rel="noopener">arXiv 2307.15052</a></li>
+    <li id="src-tr-dav2" data-added="2026-11-25"><b>Depth Anything V2</b><span class="src-meta">Lihe Yang 외, NeurIPS 2024, arXiv 2406.09414</span>합성 영상으로 학습한 교사가 대규모 실제 영상에 가짜 정답을 붙여 학생을 학습시키는 단안 깊이 파운데이션 모델이다. 로봇 실험은 없다. <a href="https://arxiv.org/abs/2406.09414" target="_blank" rel="noopener">arXiv 2406.09414</a></li>
+    <li id="src-tr-keypose" data-added="2026-11-25"><b>KeyPose: Multi-View 3D Labeling and Keypoint Estimation for Transparent Objects</b><span class="src-meta">Xingyu Liu 외, CVPR 2020, arXiv 1912.02805</span>스테레오 영상에서 깊이 없이 투명 물체의 키포인트의 3차원 위치를 구한다. <a href="https://arxiv.org/abs/1912.02805" target="_blank" rel="noopener">arXiv 1912.02805</a></li>
+    <li id="src-tr-spatialvla" data-added="2026-11-25"><b>SpatialVLA: Exploring Spatial Representations for Visual-Language-Action Model</b><span class="src-meta">RSS 2025, arXiv 2501.15830</span>단안 깊이 모델로 구한 3차원 위치의 부호를 영상 토큰에 더하는 VLA이다. 논문 뒤쪽은 요약으로만 확인하였다. <a href="https://arxiv.org/abs/2501.15830" target="_blank" rel="noopener">arXiv 2501.15830</a></li>
+    <li id="src-tr-pointvla" data-added="2026-11-25"><b>PointVLA: Injecting the 3D World into Vision-Language-Action Models</b><span class="src-meta">arXiv 2503.07511, CC BY 4.0</span>깊이 카메라의 점군을 별도의 인코더로 읽어 행동 전문가의 일부 블록에 주입하는 VLA이다. <a href="https://arxiv.org/abs/2503.07511" target="_blank" rel="noopener">arXiv 2503.07511</a></li>
+    <li id="src-tr-dreamvla" data-added="2026-11-25"><b>DreamVLA: A Vision-Language-Action Model Dreamed with Comprehensive World Knowledge</b><span class="src-meta">arXiv 2507.04447</span>미래의 깊이를 보조 예측 목표로 삼는 VLA이다. <a href="https://arxiv.org/abs/2507.04447" target="_blank" rel="noopener">arXiv 2507.04447</a></li>
+    <li id="src-tr-dp3" data-added="2026-11-25"><b>3D Diffusion Policy: Generalizable Visuomotor Policy Learning via Simple 3D Representations</b><span class="src-meta">RSS 2024, arXiv 2403.03954, CC BY 4.0</span>깊이에서 얻은 점군을 확산 정책의 조건으로 쓰는 정책이다. <a href="https://arxiv.org/abs/2403.03954" target="_blank" rel="noopener">arXiv 2403.03954</a></li>
+    <li id="src-tr-peract" data-added="2026-11-25"><b>Perceiver-Actor: A Multi-Task Transformer for Robotic Manipulation</b><span class="src-meta">CoRL 2022, arXiv 2209.05451, CC BY 4.0</span>여러 카메라의 색과 깊이를 복셀로 합쳐 트랜스포머에 넣고 복셀 위의 행동을 내는 정책이다. <a href="https://arxiv.org/abs/2209.05451" target="_blank" rel="noopener">arXiv 2209.05451</a></li>
+    <li id="src-tr-others" data-added="2026-11-25"><b>3D-VLA, VoxPoser, ReKep</b><span class="src-meta">arXiv 2403.09631, 2307.05973, 2409.01652</span>깊이를 생성 목표로 쓰거나 계획기의 중간 표현을 만드는 데 쓰는 사례로 참고하였다. 세 논문 모두 뒤쪽은 요약으로만 확인하였다. <a href="https://arxiv.org/abs/2403.09631" target="_blank" rel="noopener">arXiv 2403.09631</a></li>
   </ol>
 </section>
 
@@ -2779,6 +3844,6 @@
 </div>
 
 <div id="tip" hidden></div>
-<script src="book.js?v=20261125f"></script>
+<script src="book.js?v=20261125g"></script>
 </body>
 </html>
