@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Physical AI 지식 책</title>
-<link rel="stylesheet" href="book.css?v=20261125g">
+<link rel="stylesheet" href="book.css?v=20261126b">
 </head>
 <body>
 
@@ -24,7 +24,7 @@
     <div id="results" hidden></div>
   </div>
   <div class="side-foot">
-    <span>최종 갱신 2026-11-25</span>
+    <span>최종 갱신 2026-11-26</span>
     <button id="theme-btn" type="button">밝게/어둡게</button>
   </div>
 </aside>
@@ -3553,6 +3553,1021 @@
 <!-- ▲▲▲ 투명 물체 장 끝 ▲▲▲ -->
 </div><!-- /part-trans -->
 
+<div class="part" id="part-orch" data-title="자율실험실 오케스트레이터" data-desc="자율실험실을 조율하는 오케스트레이터와 에이전트의 개념, 좋은 오케스트레이터의 기준과 평가, 사례별 구조와 새로운 점의 비교">
+
+<!-- ═══════════ 오케스트레이터 1장 ═══════════ -->
+<section class="chapter" id="ch-or-concept" data-added="2026-11-26">
+  <h2>개념: 자율실험실, 오케스트레이터, 에이전트</h2>
+  <p class="lead">자율실험실이 무엇이고, 오케스트레이터와 에이전트가 각각 어떤 목적으로 무슨 일을 하며, 둘이 어떤 관계에 있는지를 먼저 잡는 장이다.</p>
+
+  <div class="note"><p>이 주제는 리뷰 논문과 개별 오케스트레이터의 논문, 공개 저장소를 바탕으로 정리하였다. 출판사 사이트가 자동 접근을 막아서 읽지 못한 자료가 있다. 받은 자료 가운데 「Toward self-driving laboratory 2.0」 리뷰, HELAO-async 논문, 큐레이션 목록은 본문을 읽지 못하였고, ChemOS 2.0은 논문 대신 공개 저장소의 설명만 읽었다. 그런 부분은 본문에 표시하였고 자료별 사정은 <a href="#sources">자료 목록</a>에 적어 두었다.</p></div>
+
+  <section class="topic" id="oc-sdl" data-added="2026-11-26">
+    <h3>자율실험실의 정의</h3>
+    <p><a class="t" href="#g-sdl">자율실험실(SDL, Self-Driving Laboratory)</a>은 실험을 설계하고, 실행하고, 결과를 분석하고, 그 결과로 다음 실험을 정하는 순환을 사람의 손을 거치지 않고 되풀이하는 실험실이다. 리뷰 논문<a class="cite" href="#src-or-tom"></a>은 자율실험실을 세 가지 구성 요소로 설명한다.</p>
+    <figure>
+      <b class="fig-t">자율실험실의 닫힌 순환과 세 구성 요소</b>
+      <div class="dg">
+        <span class="bx plan wide">실험 계획기<small>지금까지의 데이터를 보고 다음 실험 조건을 정한다</small></span><i class="ar"></i>
+        <span class="bx core wide">소프트웨어<small>장비 제어, 데이터 관리, 계획기와의 연결. 이것을 묶어 돌리는 것이 오케스트레이터이다</small></span><i class="ar"></i>
+        <span class="bx act wide">자동화 장비<small>합성, 측정, 시료 이송</small></span><i class="ar"></i>
+        <span class="bx db wide">실험 데이터<small>다시 계획기로 돌아간다</small></span>
+      </div>
+      <figcaption>마지막의 데이터가 맨 위의 계획기로 되돌아가면서 순환이 닫힌다. 이것을 폐루프(closed loop)라고 부른다.</figcaption>
+    </figure>
+    <div class="key"><p>자동화 실험실과 자율실험실의 차이는 다음 실험을 누가 정하는가에 있다. 장비가 사람이 정한 실험을 대신 해 주면 자동화이고, 무엇을 할지까지 시스템이 정하면 자율이다.</p></div>
+    <figure class="shot">
+      <b class="fig-t">실제 사진: 자율실험실에 쓰이는 자동화 장비</b>
+      <div class="shots one"><a href="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5933/11363023/403d294bbb6e/cr4c00055_0002.jpg" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5933/11363023/403d294bbb6e/cr4c00055_0002.jpg" alt="자동화 장비의 예"></a></div>
+      <figcaption>소형 액체 핸들러, 실험실 안을 돌아다니는 이동 로봇 팔, 저가의 공개 하드웨어 분주기, 유리 기구를 알아보는 컴퓨터 비전, 고체 계량 시뮬레이션의 예이다. 출처: Tom 외의 리뷰 논문<a class="cite" href="#src-or-tom"></a>, CC BY-NC-ND 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+  </section>
+
+  <section class="topic" id="oc-orch" data-added="2026-11-26">
+    <h3>오케스트레이터의 목적과 개념</h3>
+    <p><a class="t" href="#g-orchestrator">오케스트레이터(orchestrator)</a>는 실험실의 여러 장비와 소프트웨어가 하나의 실험 흐름으로 함께 움직이도록 조율하는 소프트웨어이다. 실험실 운영체제(lab operating system)라고도 부른다. 리뷰 논문은 오케스트레이션 계층이 세 가지 소프트웨어 기능을 묶어 실행한다고 설명한다.</p>
+    <figure>
+      <b class="fig-t">오케스트레이터가 묶는 세 가지 기능</b>
+      <div class="dg">
+        <span class="bx core wide" style="min-width:330px">오케스트레이션 계층</span><i class="ar"></i>
+        <div class="dg-row">
+          <span class="bx act">장비의 제어와 통신<small>서로 다른 회사의 장비를<br>하나의 방식으로 부린다</small></span>
+          <span class="bx db">데이터의 추출과 관리와 분석<small>측정값을 모으고 저장하고<br>해석한다</small></span>
+          <span class="bx plan">실험 계획기<small>다음에 무엇을 할지를<br>정한다</small></span>
+        </div>
+      </div>
+    </figure>
+    <h4>왜 필요한가</h4>
+    <div class="cols">
+      <div><b>장비가 제각각이다</b><p>장비 회사들은 표준화된 프로그램 접점을 제공하지 않는 경우가 많다. 연구자가 장비마다 우회 방법을 만들어야 한다.</p></div>
+      <div><b>시료가 옮겨 다닌다</b><p>합성 장비에서 측정 장비로 시료를 옮기는 일 자체가 소프트웨어를 크게 복잡하게 만든다.</p></div>
+      <div><b>여러 일이 동시에 돈다</b><p>가열로 하나에 시료 여러 개를 함께 넣고, 그동안 다른 시료를 측정한다. 누가 어느 장비를 언제 쓰는지를 누군가 정해야 한다.</p></div>
+      <div><b>기록이 남아야 한다</b><p>어떤 시료가 어떤 조건을 거쳐 어떤 결과를 냈는지가 빠짐없이 남아야 계획기가 배우고 다른 사람이 재현할 수 있다.</p></div>
+    </div>
+    <div class="analogy"><p>오케스트레이터는 공항의 관제탑과 같다. 비행기 한 대 한 대는 스스로 날 수 있지만, 활주로는 한정되어 있고 여러 대가 동시에 뜨고 내린다. 관제탑은 비행기를 조종하지 않는다. 누가 언제 어느 활주로를 쓸지를 정하고, 모든 움직임을 기록하고, 문제가 생기면 순서를 바꾼다.</p></div>
+    <div class="key"><p>오케스트레이터의 목적은 세 가지로 줄일 수 있다. 장비를 하나의 실험으로 엮는 것, 자원을 충돌 없이 나누어 쓰게 하는 것, 그리고 모든 것을 기록으로 남기는 것이다.</p></div>
+    <figure class="shot">
+      <b class="fig-t">원본 그림: 자율실험실의 소프트웨어 구성</b>
+      <div class="shots one"><a href="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5933/11363023/2de6e9d9f2de/cr4c00055_0003.jpg" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5933/11363023/2de6e9d9f2de/cr4c00055_0003.jpg" alt="자율실험실의 소프트웨어 구성"></a></div>
+      <figcaption>리뷰 논문이 그린 소프트웨어 구성이다. 오케스트레이션이 가운데에서 장비 쪽, 데이터 쪽, 계획 쪽과 사람 쪽 인터페이스를 잇는다. 출처: Tom 외의 리뷰 논문<a class="cite" href="#src-or-tom"></a>, CC BY-NC-ND 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+  </section>
+
+  <section class="topic" id="oc-agent" data-added="2026-11-26">
+    <h3>에이전트의 목적과 개념</h3>
+    <p><a class="t" href="#g-agent">에이전트(agent)</a>는 목표를 받아 스스로 계획을 세우고, 도구를 불러 실행하고, 결과를 확인하는 일을 되풀이하는 소프트웨어이다. 요즘 말하는 에이전트는 대부분 <a class="t" href="#g-llm">LLM(Large Language Model, 대형 언어 모델)</a>을 판단의 중심에 둔 LLM 에이전트를 가리킨다.</p>
+    <figure>
+      <b class="fig-t">LLM 에이전트가 일하는 순환</b>
+      <div class="flow">
+        <span class="bx">사람의 목표<small>“이 반응의 수율을 높여라”</small></span><i class="arh"></i>
+        <span class="bx llm">생각<small>무엇을 먼저 할지 정한다</small></span><i class="arh"></i>
+        <span class="bx llm">행동<small>도구를 고르고 입력을 만든다</small></span><i class="arh"></i>
+        <span class="bx aux">도구 실행<small>검색, 계산, 장비 명령</small></span><i class="arh"></i>
+        <span class="bx llm">관찰<small>결과를 읽고 다시 생각으로</small></span>
+      </div>
+      <figcaption>생각, 행동, 관찰을 되풀이하는 이 방식을 ReAct(Reasoning and Acting)라고 부른다. VLA 주제의 <a href="#comp-reason">추론</a> 항목에서 본 것과 같은 방식이다.</figcaption>
+    </figure>
+    <h4>자율실험실에서 에이전트가 맡는 일</h4>
+    <div class="tbl"><table>
+      <tr><th>역할</th><th>내용</th></tr>
+      <tr><td class="m">사람과의 창구</td><td>자연어로 실험 목표를 받고, 진행 상황과 결과를 사람이 읽을 수 있는 말로 돌려준다.</td></tr>
+      <tr><td class="m">지식의 수집</td><td>논문과 장비 설명서와 화합물 데이터베이스를 검색해 필요한 정보를 모은다.</td></tr>
+      <tr><td class="m">실험 절차의 작성</td><td>목표를 장비가 실행할 수 있는 코드나 절차 기술 언어로 바꾼다.</td></tr>
+      <tr><td class="m">다음 실험의 선택</td><td>지금까지의 결과를 보고 다음 조건을 정한다. 통계적 최적화 알고리즘이 하던 일을 일부 맡는다.</td></tr>
+      <tr><td class="m">오류의 진단</td><td>장비가 돌려준 오류 메시지를 읽고 코드를 고쳐 다시 시도한다.</td></tr>
+    </table></div>
+    <div class="key"><p>에이전트의 목적은 사람이 하던 판단과 번역을 대신하는 것이다. 무엇을 할지를 정하고, 그것을 기계가 알아듣는 형태로 옮긴다.</p></div>
+  </section>
+
+  <section class="topic" id="oc-relation" data-added="2026-11-26">
+    <h3>오케스트레이터와 에이전트의 관계</h3>
+    <p>두 말은 자주 섞여 쓰이지만 답하는 물음이 다르다. 에이전트는 무엇을 할지를 정하고, 오케스트레이터는 그것이 실험실에서 안전하고 어긋남 없이 실행되게 한다.</p>
+    <div class="tbl"><table>
+      <tr><th>항목</th><th>오케스트레이터</th><th>에이전트</th></tr>
+      <tr><td class="m">답하는 물음</td><td>누가 언제 어느 장비로 실행하는가</td><td>무엇을 왜 할 것인가</td></tr>
+      <tr><td class="m">동작의 성격</td><td>정해진 규칙에 따라 같은 입력에 같은 결과를 낸다.</td><td>확률적으로 판단한다. 같은 입력에도 답이 달라질 수 있다.</td></tr>
+      <tr><td class="m">아는 것</td><td>장비의 상태, 시료의 위치, 작업의 대기열</td><td>화학 지식, 문헌, 사용자의 의도</td></tr>
+      <tr><td class="m">잘못되면</td><td>장비가 충돌하거나 시료가 뒤섞인다.</td><td>그럴듯하지만 틀린 실험을 제안한다.</td></tr>
+    </table></div>
+    <figure>
+      <b class="fig-t">둘을 배치하는 세 가지 방식</b>
+      <div class="dg-grid">
+        <div class="dg-panel"><b>가. 규칙 기반 오케스트레이터와 최적화 알고리즘</b><div class="dg">
+          <span class="bx">사람<small>실험 범위를 정해 제출</small></span><i class="ar"></i>
+          <span class="bx plan">최적화 알고리즘<small>베이지안 최적화 등</small></span><i class="ar"></i>
+          <span class="bx core">오케스트레이터</span><i class="ar"></i>
+          <span class="bx act">장비</span></div>
+          <p>LLM이 없다. ChemOS, HELAO, AlabOS가 이 형태이다.</p></div>
+        <div class="dg-panel"><b>나. 오케스트레이터 위에 에이전트를 얹음</b><div class="dg">
+          <span class="bx">사람<small>자연어로 목표를 말함</small></span><i class="ar"></i>
+          <span class="bx llm">LLM 에이전트<small>계획과 절차 작성</small></span><span class="dg-note">표준 접점을 통해 요청한다</span><i class="ar"></i>
+          <span class="bx core">오케스트레이터<small>검사하고 실행한다</small></span><i class="ar"></i>
+          <span class="bx act">장비</span></div>
+          <p>에이전트가 제안하고 오케스트레이터가 걸러서 실행한다. UniLabOS, IvoryOS, ORGANA가 이 형태이다.</p></div>
+        <div class="dg-panel"><b>다. 에이전트가 오케스트레이터를 겸함</b><div class="dg">
+          <span class="bx">사람<small>한 줄의 지시</small></span><i class="ar"></i>
+          <span class="bx llm">LLM 에이전트<small>계획, 검색, 코드 작성,<br>실행 명령까지</small></span><i class="ar"></i>
+          <span class="bx aux">도구<small>검색, 코드 실행, 장비 접점</small></span><i class="ar"></i>
+          <span class="bx act">장비</span></div>
+          <p>별도의 조율 계층이 얇거나 없다. Coscientist와 ChemCrow가 이 형태이다.</p></div>
+      </div>
+      <figcaption>세 가지 구분은 읽은 사례들을 바탕으로 이 책에서 정리한 것이다.</figcaption>
+    </figure>
+    <div class="warn"><p>세 번째 방식은 시연하기 쉽지만 장비가 늘고 시료가 동시에 여럿 돌면 한계가 드러난다. 자원 예약, 시료 추적, 오류 복구는 확률적으로 판단하는 모델에 맡기기 어려운 일이다. 그래서 최근의 흐름은 두 번째 방식, 곧 에이전트의 출력을 운영체제가 잠금과 형식 검사와 모의 실행으로 걸러 내는 구조로 모이고 있다.</p></div>
+    <p>이 구분은 다른 주제와 겹친다. 산업 자동화 주제의 <a href="#ai-physical">피지컬 AI와 기존 제어의 분담</a>, VLA 주제의 <a href="#vla-hier">계층형 로봇 정책</a>이 같은 원리이다. 폭넓게 판단하는 모델이 위에, 확실하게 실행하는 계층이 아래에 놓인다.</p>
+  </section>
+
+  <section class="topic" id="oc-level" data-added="2026-11-26">
+    <h3>자율의 수준</h3>
+    <p>자율실험실이라고 모두 같은 정도로 자율적인 것은 아니다. 두 가지 분류가 널리 쓰인다.</p>
+    <h4>소프트웨어와 하드웨어의 두 축</h4>
+    <p>리뷰 논문<a class="cite" href="#src-or-tom"></a>은 자율주행 자동차의 단계를 본떠, 실험을 고르는 소프트웨어의 자율과 실험을 실행하는 하드웨어의 자율을 따로 매긴다.</p>
+    <div class="tbl"><table>
+      <tr><th>범주</th><th>소프트웨어의 자율, 실험 선택</th><th>하드웨어의 자율, 실험 실행</th></tr>
+      <tr><td class="m">1</td><td>데이터에 기반한 실험 설계를 한 번 한다.</td><td>한 가지 작업만 하는 장치</td></tr>
+      <tr><td class="m">2</td><td>닫힌 순환을 여러 번 되풀이한다.</td><td>여러 작업을 잇는 작업 흐름</td></tr>
+      <tr><td class="m">3</td><td>알고리즘이 탐색 공간까지 만들어 내는 생성적 접근</td><td>사람 없이 다양한 실험을 하는 완전 자동화 실험실</td></tr>
+    </table></div>
+    <p>두 축이 모두 범주 3이면 5단계이다. 한 축이 범주 3이거나 두 축이 모두 범주 2이면 4단계이다. 지금의 사례 대부분은 2단계와 3단계에 있고, 진정한 5단계는 아직 달성되지 않았다고 리뷰는 적는다.</p>
+    <h4>사람이 끼어드는 정도</h4>
+    <figure>
+      <b class="fig-t">자율 정도의 네 단계</b>
+      <div class="flow">
+        <span class="bx aux">조각별(piecewise)<small>사람이 데이터와 조건을<br>알고리즘과 장비 사이에서 나른다</small></span><i class="arh"></i>
+        <span class="bx vis">반폐루프(semi-closed-loop)<small>일부 단계에만<br>사람이 끼어든다</small></span><i class="arh"></i>
+        <span class="bx act">폐루프(closed-loop)<small>실행, 초기화, 분석, 선택에<br>사람이 끼어들지 않는다</small></span><i class="arh"></i>
+        <span class="bx plan">자기 동기(self-motivated)<small>연구 목표까지 스스로 정한다.<br>아직 도달한 사례가 없다</small></span>
+      </div>
+      <figcaption>성능 지표 논문<a class="cite" href="#src-or-metrics"></a>의 분류이다.</figcaption>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">원본 그림: 두 가지 자율 수준 분류</b>
+      <div class="shots"><a href="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5933/11363023/6809048d8840/cr4c00055_0001.jpg" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5933/11363023/6809048d8840/cr4c00055_0001.jpg" alt="자율실험실의 자율 수준"></a><a href="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/326d/10866889/0895e0cf9c44/41467_2024_45569_Fig2_HTML.jpg" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/326d/10866889/0895e0cf9c44/41467_2024_45569_Fig2_HTML.jpg" alt="자율 정도의 네 단계"></a></div>
+      <figcaption>첫째 그림은 소프트웨어와 하드웨어의 범주로 자율 수준을 매기는 도식이다. 둘째 그림은 조각별, 반폐루프, 폐루프, 자기 동기 시스템의 작업 흐름을 견준 것이다. 출처: Tom 외의 리뷰 논문<a class="cite" href="#src-or-tom"></a>, CC BY-NC-ND 4.0. 출처: Volk와 Abolhasani의 논문<a class="cite" href="#src-or-metrics"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+  </section>
+</section>
+
+<!-- ═══════════ 오케스트레이터 2장 ═══════════ -->
+<section class="chapter" id="ch-or-parts" data-added="2026-11-26">
+  <h2>오케스트레이터의 구성 요소</h2>
+  <p class="lead">어느 오케스트레이터에나 공통으로 들어 있는 부품과, 사례를 견줄 때 보아야 하는 설계의 갈림길을 정리한 장이다.</p>
+
+  <section class="topic" id="op-layers" data-added="2026-11-26">
+    <h3>공통 계층 구조</h3>
+    <p>사례마다 이름은 다르지만 층을 나누는 방식은 비슷하다. 아래 그림은 여러 사례에서 공통으로 보이는 부품을 한 장에 모은 것이다.</p>
+    <figure>
+      <b class="fig-t">오케스트레이터의 공통 계층</b>
+      <div class="legend"><span class="bx core">오케스트레이션 핵심</span><span class="bx llm">LLM을 부르는 부분</span><span class="bx db">데이터베이스와 지식 출처</span><span class="bx plan">LLM이 아닌 계획 알고리즘</span><span class="bx act">장비</span></div>
+      <div class="dg">
+        <div class="dg-row"><span class="bx">사람의 창구<small>웹 대시보드, 작업 제출, 알림</small></span><span class="bx llm">에이전트의 창구<small>자연어, 도구 호출 규약</small></span></div><i class="ar"></i>
+        <div class="dg-row"><span class="bx core">실험 관리자<small>제출된 실험을 작업의 묶음으로 푼다</small></span><span class="bx plan">계획기 연결부<small>최적화 알고리즘에 결과를 주고<br>다음 조건을 받는다</small></span></div><i class="ar"></i>
+        <div class="dg-row"><span class="bx core">작업 관리자와 스케줄러<small>준비된 작업을 순서대로 띄운다</small></span><span class="bx core">자원 관리자<small>장비와 시료 자리를 예약하고 풀어 준다</small></span></div><i class="ar"></i>
+        <span class="bx core wide" style="min-width:330px">장비 관리자와 드라이버<small>장비마다 다른 통신 방식을 하나의 호출 형태로 감싼다</small></span><i class="ar"></i>
+        <span class="bx act wide" style="min-width:330px">장비<small>로봇 팔, 가열로, 액체 핸들러, 분석 장비</small></span>
+        <div style="height:10px"></div>
+        <span class="bx db wide" style="min-width:330px">데이터 계층<small>시료, 장비, 작업, 실험의 상태와 기록. 모든 층이 여기에 읽고 쓴다</small></span>
+      </div>
+      <figcaption>이 그림은 AlabOS, HELAO, UniLabOS, IvoryOS의 구조에서 공통된 부분을 이 책에서 추려 그린 것이다.</figcaption>
+    </figure>
+    <div class="key"><p>사례를 견줄 때 물어야 할 것은 다섯 가지이다. 실험을 어떤 형태로 적는가, 자원 충돌을 어떻게 막는가, 장비와 어떻게 말하는가, 데이터를 어디에 두는가, 그리고 다음 실험을 누가 정하는가이다.</p></div>
+    <p>이 구조는 산업 자동화 주제의 <a href="#pyr-levels">자동화 피라미드</a>와 닮았다. 오케스트레이터는 실험실에서 3레벨의 제조 운영 관리가 하는 일, 곧 지시를 작업 단위로 나누고 추적하고 기록하는 일을 맡는다고 볼 수 있다. 이 대응은 이 책의 해석이다.</p>
+  </section>
+
+  <section class="topic" id="op-workflow" data-added="2026-11-26">
+    <h3>실험을 적는 방식</h3>
+    <p>오케스트레이터가 실행하려면 실험이 기계가 읽을 수 있는 형태로 적혀 있어야 한다. 이것을 워크플로 표현(workflow representation)이라고 한다.</p>
+    <div class="tbl"><table>
+      <tr><th>방식</th><th>내용</th><th>사례</th></tr>
+      <tr><td class="m">작업의 방향 그래프</td><td>작업을 점으로, 앞뒤 의존 관계를 화살표로 적는다. 앞의 작업이 끝나야 뒤의 작업이 시작된다.</td><td>AlabOS</td></tr>
+      <tr><td class="m">층을 이룬 순서</td><td>오케스트레이터 아래에 행동, 그 아래에 드라이버를 두는 층 구조. 실험은 사건의 순서를 담은 사전으로 적는다.</td><td>HELAO</td></tr>
+      <tr><td class="m">의미 단위 명령</td><td>“옮긴다”, “섞는다” 같은 의미 단위의 명령을 장비와 무관하게 적고, 실행할 때 장비의 동작으로 푼다.</td><td>UniLabOS</td></tr>
+      <tr><td class="m">끌어다 놓기와 코드 변환</td><td>화면에서 기능 카드를 끌어다 순서를 만들면 파이썬 코드로 바뀐다.</td><td>IvoryOS</td></tr>
+      <tr><td class="m">절차 기술 언어</td><td>화학 절차를 장비와 무관하게 적는 전용 언어. χDL(Chemical Description Language)이 대표적이다.</td><td>Chemputer, ORGANA</td></tr>
+      <tr><td class="m">설정 파일</td><td>실험 회차마다 설정 파일 하나로 쓸 알고리즘과 장비를 고른다.</td><td>ChemOS</td></tr>
+      <tr><td class="m">LLM이 쓴 코드</td><td>LLM이 장비의 프로그램 접점을 부르는 코드를 그때그때 작성한다.</td><td>Coscientist</td></tr>
+    </table></div>
+    <figure>
+      <b class="fig-t">방향 그래프로 적은 실험의 예</b>
+      <div class="dg">
+        <span class="bx">시료 16개의 실험 제출</span><i class="ar"></i>
+        <span class="bx core wide">분말 계량<small>16개를 한 묶음으로</small></span><i class="ar"></i>
+        <div class="dg-row"><span class="bx act">가열 묶음 1<small>시료 4개</small></span><span class="bx act">가열 묶음 2<small>시료 4개</small></span><span class="bx act">가열 묶음 3<small>시료 8개</small></span></div>
+        <span class="dg-note">가열 조건이 다른 시료는 같은 가열로에 넣을 수 없다</span><i class="ar"></i>
+        <span class="bx core wide">분말 회수<small>한 번에 하나씩</small></span><i class="ar"></i>
+        <span class="bx core wide">X선 회절 측정<small>한 번에 하나씩</small></span>
+      </div>
+      <figcaption>AlabOS 논문이 드는 A-Lab의 예이다. 점 하나가 여러 시료를 한 묶음으로 담을 수 있다는 점이 특징이다.</figcaption>
+    </figure>
+    <p>여기에서 <a class="t" href="#g-dag">DAG(Directed Acyclic Graph, 방향 비순환 그래프)</a>는 화살표를 따라가도 제자리로 돌아오지 않는 그래프를 뜻한다. 작업의 앞뒤 관계를 적는 데 알맞다.</p>
+  </section>
+
+  <section class="topic" id="op-sched" data-added="2026-11-26">
+    <h3>스케줄링과 자원 관리</h3>
+    <p>스케줄링(scheduling)은 준비된 작업 가운데 무엇을 먼저 어느 장비에서 할지를 정하는 일이다. 자원 관리는 장비와 시료 자리 같은 한정된 자원을 두 작업이 동시에 쓰지 않게 하는 일이다.</p>
+    <div class="tbl"><table>
+      <tr><th>기법</th><th>내용</th></tr>
+      <tr><td class="m">자원 예약</td><td>작업이 장비를 쓰기 전에 요청하고, 다 쓰면 풀어 준다. AlabOS는 작업이 끝나면 자동으로 풀리는 구문을 쓴다.</td></tr>
+      <tr><td class="m">우선순위 대기열</td><td>요청을 우선순위 순서로, 같으면 제출한 순서로 처리한다.</td></tr>
+      <tr><td class="m">묶음 처리</td><td>가열로처럼 한 번에 여러 시료를 받는 장비에는 조건이 맞는 시료를 모아 넣는다.</td></tr>
+      <tr><td class="m">점유 확인과 잠금</td><td>명령을 보내기 전에 장비가 비어 있는지 확인하고, 쓰는 동안 잠근다.</td></tr>
+      <tr><td class="m">비동기 실행</td><td>한 장비가 오래 걸리는 일을 하는 동안 기다리지 않고 다른 일을 진행한다.</td></tr>
+      <tr><td class="m">사전 모의 실행</td><td>명령을 보내기 전에 가상으로 돌려 충돌과 도달 불가를 걸러 낸다.</td></tr>
+    </table></div>
+    <div class="warn"><p>두 작업이 서로 상대가 쥔 자원을 기다리며 멈추는 것을 교착(deadlock)이라고 한다. 시료 수가 많은 실험실에서 가장 흔한 사고이며, AlabOS가 자원 예약과 그래프 기반 작업 흐름을 내세운 까닭이다.</p></div>
+  </section>
+
+  <section class="topic" id="op-comm" data-added="2026-11-26">
+    <h3>장비 추상화와 통신</h3>
+    <p>장비 추상화(hardware abstraction)는 회사와 모델이 다른 장비를 같은 형태의 호출로 부릴 수 있게 감싸는 일이다. 가열로가 어느 회사 것이든 “이 온도로 가열하라”는 같은 명령으로 부린다.</p>
+    <div class="tbl"><table>
+      <tr><th>통신 방식</th><th>성격</th><th>쓰는 사례</th></tr>
+      <tr><td class="m">SiLA 2<small>Standardization in Lab Automation</small></td><td>실험실 장비를 위한 통신 표준. 장비마다 서버를 두고 기능을 표준 형태로 드러낸다.</td><td>ChemOS 2.0</td></tr>
+      <tr><td class="m">ROS 2와 DDS</td><td>로봇 분야의 통신 기반. 중앙 중개자 없이 노드끼리 직접 주고받는다. <a href="#ib-ros">Isaac Sim 주제</a>에서 본 것과 같다.</td><td>UniLabOS</td></tr>
+      <tr><td class="m">HTTP와 웹 프레임워크</td><td>장비의 기능을 웹 주소로 드러낸다. 구현이 쉽다.</td><td>HELAO, IvoryOS</td></tr>
+      <tr><td class="m">공유 데이터베이스</td><td>관리자들이 같은 데이터베이스를 읽고 써서 상태를 맞춘다.</td><td>AlabOS</td></tr>
+      <tr><td class="m">산업용 규약</td><td>Modbus, 직렬 통신, OPC UA 같은 규약. 드라이버의 맨 아래에서 실제 장비와 말한다. <a href="#dig-uns">산업 자동화 주제</a>와 겹친다.</td><td>AlabOS, UniLabOS</td></tr>
+      <tr><td class="m">MCP<small>Model Context Protocol</small></td><td>LLM 에이전트가 도구를 부르는 공개 규약. <a href="#ai-mcp">산업 자동화 주제</a>에서 다루었다.</td><td>UniLabOS</td></tr>
+      <tr><td class="m">파일 동기화와 원격 복사</td><td>초기 시스템이 쓴 방식. 공유 폴더와 파일 전송으로 데이터를 주고받는다.</td><td>ChemOS</td></tr>
+    </table></div>
+    <p>리뷰 논문은 장비 회사의 닫힌 소프트웨어 때문에 양방향 통신이 드물고, 어떤 연구실은 마우스와 키보드 입력을 흉내 내어 회사의 화면을 조작하기까지 한다고 요약에서 전한다.</p>
+  </section>
+
+  <section class="topic" id="op-data" data-added="2026-11-26">
+    <h3>데이터 계층</h3>
+    <p>오케스트레이터가 다루는 데이터는 안의 것과 밖의 것으로 나뉜다. 사례를 견줄 때 이 둘을 구분해서 보아야 한다.</p>
+    <div class="cols">
+      <div><b>안의 저장소</b><p>실험실 자신의 상태와 기록이다. 시료의 위치, 장비의 점유 상태, 작업의 진행, 측정 결과, 기록 일지가 들어간다. 오케스트레이터가 직접 운영한다.</p></div>
+      <div><b>밖의 지식 출처</b><p>이미 세상에 있는 지식이다. 계산 재료 데이터베이스, 결정 구조 데이터베이스, 화합물 데이터베이스, 문헌, 장비 설명서가 여기에 든다. 주로 계획기와 에이전트가 참조한다.</p></div>
+    </div>
+    <div class="tbl"><table>
+      <tr><th>종류</th><th>예</th><th>성격</th></tr>
+      <tr><td class="m">문서형 데이터베이스</td><td>MongoDB</td><td>형태가 자유로운 기록을 담기 좋다. AlabOS가 쓴다.</td></tr>
+      <tr><td class="m">관계형 데이터베이스</td><td>PostgreSQL, SQLite</td><td>표 형태의 기록. ChemOS 2.0은 PostgreSQL을, IvoryOS는 기본으로 SQLite를 쓴다.</td></tr>
+      <tr><td class="m">파일 저장</td><td>HDF5 파일</td><td>측정 데이터를 파일로 쌓는다. HELAO가 쓴다.</td></tr>
+      <tr><td class="m">벡터 검색 색인</td><td>FAISS</td><td>문서를 숫자 벡터로 바꾸어 뜻이 가까운 것을 찾는다. LLM 에이전트가 설명서와 문헌을 찾을 때 쓴다.</td></tr>
+      <tr><td class="m">공개 과학 데이터베이스</td><td>Materials Project, ICSD, PubChem</td><td>계산으로 얻은 재료 물성, 결정 구조, 화합물 정보</td></tr>
+    </table></div>
+    <p>데이터가 찾을 수 있고, 접근할 수 있고, 서로 호환되고, 다시 쓸 수 있어야 한다는 원칙을 <a class="t" href="#g-fair">FAIR 원칙</a>이라고 부른다. 어떤 시료가 어떤 과정을 거쳤는지의 이력을 출처 기록(provenance)이라고 한다.</p>
+  </section>
+
+  <section class="topic" id="op-planner" data-added="2026-11-26">
+    <h3>실험 계획기</h3>
+    <p>실험 계획기(experiment planner)는 지금까지의 결과를 보고 다음 실험 조건을 고른다. 오케스트레이터 자체가 아니라 오케스트레이터에 끼워 쓰는 부품이다.</p>
+    <div class="tbl"><table>
+      <tr><th>종류</th><th>원리</th><th>예</th></tr>
+      <tr><td class="m"><a class="t" href="#g-bo">베이지안 최적화</a><small>BO, Bayesian Optimization</small></td><td>지금까지의 결과로 반응 표면의 통계 모형을 만들고, 가장 유망하거나 가장 불확실한 지점을 다음 실험으로 고른다.</td><td>Phoenics, Gryffin, Atlas, Ax, BayBE, NIMO</td></tr>
+      <tr><td class="m">능동 학습</td><td>실패한 실험에서 무엇이 걸림돌이었는지를 배워 다음 후보의 순위를 바꾼다.</td><td>A-Lab의 ARROWS3</td></tr>
+      <tr><td class="m">고전적 최적화</td><td>진화 알고리즘, 심플렉스 방법 등</td><td>SNOBFIT, CMA-ES, Nelder-Mead</td></tr>
+      <tr><td class="m">LLM의 판단</td><td>이전 결과를 글로 주고 다음 조건을 제안하게 한다.</td><td>Coscientist</td></tr>
+    </table></div>
+    <div class="key"><p>좋은 오케스트레이터는 계획기를 가리지 않는다. 계획기를 바꾸어 끼워도 장비 쪽과 데이터 쪽을 고칠 필요가 없어야 한다.</p></div>
+  </section>
+
+  <section class="topic" id="op-fault" data-added="2026-11-26">
+    <h3>오류 처리, 사람의 개입, 안전</h3>
+    <div class="tbl"><table>
+      <tr><th>요소</th><th>내용</th><th>사례에서의 구현</th></tr>
+      <tr><td class="m">오류의 구분과 복구</td><td>다시 시도하면 되는 오류와 사람이 손대야 하는 오류를 나눈다.</td><td>AlabOS는 복구 가능한 예외와 불가능한 예외를 나누고, 불가능하면 작업자에게 시료 교체와 장비 초기화를 요청한다.</td></tr>
+      <tr><td class="m">부분 고립</td><td>한 장비가 멈추어도 나머지는 계속 돈다.</td><td>UniLabOS는 연결이 끊긴 노드의 대기열만 떼어 놓는다.</td></tr>
+      <tr><td class="m">사람에게 알림</td><td>필요할 때에만 사람을 부른다.</td><td>대시보드, 메신저, 전자우편 알림. ORGANA는 결과가 예상과 다를 때에만 사용자를 부른다.</td></tr>
+      <tr><td class="m">실행 전 승인</td><td>위험한 동작은 사람이 승인해야 실행된다.</td><td>ChemCrow는 로봇 합성을 시작하기 전에 사용자의 허락을 받는다.</td></tr>
+      <tr><td class="m">모의 실행 방식</td><td>실제 장비 없이 흐름을 시험한다.</td><td>AlabOS의 모의 장비, ChemOS 2.0의 모의 서버, UniLabOS의 디지털 트윈</td></tr>
+      <tr><td class="m">위험 물질 차단</td><td>통제 대상 화학 물질이 나오면 실행을 멈춘다.</td><td>ChemCrow의 통제 물질 점검 도구</td></tr>
+    </table></div>
+    <p>모의 실행과 디지털 트윈은 Isaac Sim 주제의 <a href="#ib-sil">SIL과 HIL</a>, <a href="#ii-twin">산업 디지털 트윈</a>과 같은 발상이다. 실제 장비에 명령을 보내기 전에 가상으로 먼저 돌려 본다.</p>
+  </section>
+</section>
+
+<!-- ═══════════ 오케스트레이터 3장 ═══════════ -->
+<section class="chapter" id="ch-or-criteria" data-added="2026-11-26">
+  <h2>좋은 오케스트레이터의 기준과 평가</h2>
+  <p class="lead">잘 만들어진 오케스트레이터를 가르는 기준이 무엇이고, 그 기준이 실제로 어떻게 평가되고 있는지를 정리한 장이다.</p>
+
+  <section class="topic" id="ok-criteria" data-added="2026-11-26">
+    <h3>잘 만들어진 오케스트레이터의 기준 열두 가지</h3>
+    <p>읽은 자료 어디에도 오케스트레이터의 공인된 기준표는 없었다. 아래의 열두 가지는 리뷰 논문이 든 어려움과 각 사례가 내세운 강점을 모아 이 책에서 정리한 것이다.</p>
+    <div class="tbl"><table>
+      <tr><th>기준</th><th>뜻</th><th>근거가 된 자료</th></tr>
+      <tr><td class="m">1. 장비의 직접 제어</td><td>모든 장비를 프로그램 접점으로 직접 부린다. 화면 조작을 흉내 내는 우회가 없다.</td><td>리뷰가 든 첫째 어려움</td></tr>
+      <tr><td class="m">2. 모듈 분리</td><td>장비 제어, 데이터 관리, 계획이 나뉘어 있어서 하나를 바꾸어도 나머지를 고치지 않는다.</td><td>리뷰의 세 부분 구성</td></tr>
+      <tr><td class="m">3. 표현력 있는 워크플로</td><td>갈래가 나뉘고 다시 모이는 실험, 묶음 처리, 병렬 측정을 적을 수 있다.</td><td>AlabOS가 앞선 시스템의 약점으로 든 것</td></tr>
+      <tr><td class="m">4. 자원 관리와 병렬 실행</td><td>여러 시료가 동시에 돌아도 충돌과 교착이 없다.</td><td>AlabOS, HELAO, ORGANA</td></tr>
+      <tr><td class="m">5. 시료 이송의 관리</td><td>시료의 위치와 소유가 장비의 실제 움직임과 어긋나지 않는다.</td><td>리뷰, UniLabOS의 이송 연산</td></tr>
+      <tr><td class="m">6. 오류 내성</td><td>한 곳이 멈추어도 전체가 멈추지 않고, 복구 절차가 정해져 있다.</td><td>AlabOS, UniLabOS</td></tr>
+      <tr><td class="m">7. 기록과 재현성</td><td>모든 조건과 결과와 장비 상태가 남아 있어서 기록만으로 실험을 다시 할 수 있다.</td><td>리뷰, HELAO의 통합 데이터 관리</td></tr>
+      <tr><td class="m">8. 계획기 중립성</td><td>최적화 알고리즘이나 에이전트를 바꾸어 끼울 수 있다.</td><td>ChemOS, IvoryOS</td></tr>
+      <tr><td class="m">9. 사람과 에이전트의 창구</td><td>진행 상황을 볼 수 있는 화면과, 사람과 에이전트가 요청을 넣는 표준 접점이 있다.</td><td>IvoryOS, UniLabOS</td></tr>
+      <tr><td class="m">10. 이식성</td><td>한 실험실에 맞추어 만든 것이 아니라 다른 실험실에 옮겨 쓸 수 있다.</td><td>리뷰가 지적한 일반성의 부족</td></tr>
+      <tr><td class="m">11. 붙이기 쉬움</td><td>새 장비나 기존 코드를 적은 수고로 붙일 수 있다.</td><td>IvoryOS, UniLabOS의 드라이버 등록</td></tr>
+      <tr><td class="m">12. 안전</td><td>에이전트의 제안을 걸러 내고, 위험한 동작에 승인을 요구하며, 사고를 감지해 알린다.</td><td>리뷰의 안전 절, ChemCrow, UniLabOS</td></tr>
+    </table></div>
+    <div class="key"><p>열두 가지는 세 묶음으로 볼 수 있다. 1부터 5까지는 실험실을 제대로 부리는가이고, 6부터 8까지는 오래 믿고 쓸 수 있는가이며, 9부터 12까지는 다른 사람과 다른 실험실이 쓸 수 있는가이다.</p></div>
+  </section>
+
+  <section class="topic" id="ok-metrics" data-added="2026-11-26">
+    <h3>정량 지표 일곱 가지</h3>
+    <p>기준이 무엇을 갖추었는가를 묻는다면, 지표는 얼마나 잘하는가를 숫자로 잰다. Volk와 Abolhasani의 논문<a class="cite" href="#src-or-metrics"></a>은 자율실험실의 성능을 일곱 가지 지표로 보고하자고 제안한다. 오케스트레이터만의 지표는 아니고 장비와 소프트웨어를 합친 시스템 전체의 지표이다.</p>
+    <div class="tbl"><table>
+      <tr><th>지표</th><th>뜻</th><th>보고하는 방법</th></tr>
+      <tr><td class="m">자율 정도</td><td>평소 운영에 사람이 얼마나 끼어드는가</td><td>조각별, 반폐루프, 폐루프, 자기 동기 가운데 하나</td></tr>
+      <tr><td class="m">운영 수명</td><td>실험을 이어서 할 수 있는 총 시간</td><td>실제로 보인 값과 이론값, 사람의 도움이 있는 경우와 없는 경우를 나누어 네 가지로</td></tr>
+      <tr><td class="m">처리량</td><td>시료 준비와 측정을 포함한 실험의 속도</td><td>실제로 보인 값과 이론값</td></tr>
+      <tr><td class="m">실험 정밀도</td><td>같은 조건을 되풀이했을 때의 재현성</td><td>반복 실험의 표준 편차. 같은 조건을 연달아 하지 말고 무작위 조건 사이에 끼워 넣는다.</td></tr>
+      <tr><td class="m">재료 사용량</td><td>실험 한 번에 쓰는 재료</td><td>전체 사용량, 위험 물질의 양, 고가 재료의 양. 세척에 쓰는 것까지 포함</td></tr>
+      <tr><td class="m">접근 가능한 매개변수 공간</td><td>다룰 수 있는 실험 조건의 범위</td><td>매개변수마다 최솟값과 최댓값, 제약 조건</td></tr>
+      <tr><td class="m">최적화 효율</td><td>좋은 조건을 얼마나 적은 실험으로 찾는가</td><td>무작위 탐색과 다른 알고리즘에 견준 비교 실험. 실험 횟수와 함께 보고</td></tr>
+    </table></div>
+    <figure>
+      <b class="fig-t">운영 수명과 처리량을 나누어 보고하는 예</b>
+      <div class="dg-grid">
+        <div class="dg-panel"><b>운영 수명</b><div class="dg"><span class="bx vis">사람의 도움 없이 실제로 보인 수명<small>이틀. 원료 하나가 이틀 안에 변질된다</small></span><div style="height:5px"></div><span class="bx lang">사람이 원료를 새로 준비해 주며 보인 수명<small>한 달까지</small></span></div><p>두 값을 따로 적어야 무엇이 병목인지가 드러난다.</p></div>
+        <div class="dg-panel"><b>처리량</b><div class="dg"><span class="bx vis">실제로 보인 처리량<small>시간당 약 100개. 반응 시간이 길었기 때문이다</small></span><div style="height:5px"></div><span class="bx lang">이론상 최대 처리량<small>시간당 측정 1,200회</small></span></div><p>장비의 한계와 실험의 한계를 구분한다.</p></div>
+      </div>
+      <figcaption>논문이 저자들의 장치로 든 예이다.</figcaption>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">원본 그림: 일곱 가지 성능 지표의 개요</b>
+      <div class="shots one"><a href="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/326d/10866889/d2c50ef224cd/41467_2024_45569_Fig1_HTML.jpg" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/326d/10866889/d2c50ef224cd/41467_2024_45569_Fig1_HTML.jpg" alt="자율실험실 성능 지표 개요"></a></div>
+      <figcaption>자율 정도, 운영 수명, 처리량, 실험 정밀도, 재료 사용량, 접근 가능한 매개변수 공간, 최적화 효율을 한 장에 모은 그림이다. 출처: Volk와 Abolhasani의 논문<a class="cite" href="#src-or-metrics"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <div class="warn"><p>이 논문이 조사한 연구 약 17편 가운데 65퍼센트는 알고리즘 비교를 하지 않았고, 71퍼센트는 정밀도 자료를 보고하지 않았으며, 접근 가능한 매개변수 공간을 수치로 보고한 연구는 하나도 없었다. 지표는 제안되었지만 아직 널리 지켜지지 않는다.</p></div>
+  </section>
+
+  <section class="topic" id="ok-practice" data-added="2026-11-26">
+    <h3>논문들은 실제로 무엇으로 평가했는가</h3>
+    <p>각 사례가 자신의 오케스트레이터를 무엇으로 입증했는지를 모으면 다음과 같다.</p>
+    <div class="tbl"><table>
+      <tr><th>사례</th><th>평가에 쓴 것</th><th>보고한 값</th></tr>
+      <tr><td class="m">ChemOS</td><td>색 섞기, 산도 맞추기 같은 시범 과제와 계획기의 모의 비교</td><td>회차당 실험 25회. 밀도 목표를 실험 9회에 달성</td></tr>
+      <tr><td class="m">HELAO</td><td>여러 장비를 묶은 능동 학습 실험</td><td>총 실험 시간 약 절반, 능동 학습 5배에서 10배 가속이라고 주장</td></tr>
+      <tr><td class="m">AlabOS</td><td>실제 실험실에서의 장기 운영 기록</td><td>약 1년 동안 시료 2,500개 이상. 하루 최대 149개. 개정판 초록은 1.5년 동안 약 3,500개</td></tr>
+      <tr><td class="m">IvoryOS</td><td>여러 실험 플랫폼에 붙여 본 사례</td><td>두 연구 조직의 플랫폼 6개. 처음 설치와 연결에 10분에서 30분</td></tr>
+      <tr><td class="m">UniLabOS</td><td>성격이 다른 네 가지 실험실 환경에서의 시연</td><td>정량적인 값이 거의 없다. 호스트 하나의 연결을 끊는 시험 한 번</td></tr>
+      <tr><td class="m">Coscientist</td><td>여섯 가지 과제, 합성 계획의 전문가 채점, 최적화 비교</td><td>화합물 7개의 합성 계획을 5점 척도로 채점. 최적화에서 베이지안 최적화보다 높은 점수</td></tr>
+      <tr><td class="m">ChemCrow</td><td>과제 14개의 전문가 평가와 실제 합성</td><td>방충제와 촉매 3종을 로봇으로 합성. 어려운 과제에서 전문가가 선호</td></tr>
+      <tr><td class="m">ORGANA</td><td>화학자 8명의 사용자 연구와 화학 실험</td><td>병렬 실행으로 21.1퍼센트 단축. 올바른 실행 40번 가운데 거짓 경보 3번</td></tr>
+      <tr><td class="m">A-Lab</td><td>17일의 연속 운영</td><td>목표 57개 가운데 36개 합성. 시도한 조리법 353개</td></tr>
+    </table></div>
+    <div class="key"><p>오케스트레이터는 대부분 숫자의 비교가 아니라 시연으로 평가된다. 여러 오케스트레이터를 같은 과제에서 견준 공통 평가는 읽은 자료에 없었다. 실험실마다 장비와 화학이 달라서 같은 조건을 만들기 어렵기 때문이다.</p></div>
+    <p>평가의 종류를 나누어 보면 네 가지가 쓰인다. 장기 운영의 기록, 붙여 본 플랫폼의 수와 붙이는 데 든 시간, 사용자 연구, 그리고 과학적 성과이다. 마지막 것은 오케스트레이터가 아니라 실험실 전체의 성과라는 점에 주의해야 한다.</p>
+  </section>
+
+  <section class="topic" id="ok-how" data-added="2026-11-26">
+    <h3>기준을 평가하는 방법</h3>
+    <p>앞의 기준 열두 가지를 실제로 평가하려면 점검표로 볼 것과 숫자로 잴 것을 나누어야 한다. 아래는 이 책이 제안하는 짝짓기이며 읽은 자료에 그대로 있는 것은 아니다.</p>
+    <div class="tbl"><table>
+      <tr><th>기준</th><th>점검표로 볼 것</th><th>숫자로 잴 것</th></tr>
+      <tr><td class="m">장비의 직접 제어</td><td>통신 표준을 쓰는가</td><td>직접 제어되는 장비의 비율, 우회 방법의 수</td></tr>
+      <tr><td class="m">모듈 분리와 계획기 중립성</td><td>계획기를 바꾸어 끼운 사례가 있는가</td><td>계획기나 장비 하나를 바꿀 때 고친 코드의 양</td></tr>
+      <tr><td class="m">워크플로와 병렬 실행</td><td>갈래와 묶음을 적을 수 있는가</td><td>장비 가동률, 대기 시간, 순차 실행에 견준 단축 비율</td></tr>
+      <tr><td class="m">시료 이송</td><td>위치 이력이 남는가</td><td>자동화된 이송의 비율, 이송 실패 횟수</td></tr>
+      <tr><td class="m">오류 내성</td><td>복구 절차가 정해져 있는가</td><td>예외 발생률, 사람 없이 복구된 비율, 고의로 낸 오류에서 안전 상태까지 걸린 시간</td></tr>
+      <tr><td class="m">기록과 재현성</td><td>FAIR 원칙의 항목을 채우는가</td><td>기록이 완전한 실험의 비율</td></tr>
+      <tr><td class="m">창구</td><td>대시보드와 표준 접점이 있는가</td><td>사용자 연구의 작업 시간과 부담 점수, 에이전트가 쓴 절차의 성공률</td></tr>
+      <tr><td class="m">이식성과 붙이기 쉬움</td><td>다른 기관이 쓴 사례가 있는가</td><td>새 실험실에 옮기는 데 든 시간과 고친 설정의 수, 붙인 장비의 수</td></tr>
+      <tr><td class="m">안전</td><td>승인 단계와 차단 목록이 있는가</td><td>걸러 낸 잘못된 명령의 비율, 거짓 경보와 놓친 오류의 수</td></tr>
+      <tr><td class="m">시스템 전체</td><td>자율 정도의 단계</td><td>운영 수명, 처리량, 정밀도, 최적화 효율</td></tr>
+    </table></div>
+    <p>A-Lab은 1.5년 동안의 평균 예외 발생률을 약 3.9퍼센트로, ORGANA는 거짓 경보와 놓친 오류의 수를 보고한다. 이런 값이 오류 내성과 안전을 숫자로 보인 드문 예이다.</p>
+  </section>
+</section>
+
+<!-- ═══════════ 오케스트레이터 4장 ═══════════ -->
+<section class="chapter" id="ch-or-glance" data-added="2026-11-26">
+  <h2>사례 한눈에 비교</h2>
+  <p class="lead">열 가지 사례의 구조를 같은 틀의 도식으로 나란히 놓고, LLM과 데이터베이스가 어디에 무엇으로 쓰였는지를 표시한 장이다.</p>
+
+  <section class="topic" id="og-grid" data-added="2026-11-26">
+    <h3>구조 도식 모아 보기</h3>
+    <p>모든 도식은 위에서 아래로 사람, 두뇌, 조율, 장비의 순서로 그렸다. 보라색 테두리는 LLM을 부르는 부분이고, 노란색 테두리는 데이터베이스나 지식 출처이다. 이름을 누르면 자세한 설명으로 이동한다.</p>
+    <figure>
+      <b class="fig-t">실험실 운영체제형 여섯 가지</b>
+      <div class="legend"><span class="bx core">오케스트레이션 핵심</span><span class="bx llm">LLM을 부르는 부분</span><span class="bx db">데이터베이스와 지식 출처</span><span class="bx plan">LLM이 아닌 계획 알고리즘</span><span class="bx act">장비</span></div>
+      <div class="sys-grid">
+        <div class="dg-panel"><b><a href="#os-chemos">ChemOS</a><i>2018</i></b><div class="dg">
+          <span class="bx">사람<small>대화 봇, 전자우편, 메신저</small></span><i class="ar"></i>
+          <span class="bx plan">계획기<small>Phoenics, SMAC, Spearmint</small></span><i class="ar"></i>
+          <span class="bx core">중앙 워크플로 관리자<small>여섯 가지 모듈을 묶는다</small></span><i class="ar"></i>
+          <span class="bx act">액체 핸들러, 분석 장비</span></div>
+          <div class="sys-meta"><div><span class="tag llm">LLM</span><span class="tagt">없음. 자연어 대화 봇은 있으나 모델 이름이 없다</span></div><div><span class="tag db">DB</span><span class="tagt">여러 데이터베이스 시스템에 연결. 이름은 밝히지 않음</span></div><div><span class="tag com">통신</span><span class="tagt">파일 동기화, 원격 복사</span></div></div></div>
+        <div class="dg-panel"><b><a href="#os-chemos2">ChemOS 2.0</a><i>2024</i></b><div class="dg">
+          <span class="bx">사람<small>웹 화면</small></span><i class="ar"></i>
+          <span class="bx plan">계획기<small>공개 저장소에는 이름이 없다</small></span><i class="ar"></i>
+          <span class="bx core">중앙 프로세스<small>명령을 보내고 데이터를 받는다</small></span><i class="ar"></i>
+          <span class="bx aux">장비마다 SiLA 2 서버</span><i class="ar"></i>
+          <span class="bx act">분석 장비, 광학 측정대</span>
+          <div style="height:6px"></div><span class="bx db">PostgreSQL<small>자체 운영</small></span></div>
+          <div class="sys-meta"><div><span class="tag llm">LLM</span><span class="tagt">없음</span></div><div><span class="tag db">DB</span><span class="tagt">PostgreSQL. 실험실 자체 저장소</span></div><div><span class="tag com">통신</span><span class="tagt">SiLA 2</span></div></div></div>
+        <div class="dg-panel"><b><a href="#os-helao">HELAO</a><i>2022, 2023</i></b><div class="dg">
+          <span class="bx">사람<small>운영자 화면</small></span><i class="ar"></i>
+          <span class="bx core">오케스트레이터</span><i class="ar"></i>
+          <span class="bx core">행동 서버<small>웹 접점으로 기능을 드러낸다</small></span><i class="ar"></i>
+          <span class="bx aux">드라이버</span><i class="ar"></i>
+          <span class="bx act">전기화학 장비, 이송 장치</span>
+          <div style="height:6px"></div><span class="bx db">HDF5 파일과 데이터 관리 드라이버</span></div>
+          <div class="sys-meta"><div><span class="tag llm">LLM</span><span class="tagt">없음</span></div><div><span class="tag db">DB</span><span class="tagt">HDF5 파일. 자체 저장</span></div><div><span class="tag com">통신</span><span class="tagt">HTTP, FastAPI</span></div></div></div>
+        <div class="dg-panel"><b><a href="#os-alabos">AlabOS</a><i>2024</i></b><div class="dg">
+          <span class="bx">사람<small>대시보드, 메신저 알림</small></span><i class="ar"></i>
+          <span class="bx core">실험, 작업, 자원, 장비 관리자</span><i class="ar"></i>
+          <span class="bx aux">작업 행위자<small>작업마다 별도 프로세스</small></span><i class="ar"></i>
+          <span class="bx act">로봇 팔, 가열로, X선 회절 장비</span>
+          <div style="height:6px"></div><span class="bx db">MongoDB<small>모든 관리자가 함께 쓴다</small></span></div>
+          <div class="sys-meta"><div><span class="tag llm">LLM</span><span class="tagt">없음</span></div><div><span class="tag db">DB</span><span class="tagt">MongoDB. 시료, 장비, 작업, 실험의 네 묶음</span></div><div><span class="tag com">통신</span><span class="tagt">공유 데이터베이스, 원격 호출</span></div></div></div>
+        <div class="dg-panel"><b><a href="#os-ivoryos">IvoryOS</a><i>2025</i></b><div class="dg">
+          <div class="dg-row"><span class="bx">사람<small>웹 화면</small></span><span class="bx llm">글을 워크플로로<small>선택 기능</small></span></div><i class="ar"></i>
+          <span class="bx plan">계획기<small>Ax 등</small></span><i class="ar"></i>
+          <span class="bx core">웹 서버<small>사용자의 파이썬 코드를 읽어 화면을 만든다</small></span><i class="ar"></i>
+          <span class="bx act">사용자의 기존 장비 코드</span>
+          <div style="height:6px"></div><span class="bx db">SQLite<small>저장소 설명 기준</small></span></div>
+          <div class="sys-meta"><div><span class="tag llm">LLM</span><span class="tagt">선택 기능. 논문에 모델 이름이 없다</span></div><div><span class="tag db">DB</span><span class="tagt">SQLite가 기본, PostgreSQL 선택</span></div><div><span class="tag com">통신</span><span class="tagt">HTTP, 웹소켓</span></div></div></div>
+        <div class="dg-panel"><b><a href="#os-unilabos">UniLabOS</a><i>2025</i></b><div class="dg">
+          <div class="dg-row"><span class="bx">사람<small>웹 화면</small></span><span class="bx llm">LLM 에이전트<small>MCP로 연결</small></span></div><i class="ar"></i>
+          <span class="bx core">클라우드<small>일정, 데이터 모음</small></span><i class="ar"></i>
+          <span class="bx core">호스트 노드<small>점유 확인, 모의 실행</small></span><i class="ar"></i>
+          <span class="bx aux">장비 노드<small>드라이버</small></span><i class="ar"></i>
+          <span class="bx act">액체 핸들러, 합성 장치, 전지 조립</span></div>
+          <div class="sys-meta"><div><span class="tag llm">LLM</span><span class="tagt">에이전트. 모델과 제공사 이름이 없다</span></div><div><span class="tag db">DB</span><span class="tagt">데이터베이스 종류를 밝히지 않음. 클라우드 보관</span></div><div><span class="tag com">통신</span><span class="tagt">ROS 2와 DDS, MCP</span></div></div></div>
+      </div>
+    </figure>
+    <figure>
+      <b class="fig-t">LLM 에이전트형 세 가지와 견줄 기준 하나</b>
+      <div class="legend"><span class="bx core">오케스트레이션 핵심</span><span class="bx llm">LLM을 부르는 부분</span><span class="bx db">데이터베이스와 지식 출처</span><span class="bx plan">LLM이 아닌 계획 알고리즘</span><span class="bx act">장비</span></div>
+      <div class="sys-grid">
+        <div class="dg-panel"><b><a href="#oa-coscientist">Coscientist</a><i>2023</i></b><div class="dg">
+          <span class="bx">사람<small>한 줄의 지시</small></span><i class="ar"></i>
+          <span class="bx llm">계획자<small>GPT-4, OpenAI</small></span><i class="ar"></i>
+          <div class="dg-row"><span class="bx llm">웹 검색기</span><span class="bx llm">문서 검색기</span><span class="bx aux">코드 실행</span></div><i class="ar"></i>
+          <span class="bx act">액체 핸들러, 클라우드 실험실</span>
+          <div style="height:6px"></div><div class="dg-row"><span class="bx db">구글 검색</span><span class="bx db">장비 설명서의 벡터 색인</span></div></div>
+          <div class="sys-meta"><div><span class="tag llm">LLM</span><span class="tagt">GPT-4와 GPT-3.5, 임베딩은 ada. 모두 OpenAI</span></div><div><span class="tag db">DB</span><span class="tagt">구글 검색, 장비 설명서의 벡터 색인. 실험 기록용 저장소는 없음</span></div><div><span class="tag com">통신</span><span class="tagt">장비의 파이썬 접점, 클라우드 실험실 언어</span></div></div></div>
+        <div class="dg-panel"><b><a href="#oa-chemcrow">ChemCrow</a><i>2023</i></b><div class="dg">
+          <span class="bx">사람<small>과제를 글로</small></span><i class="ar"></i>
+          <span class="bx llm">에이전트<small>GPT-4, OpenAI.<br>LangChain의 ReAct 순환</small></span><i class="ar"></i>
+          <span class="bx aux">화학 도구 18종</span><i class="ar"></i>
+          <span class="bx act">클라우드 로봇 합성 장치</span>
+          <div style="height:6px"></div><div class="dg-row"><span class="bx db">PubChem 등 공개 자료</span><span class="bx db">FAISS 문헌 색인</span></div></div>
+          <div class="sys-meta"><div><span class="tag llm">LLM</span><span class="tagt">GPT-4, OpenAI. 임베딩도 OpenAI</span></div><div><span class="tag db">DB</span><span class="tagt">PubChem, ZINC20, 검색 API, 반응 예측 서비스, FAISS 색인</span></div><div><span class="tag com">통신</span><span class="tagt">IBM의 반응 서비스 접점</span></div></div></div>
+        <div class="dg-panel"><b><a href="#oa-organa">ORGANA</a><i>2024</i></b><div class="dg">
+          <span class="bx">사람<small>글이나 말</small></span><i class="ar"></i>
+          <span class="bx llm">추론기<small>GPT-4</small></span><i class="ar"></i>
+          <span class="bx llm">절차 생성<small>GPT-3.5가 χDL을 쓴다</small></span><i class="ar"></i>
+          <span class="bx core">작업과 동작 계획기<small>일정까지 함께 푼다</small></span><i class="ar"></i>
+          <span class="bx act">로봇 팔, 펌프, 전기화학 장비</span></div>
+          <div class="sys-meta"><div><span class="tag llm">LLM</span><span class="tagt">GPT-4와 GPT-3.5, 음성 인식은 Whisper. OpenAI</span></div><div><span class="tag db">DB</span><span class="tagt">없음. 지난 실험은 프롬프트 안에 기억으로 둔다</span></div><div><span class="tag com">통신</span><span class="tagt">장비 직접 연결</span></div></div></div>
+        <div class="dg-panel"><b><a href="#oa-alab">A-Lab</a><i>2023</i></b><div class="dg">
+          <span class="bx">사람<small>목표 물질의 선별</small></span><i class="ar"></i>
+          <span class="bx plan">조리법 제안과 능동 학습<small>문헌 유사도 모델, ARROWS3</small></span><i class="ar"></i>
+          <span class="bx core">실험실 제어 소프트웨어<small>뒤에 AlabOS로 발표</small></span><i class="ar"></i>
+          <span class="bx act">계량, 가열로, X선 회절</span>
+          <div style="height:6px"></div><div class="dg-row"><span class="bx db">Materials Project, ICSD</span><span class="bx db">문헌에서 뽑은 조리법</span></div></div>
+          <div class="sys-meta"><div><span class="tag llm">LLM</span><span class="tagt">없음. 기계학습 모델만 쓴다</span></div><div><span class="tag db">DB</span><span class="tagt">Materials Project, 구글 딥마인드의 안정상 자료, ICSD, 문헌 조리법 33,343건</span></div><div><span class="tag com">통신</span><span class="tagt">실험실 내부망, 작업 제출 접점</span></div></div></div>
+      </div>
+      <figcaption>A-Lab은 LLM을 쓰지 않는 자율실험실이다. LLM 없이도 자율이 가능하다는 것을 보이는 기준으로 함께 놓았다.</figcaption>
+    </figure>
+  </section>
+
+  <section class="topic" id="og-table" data-added="2026-11-26">
+    <h3>한 장 비교표</h3>
+    <div class="tbl"><table>
+      <tr><th>사례</th><th>기관</th><th>두뇌</th><th>워크플로</th><th>통신</th><th>새로운 점</th></tr>
+      <tr><td class="m">ChemOS<small>2018</small></td><td>하버드, 토론토</td><td>베이지안 최적화</td><td>설정 파일</td><td>파일 동기화</td><td>계획기와 장비를 잇는 공통 계층이라는 발상</td></tr>
+      <tr><td class="m">ChemOS 2.0<small>2024</small></td><td>토론토</td><td>최적화 알고리즘</td><td>파이썬 스크립트</td><td>SiLA 2</td><td>실험실 전체를 운영체제처럼 보는 구조와 통신 표준의 채택</td></tr>
+      <tr><td class="m">HELAO<small>2022, 2023</small></td><td>카를스루에, 칼텍</td><td>능동 학습</td><td>층을 이룬 순서</td><td>HTTP</td><td>오케스트레이터, 행동, 드라이버의 층 구조와 통합 데이터 관리</td></tr>
+      <tr><td class="m">AlabOS<small>2024</small></td><td>버클리, 로런스 버클리 연구소</td><td>외부 계획기</td><td>방향 그래프와 묶음</td><td>공유 데이터베이스</td><td>자원 예약과 그래프 기반 워크플로, 관리자와 작업자의 분리</td></tr>
+      <tr><td class="m">IvoryOS<small>2025</small></td><td>브리티시컬럼비아</td><td>Ax와 선택적 LLM</td><td>끌어다 놓기</td><td>웹</td><td>기존 파이썬 코드를 고치지 않고 화면을 자동으로 만든다</td></tr>
+      <tr><td class="m">UniLabOS<small>2025</small></td><td>DP Technology, 베이징대 등</td><td>LLM 에이전트</td><td>의미 단위 명령</td><td>ROS 2, MCP</td><td>행동과 자원의 형 체계, 이중 위상, 이송을 기본 연산으로</td></tr>
+      <tr><td class="m">Coscientist<small>2023</small></td><td>카네기멜런</td><td>GPT-4</td><td>LLM이 쓴 코드</td><td>장비 접점</td><td>여러 LLM과 도구를 묶어 설계부터 실행까지</td></tr>
+      <tr><td class="m">ChemCrow<small>2023</small></td><td>EPFL, 로체스터, IBM</td><td>GPT-4</td><td>도구 호출의 순환</td><td>클라우드 접점</td><td>전문 화학 도구로 LLM의 약점을 보완</td></tr>
+      <tr><td class="m">ORGANA<small>2024</small></td><td>토론토</td><td>GPT-4와 계획기</td><td>χDL</td><td>직접 연결</td><td>작업 계획과 일정을 함께 풀어 병렬 실행</td></tr>
+      <tr><td class="m">A-Lab<small>2023</small></td><td>버클리, 로런스 버클리 연구소</td><td>기계학습과 능동 학습</td><td>작업 제출</td><td>내부망</td><td>고체 분말 합성의 자율화와 17일 연속 운영</td></tr>
+    </table></div>
+    <p>이 밖에 읽은 자료에 이름만 나온 것으로 OCTOPUS, ARChemist, AresOS, Chemputer가 있다. OCTOPUS는 클라우드와 현장을 잇는 사건 기반 구조로 분산 작업과 병렬화를 다룬다고 UniLabOS 논문이 소개한다.</p>
+  </section>
+
+  <section class="topic" id="og-llmdb" data-added="2026-11-26">
+    <h3>LLM과 데이터베이스 사용 지도</h3>
+    <h4>LLM</h4>
+    <div class="tbl"><table>
+      <tr><th>사례</th><th>모델과 제공사</th><th>부르는 방식</th><th>맡은 일</th><th>실행 순환 안에 있는가</th></tr>
+      <tr><td class="m">Coscientist</td><td>GPT-4와 GPT-3.5, OpenAI</td><td>대화형 호출. 네 가지 명령 가운데 고른다</td><td>계획, 웹 검색, 설명서 요약, 코드 작성과 수정</td><td>그렇다. 중심이다</td></tr>
+      <tr><td class="m">ChemCrow</td><td>GPT-4, OpenAI. 온도 값 0.1</td><td>LangChain의 ReAct 순환</td><td>도구 선택, 절차 설명, 오류 수정</td><td>그렇다. 합성 시작 전에 사람이 승인한다</td></tr>
+      <tr><td class="m">ORGANA</td><td>GPT-4와 GPT-3.5, OpenAI</td><td>ReAct 방식의 프롬프트</td><td>사용자와의 대화, 실험 제안, χDL 작성</td><td>계획 단계까지. 실행은 계획기가 한다</td></tr>
+      <tr><td class="m">UniLabOS</td><td>밝히지 않음</td><td>MCP</td><td>계획, 도구 선택, 매개변수 생성</td><td>그렇다. 운영체제가 출력을 검사한다</td></tr>
+      <tr><td class="m">IvoryOS</td><td>논문에 이름이 없음</td><td>예시 코드와 지침을 담은 프롬프트</td><td>글을 워크플로로 번역</td><td>아니다. 설계 보조이다</td></tr>
+      <tr><td class="m">ChemOS</td><td>이름이 없는 자연어 처리 봇</td><td>전자우편과 메신저</td><td>사람과의 창구</td><td>아니다</td></tr>
+      <tr><td class="m">나머지</td><td>ChemOS 2.0, HELAO, AlabOS, A-Lab은 LLM을 쓰지 않는다</td><td></td><td></td><td></td></tr>
+    </table></div>
+    <h4>데이터베이스와 지식 출처</h4>
+    <div class="tbl"><table>
+      <tr><th>사례</th><th>안의 저장소</th><th>밖의 지식 출처</th></tr>
+      <tr><td class="m">ChemOS</td><td>여러 데이터베이스 시스템, 이름 없음</td><td>없음</td></tr>
+      <tr><td class="m">ChemOS 2.0</td><td>PostgreSQL</td><td>공개 저장소 설명에는 없음</td></tr>
+      <tr><td class="m">HELAO</td><td>HDF5 파일</td><td>없음</td></tr>
+      <tr><td class="m">AlabOS</td><td>MongoDB와 백업용 데이터베이스</td><td>없음. 위의 A-Lab이 참조한다</td></tr>
+      <tr><td class="m">IvoryOS</td><td>SQLite 기본, PostgreSQL 선택</td><td>없음</td></tr>
+      <tr><td class="m">UniLabOS</td><td>종류를 밝히지 않음. 사건 기록이 출처 그래프가 된다</td><td>없음</td></tr>
+      <tr><td class="m">Coscientist</td><td>없음</td><td>구글 검색, 장비 설명서의 벡터 색인, 클라우드 실험실의 시료 목록</td></tr>
+      <tr><td class="m">ChemCrow</td><td>사용자 문서의 FAISS 색인</td><td>PubChem, ZINC20, 구매 가능 화합물 목록, 통제 물질 목록, IBM의 반응 예측 서비스, 검색 API</td></tr>
+      <tr><td class="m">ORGANA</td><td>없음. 프롬프트 안의 기억</td><td>없음</td></tr>
+      <tr><td class="m">A-Lab</td><td>반응 쌍 데이터베이스, 실험 기록</td><td>Materials Project, 구글 딥마인드의 안정상 자료, ICSD, 문헌에서 뽑은 합성 절차 33,343건</td></tr>
+    </table></div>
+    <div class="key"><p>뚜렷한 대비가 보인다. 운영체제형은 안의 저장소가 튼튼하고 밖의 지식을 거의 쓰지 않는다. 에이전트형은 밖의 지식을 폭넓게 쓰지만 실험 기록을 쌓는 안의 저장소가 약하다. 두 쪽을 합치는 것이 다음 과제이다.</p></div>
+  </section>
+</section>
+
+
+<!-- ═══════════ 오케스트레이터 5장 ═══════════ -->
+<section class="chapter" id="ch-or-os" data-added="2026-11-26">
+  <h2>실험실 운영체제형 사례</h2>
+  <p class="lead">규칙에 따라 실험실을 조율하는 여섯 가지 오케스트레이터의 구조, 새로운 점, 기존 기술과의 차별점을 정리한 장이다.</p>
+
+  <section class="topic" id="os-chemos" data-added="2026-11-26">
+    <h3>ChemOS: 공통 계층이라는 발상</h3>
+    <p>ChemOS<a class="cite" href="#src-or-chemos"></a>는 자율실험실의 소프트웨어를 장비와 무관한 공통 계층으로 만들자는 발상을 처음 내놓은 사례이다. 그전의 실험실 소프트웨어는 특정 장비와 특정 절차에 묶여 있었다.</p>
+    <figure>
+      <b class="fig-t">ChemOS의 구조</b>
+      <div class="dg">
+        <span class="bx">연구자<small>자연어 대화 봇을 통해 전자우편, 메신저로 접근</small></span><i class="ar"></i>
+        <span class="bx core wide">중앙 워크플로 관리자</span><i class="ar"></i>
+        <div class="dg-row">
+          <span class="bx plan">학습 절차<small>Phoenics, SMAC,<br>Spearmint, 무작위 탐색</small></span>
+          <span class="bx act">자동화 로봇 장치</span>
+          <span class="bx act">분석 장비</span>
+        </div>
+        <span class="dg-note">위의 세 모듈이 닫힌 순환에 꼭 필요하다</span>
+        <div class="dg-row">
+          <span class="bx db">데이터베이스 처리<small>여러 시스템에 연결</small></span>
+          <span class="bx">연구자 인터페이스</span>
+          <span class="bx aux">온라인 분석</span>
+        </div>
+      </div>
+      <figcaption>회차마다 설정 파일 하나로 쓸 계획기와 통신 방식과 장비를 고른다. 장비 사이의 데이터는 파일 동기화 서비스와 원격 복사로 오간다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><td class="m">새로운 점</td><td>계획 알고리즘, 로봇 장치, 분석 장비, 데이터베이스, 연구자 창구, 온라인 분석을 중앙 관리자가 묶는 구조. 설정 파일만 바꾸면 다른 응용에 쓸 수 있다.</td></tr>
+      <tr><td class="m">기존 기술과의 차별점</td><td>그전의 실험실 소프트웨어는 특정 장비와 절차에 묶여 있었다. ChemOS는 장비와 무관한 계층을 따로 두었다.</td></tr>
+      <tr><td class="m">평가</td><td>색 섞기, 산도 맞추기, 밀도 맞추기 같은 시범 과제. 회차당 실험 25회. 계획기끼리의 모의 비교.</td></tr>
+      <tr><td class="m">한계</td><td>새 장비의 통신 계층은 손으로 짜야 한다. 통신이 파일 동기화에 기댄다. 저자들 스스로 첫걸음이라고 부른다.</td></tr>
+    </table></div>
+    <p>이 정리는 2020년의 논문을 바탕으로 한다. 2018년의 첫 논문은 읽지 못하였다.</p>
+  </section>
+
+  <section class="topic" id="os-chemos2" data-added="2026-11-26">
+    <h3>ChemOS 2.0: 통신 표준을 쓰는 운영체제</h3>
+    <p>ChemOS 2.0<a class="cite" href="#src-or-chemos2"></a>은 실험실 전체를 하나의 운영체제처럼 다룬다. 모듈 사이의 통신, 데이터 교환, 명령 관리를 조율한다고 UniLabOS 논문이 소개한다. 논문 본문은 읽지 못하였고 아래 내용은 공개 저장소의 설명에 따른 것이다.</p>
+    <figure>
+      <b class="fig-t">ChemOS 2.0의 구조</b>
+      <div class="dg">
+        <span class="bx">사람<small>웹 화면에서 작업 제출과 결과 보기</small></span><i class="ar"></i>
+        <span class="bx core wide">ChemOS 2.0 중앙 프로세스<small>닫힌 순환의 스크립트를 돌린다</small></span>
+        <span class="dg-note">명령을 보내고 데이터를 흘려 받는다</span><i class="ar"></i>
+        <div class="dg-row"><span class="bx aux">SiLA 2 서버<small>장비에 붙은 컴퓨터마다 하나</small></span><span class="bx aux">SiLA 2 서버</span></div><i class="ar"></i>
+        <div class="dg-row"><span class="bx act">액체 크로마토그래피 질량 분석기</span><span class="bx act">광학 측정대</span></div>
+        <div style="height:8px"></div>
+        <span class="bx db wide">PostgreSQL<small>실험실 자체 저장소</small></span>
+      </div>
+      <figcaption>장비마다 표준 통신 서버를 두고 중앙이 그것을 부른다. 모의 서버로 실제 장비 없이 흐름을 시험할 수 있다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><td class="m">새로운 점</td><td>장비마다 SiLA 2 서버를 두는 표준 통신, 실험실 전체를 운영체제로 보는 구성, 모의 서버와 무작위로 멈추는 시험용 서버.</td></tr>
+      <tr><td class="m">기존 기술과의 차별점</td><td>ChemOS가 파일 동기화로 잇던 것을 실험실 장비용 통신 표준으로 바꾸었다. 데이터를 관계형 데이터베이스에 모은다.</td></tr>
+      <tr><td class="m">평가</td><td>유기 레이저 분자 탐색에서 여러 장비의 조율을 보였다고 다른 논문이 소개한다. 저장소 설명에는 수치가 없다.</td></tr>
+      <tr><td class="m">한계</td><td>저장소가 스스로 밝히기로, 실제 적용에는 실험실마다 맞춤 작업이 필요하고 바로 배포할 수 있는 완성품이 아니다.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="topic" id="os-helao" data-added="2026-11-26">
+    <h3>HELAO: 층을 이룬 오케스트레이션</h3>
+    <p>HELAO(Hierarchical Experimental Laboratory Automation and Orchestration)<a class="cite" href="#src-or-helao"></a>는 이름 그대로 층을 이룬 구조이다. 오케스트레이터 아래에 행동이, 그 아래에 드라이버가 놓인다. 통신은 위에서 아래로 내려간다.</p>
+    <figure>
+      <b class="fig-t">HELAO의 층 구조</b>
+      <div class="dg">
+        <span class="bx core wide">오케스트레이터<small>실험을 사건의 순서로 풀어 차례로 보낸다</small></span><i class="ar"></i>
+        <div class="dg-row"><span class="bx core">행동 서버<small>측정하기, 옮기기 같은 의미 단위</small></span><span class="bx core">행동 서버</span></div>
+        <span class="dg-note">행동끼리는 서로 말할 수 있다. 모든 것이 웹 접점으로 드러난다</span><i class="ar"></i>
+        <div class="dg-row"><span class="bx aux">드라이버<small>자기를 부른 행동하고만 말한다</small></span><span class="bx aux">드라이버</span></div><i class="ar"></i>
+        <div class="dg-row"><span class="bx act">전기화학 측정 장비</span><span class="bx act">이송 장치</span></div>
+        <div style="height:8px"></div>
+        <span class="bx db wide">HDF5 파일과 데이터 관리 드라이버<small>어느 층에서나 메타데이터를 붙일 수 있다</small></span>
+      </div>
+      <figcaption>웹 프레임워크인 FastAPI로 각 서버를 만든다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><td class="m">새로운 점</td><td>오케스트레이터, 행동, 드라이버의 층 구조. 모든 기능을 웹 접점으로 드러낸다. 어느 층에서나 메타데이터를 붙이는 통합 데이터 관리.</td></tr>
+      <tr><td class="m">기존 기술과의 차별점</td><td>저자들은 닫힌 순환의 다중 장비 최적화를 위한 틀 가운데 데이터 관리를 통합한 유일한 것이라고 주장한다.</td></tr>
+      <tr><td class="m">평가</td><td>총 실험 시간이 약 절반으로 줄고 능동 학습이 5배에서 10배 빨라진다고 주장한다.</td></tr>
+      <tr><td class="m">한계</td><td>저장소 설명에 따르면 설정 묶음 사이의 포트 충돌을 검사하지 않는다. 계획기는 따로 정해져 있지 않다.</td></tr>
+    </table></div>
+    <p>뒤이은 HELAO-async는 비동기 실행을 넣고 여러 실험실을 잇는 방향으로 넓힌 판이다. 그 논문은 읽지 못하였고, 공개 저장소에서 틀과 실제 장비 배치가 분리되어 있고 오케스트레이터, 운영자 화면, 시각화, 데이터 동기화기가 공통 서비스로 제공된다는 점만 확인하였다.</p>
+  </section>
+
+  <section class="topic" id="os-alabos" data-added="2026-11-26">
+    <h3>AlabOS: 자원 예약과 그래프 기반 워크플로</h3>
+    <p>AlabOS<a class="cite" href="#src-or-alabos"></a>는 고체 분말 합성 실험실인 A-Lab을 돌리려고 만든 오케스트레이터이다. 가열로 하나에 시료 여러 개를 함께 굽고, 합성이 끝난 뒤 여러 측정으로 갈래가 나뉘는 실험을 다루어야 했다.</p>
+    <figure>
+      <b class="fig-t">AlabOS의 구조</b>
+      <div class="dg">
+        <span class="bx">작업자<small>웹 대시보드로 제출하고 지켜본다. 메신저와 전자우편 알림</small></span><i class="ar"></i>
+        <span class="bx core wide">대시보드 서버<small>제출된 실험의 형식을 검사한다</small></span><i class="ar"></i>
+        <div class="dg-row">
+          <span class="bx core">실험 관리자<small>실험을 작업 그래프로 푼다</small></span>
+          <span class="bx core">작업 관리자<small>준비된 작업을 띄우고 지켜본다</small></span>
+          <span class="bx core">자원 관리자<small>장비와 시료 자리를 배정한다</small></span>
+          <span class="bx core">장비 관리자<small>점유와 소유를 확인하고 명령을 전달한다</small></span>
+        </div><i class="ar"></i>
+        <span class="bx aux wide">작업 행위자<small>작업 하나가 별도의 프로세스 하나. 관리자하고만 말한다</small></span><i class="ar"></i>
+        <span class="bx act wide">로봇 팔, 분말 계량기, 가열로, X선 회절 장비</span>
+        <div style="height:8px"></div>
+        <span class="bx db wide">MongoDB<small>시료, 장비, 작업, 실험의 네 묶음. 모든 관리자가 이 하나를 통해 상태를 맞춘다</small></span>
+      </div>
+    </figure>
+    <div class="key"><p>핵심은 작업 논리와 자원 다툼을 떼어 놓은 것이다. 작업을 쓰는 사람은 “가열로가 필요하다”고만 적고, 누구와 겹치는지는 자원 관리자가 풀어 준다.</p></div>
+    <div class="tbl"><table>
+      <tr><td class="m">새로운 점</td><td>실험을 작업의 방향 그래프로 적고 점 하나에 여러 시료를 묶는다. 자원을 요청하고 자동으로 풀어 주는 예약 방식. 관리자와 작업 행위자의 분리. 상태 감시와 알림과 오류 처리의 내장.</td></tr>
+      <tr><td class="m">기존 기술과의 차별점</td><td>저자들은 ChemOS 2.0, ARChemist, HELAO 같은 앞선 틀이 고정된 흐름에 치우쳐 복잡한 순서와 병렬과 나무 모양의 의존 관계에 약하다고 본다.</td></tr>
+      <tr><td class="m">평가</td><td>실제 실험실에서 약 1년 동안 시료 2,500개 이상, 하루 최대 149개. 개정판 초록은 1.5년 동안 약 3,500개.</td></tr>
+      <tr><td class="m">한계</td><td>작업 정의를 바꾸면 다시 시작해야 한다. 복구할 수 없는 오류는 사람이 손대야 한다. 계획기와 LLM은 들어 있지 않다.</td></tr>
+    </table></div>
+    <figure class="shot">
+      <b class="fig-t">원본 구조도와 실제 화면</b>
+      <div class="shots"><a href="https://arxiv.org/html/2405.13930v2/Fig1.png" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://arxiv.org/html/2405.13930v2/Fig1.png" alt="AlabOS 구조 원본"></a><a href="https://arxiv.org/html/2405.13930v2/Fig3.png" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://arxiv.org/html/2405.13930v2/Fig3.png" alt="AlabOS 대시보드 화면"></a></div>
+      <figcaption>첫째 그림은 저자들이 그린 구조도이다. 둘째 그림은 대시보드의 실제 화면으로, 실험 목록과 장비 상태와 알림을 보여 준다. 출처: AlabOS 논문<a class="cite" href="#src-or-alabos"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <figure class="shot">
+      <b class="fig-t">원본 그림: A-Lab의 작업 흐름과 처리량</b>
+      <div class="shots one"><a href="https://arxiv.org/html/2405.13930v2/fig-alab.png" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://arxiv.org/html/2405.13930v2/fig-alab.png" alt="A-Lab의 작업 흐름과 처리량"></a></div>
+      <figcaption>전형적인 작업의 흐름, 시료 16개를 묶음으로 처리하는 그래프, 분기별 처리 시료 수이다. 출처: AlabOS 논문<a class="cite" href="#src-or-alabos"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+  </section>
+
+  <section class="topic" id="os-ivoryos" data-added="2026-11-26">
+    <h3>IvoryOS: 기존 코드를 그대로 화면으로</h3>
+    <p>IvoryOS<a class="cite" href="#src-or-ivoryos"></a>는 반대 방향에서 접근한다. 틀에 실험실을 맞추게 하지 않고, 실험실이 이미 가진 파이썬 장비 코드를 읽어서 조작 화면과 워크플로 편집기를 자동으로 만든다.</p>
+    <figure>
+      <b class="fig-t">IvoryOS의 구조</b>
+      <div class="dg">
+        <span class="bx act wide">사용자의 기존 파이썬 스크립트<small>장비 객체가 이미 만들어져 있다</small></span>
+        <span class="dg-note">한 줄을 더해 서버를 띄운다</span><i class="ar"></i>
+        <span class="bx core wide">코드 살펴보기<small>객체의 기능 이름, 입력 이름, 자료형, 기본값을 읽어 낸다</small></span><i class="ar"></i>
+        <div class="dg-row">
+          <span class="bx core">양식 모듈<small>기능마다 입력 양식을 만든다</small></span>
+          <span class="bx core">워크플로 모듈<small>편집, 저장, 검사</small></span>
+          <span class="bx core">실행 제어 모듈<small>반복 계획에 따라 장비를 부른다</small></span>
+        </div><i class="ar"></i>
+        <div class="dg-row"><span class="bx">직접 제어 화면</span><span class="bx">끌어다 놓는 워크플로 화면</span><span class="bx llm">글을 워크플로로<small>선택 기능</small></span></div><i class="ar"></i>
+        <div class="dg-row"><span class="bx aux">고정 반복</span><span class="bx aux">사람이 값을 넣는 반복</span><span class="bx plan">적응 반복<small>Ax의 베이지안 최적화</small></span></div>
+        <div style="height:8px"></div>
+        <span class="bx db wide">워크플로 저장용 데이터베이스<small>저장소 설명으로는 SQLite가 기본이고 PostgreSQL을 고를 수 있다</small></span>
+      </div>
+      <figcaption>웹 프레임워크는 Flask이고, 실행 상황은 웹소켓으로 화면에 전달된다. 워크플로는 준비, 본 실험, 정리의 세 단계로 나뉜다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><td class="m">새로운 점</td><td>사용자의 파이썬 코드를 고치지 않고 읽어서 조작 화면과 워크플로 편집기를 자동으로 만든다. 서버를 띄우는 데 코드 한 줄. 코드를 쓰지 않는 워크플로 설계.</td></tr>
+      <tr><td class="m">기존 기술과의 차별점</td><td>저자들은 χDL 기반 도구는 현장 실행 환경의 설정이 필요하고, AlabOS와 ChemOS 2.0은 틀에 맞춘 재작업이 필요하다고 본다. IvoryOS는 설정이 필요 없다.</td></tr>
+      <tr><td class="m">평가</td><td>두 연구 조직의 실험 플랫폼 6개에 연결. 처음 설치와 연결에 10분에서 30분. 닫힌 순환 시범 두 가지. 정량적인 비교는 없다.</td></tr>
+      <tr><td class="m">한계</td><td>개발자가 드러낸 것 이상의 안전 검사가 없고 실행이 한 줄기라고 요약에서 확인하였다. 병렬과 일정 관리는 다루지 않는다.</td></tr>
+    </table></div>
+    <figure class="shot">
+      <b class="fig-t">원본 구조도와 연결된 실험 플랫폼</b>
+      <div class="shots"><a href="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/3d4e/12137583/ce6399189e92/41467_2025_60514_Fig2_HTML.jpg" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/3d4e/12137583/ce6399189e92/41467_2025_60514_Fig2_HTML.jpg" alt="IvoryOS 구조 원본"></a><a href="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/3d4e/12137583/c8c33571d597/41467_2025_60514_Fig5_HTML.jpg" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/3d4e/12137583/c8c33571d597/41467_2025_60514_Fig5_HTML.jpg" alt="IvoryOS를 붙인 여섯 실험 플랫폼"></a></div>
+      <figcaption>첫째 그림은 저자들이 그린 구조도이다. 둘째 그림은 IvoryOS를 붙인 여섯 가지 실험 플랫폼의 사진이다. 출처: IvoryOS 논문<a class="cite" href="#src-or-ivoryos"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+  </section>
+
+  <section class="topic" id="os-unilabos" data-added="2026-11-26">
+    <h3>UniLabOS: 에이전트를 전제로 한 운영체제</h3>
+    <p>UniLabOS<a class="cite" href="#src-or-unilabos"></a>는 처음부터 AI 에이전트가 실험실을 부린다는 전제로 설계되었다. 기존의 실험 기록 소프트웨어가 기록은 하지만 실행 계층이 없다는 점을 문제로 삼는다.</p>
+    <figure>
+      <b class="fig-t">UniLabOS의 구조</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx">사람<small>웹 화면. 목표와 승인</small></span><span class="bx llm">LLM 에이전트<small>MCP로 연결. 계획, 도구 선택,<br>매개변수 생성</small></span></div><i class="ar"></i>
+        <span class="bx core wide">클라우드<small>비동기 일정, 전체 데이터 모음, 여러 사업장의 조율</small></span><i class="ar"></i>
+        <span class="bx core wide">호스트 노드<small>명령을 보내기 전에 장비 점유를 확인한다. 외부망이 끊겨도 대기 중인 작업을 계속 돌린다</small></span>
+        <span class="dg-note">ROS 2와 DDS. 중앙 중개자 없이 노드끼리 직접 주고받는다</span><i class="ar"></i>
+        <span class="bx aux wide">장비 노드<small>안전 연동, 구동, 시간에 민감한 제어. 드라이버는 등록하면 바로 노드로 뜬다</small></span><i class="ar"></i>
+        <span class="bx act wide">액체 핸들러, 합성 장치, 전지 조립 장치, 로봇 팔</span>
+        <div style="height:8px"></div>
+        <div class="dg-row"><span class="bx db">자원 상태<small>자원 나무와 물리 그래프</small></span><span class="bx aux">디지털 트윈<small>보내기 전에 충돌과 도달을 미리 본다</small></span></div>
+      </div>
+    </figure>
+    <h4>세 가지 핵심 개념</h4>
+    <div class="cols">
+      <div><b>행동과 자원의 형 체계</b><p>실험실의 모든 것을 행동, 자원, 그리고 둘을 겸하는 것의 세 가지 형으로 나눈다. 에이전트의 요청이 형에 맞는지를 검사할 수 있다.</p></div>
+      <div><b>이중 위상</b><p>누가 무엇을 담고 있는가를 적는 자원 나무와, 물질과 로봇이 실제로 어디에서 어디로 갈 수 있는가를 적는 물리 그래프를 따로 둔다.</p></div>
+      <div><b>이송을 기본 연산으로</b><p>만들기, 읽기, 고치기, 지우기에 옮기기를 더한다. 옮기기는 소유의 변경과 실제 구동의 확인을 하나로 묶는다.</p></div>
+    </div>
+    <div class="key"><p>논문은 운영체제를 AI를 위한 안전 핵심이라고 부른다. 에이전트의 출력은 잠금, 형 검사, 모의 실행을 통과해야 장비에 닿는다.</p></div>
+    <div class="tbl"><table>
+      <tr><td class="m">새로운 점</td><td>행동과 자원의 형 체계, 자원 나무와 물리 그래프의 이중 위상, 이송을 기본 연산으로 넣은 것, 중앙 중개자 없는 통신과 재시작 없는 드라이버 등록.</td></tr>
+      <tr><td class="m">기존 기술과의 차별점</td><td>기존 실험실 소프트웨어는 계획과 실행이 떨어져 있고, 기록 소프트웨어에는 실행 계층이 없으며, 드라이버를 다시 쓸 수 없다고 본다. 에이전트를 위한 표준 접점을 갖추었다.</td></tr>
+      <tr><td class="m">평가</td><td>액체 다루기, 유기 합성, 분산 전해질 실험실, 전해수 장치의 네 가지 시연. 2단계 반응으로 생성물 5.3그램. 정량적인 처리량과 가동률은 없다.</td></tr>
+      <tr><td class="m">한계</td><td>에이전트의 신뢰성을 재지 못하였다. 물리적 예외의 자동 복구, 정책에 따른 일정 관리, 기관 사이의 신원 관리가 과제로 남아 있다. LLM의 종류를 밝히지 않는다.</td></tr>
+    </table></div>
+    <figure class="shot">
+      <b class="fig-t">원본 구조도</b>
+      <div class="shots"><a href="https://arxiv.org/html/2512.21766v1/lab.png" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://arxiv.org/html/2512.21766v1/lab.png" alt="UniLabOS 구조 개요"></a><a href="https://arxiv.org/html/2512.21766v1/network.png" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://arxiv.org/html/2512.21766v1/network.png" alt="UniLabOS의 호스트와 장비 사이 통신"></a></div>
+      <figcaption>첫째 그림은 장비에서 현장 노드를 거쳐 클라우드의 디지털 트윈과 에이전트와 일정 관리로 이어지는 전체 개요, 그리고 자원 나무와 물리 그래프의 이중 위상이다. 둘째 그림은 호스트와 장비 사이의 네 가지 통신 통로이다. 출처: UniLabOS 논문<a class="cite" href="#src-or-unilabos"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+  </section>
+</section>
+
+<!-- ═══════════ 오케스트레이터 6장 ═══════════ -->
+<section class="chapter" id="ch-or-agent" data-added="2026-11-26">
+  <h2>LLM 에이전트형 사례</h2>
+  <p class="lead">LLM이 판단의 중심에 서는 세 가지 사례와, LLM 없이 자율을 이룬 기준 사례의 구조와 새로운 점을 정리한 장이다.</p>
+
+  <section class="topic" id="oa-coscientist" data-added="2026-11-26">
+    <h3>Coscientist: 여러 LLM과 도구를 묶은 에이전트</h3>
+    <p>Coscientist<a class="cite" href="#src-or-coscientist"></a>는 GPT-4를 중심으로 실험을 설계하고, 계획하고, 실행하는 에이전트이다. 사용자는 “스즈키 반응을 여러 개 수행하라” 같은 한 줄의 지시만 준다.</p>
+    <figure>
+      <b class="fig-t">Coscientist의 구조</b>
+      <div class="dg">
+        <span class="bx wide">사용자의 한 줄 지시</span><i class="ar"></i>
+        <span class="bx llm wide">계획자<small>GPT-4, OpenAI. 네 가지 명령 가운데 하나를 골라 부르고, 결과를 다시 받아 다음을 정한다</small></span><i class="ar"></i>
+        <div class="dg-row">
+          <span class="bx llm">웹 검색기<small>GPT-4 또는 GPT-3.5.<br>검색어를 만들고 읽고 요약</small></span>
+          <span class="bx llm">문서 검색기<small>설명서에서 필요한 부분을<br>찾아 요약</small></span>
+          <span class="bx aux">코드 실행<small>격리된 컨테이너.<br>LLM을 쓰지 않는다</small></span>
+          <span class="bx aux">자동화<small>만든 코드를 장비에서 실행</small></span>
+        </div><i class="ar"></i>
+        <div class="dg-row"><span class="bx act">소형 액체 핸들러<small>파이썬 접점</small></span><span class="bx act">클라우드 실험실<small>전용 기호 언어</small></span></div>
+        <div style="height:8px"></div>
+        <div class="dg-row"><span class="bx db">구글 검색 API와 웹 문서<small>밖의 공개 자료</small></span><span class="bx db">장비 설명서의 벡터 색인<small>OpenAI의 ada 임베딩으로 만든 안의 색인</small></span></div>
+      </div>
+      <figcaption>네 가지 명령은 검색, 파이썬 실행, 설명서 조회, 실험이다. 실험 결과를 쌓아 두는 데이터베이스는 따로 없다.</figcaption>
+    </figure>
+    <div class="analogy"><p>문서 검색기는 설명서를 통째로 외운 것이 아니다. 설명서의 절마다 뜻을 숫자 벡터로 바꾸어 두었다가, 물음이 오면 뜻이 가장 가까운 절을 찾아 계획자에게 건넨다. 이 방식을 검색 증강 생성(RAG, Retrieval-Augmented Generation)이라고 부른다.</p></div>
+    <div class="tbl"><table>
+      <tr><td class="m">새로운 점</td><td>여러 LLM 모듈과 검색, 코드 실행, 장비 접점을 묶어 설계부터 실행까지 맡긴다. 설명서를 벡터 검색으로 읽고 처음 보는 장비의 코드를 쓴다.</td></tr>
+      <tr><td class="m">기존 기술과의 차별점</td><td>LLM을 최적화 알고리즘에 붙이는 대신 LLM 자체를 실험 계획과 최적화에 쓴다. 같은 시기의 ChemCrow보다 클라우드 실험실과 장비 제어에 초점을 둔다.</td></tr>
+      <tr><td class="m">평가</td><td>화합물 7개의 합성 계획을 5점 척도로 채점. 스즈키와 소노가시라 반응을 실제로 수행. 두 반응 자료에서 최대 20회 반복의 최적화가 베이지안 최적화보다 높은 점수.</td></tr>
+      <tr><td class="m">한계</td><td>완전 자동이 아니다. 시료판을 사람이 옮겼다. 그럴듯한 오답의 위험이 있다. 안전을 이유로 코드와 프롬프트 일부를 공개하지 않았다.</td></tr>
+    </table></div>
+    <figure class="shot">
+      <b class="fig-t">원본 구조도와 문서 검색의 원리</b>
+      <div class="shots"><a href="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/a882/10733136/f7c6716d86f0/41586_2023_6792_Fig1_HTML.jpg" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/a882/10733136/f7c6716d86f0/41586_2023_6792_Fig1_HTML.jpg" alt="Coscientist 구조 원본"></a><a href="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/a882/10733136/5ed91c7ade4f/41586_2023_6792_Fig3_HTML.jpg" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/a882/10733136/5ed91c7ade4f/41586_2023_6792_Fig3_HTML.jpg" alt="Coscientist의 문서 검색"></a></div>
+      <figcaption>첫째 그림은 저자들이 그린 구조도로, LLM을 쓰는 모듈과 쓰지 않는 모듈이 색으로 구분되어 있다. 둘째 그림은 설명서를 임베딩으로 바꾸어 벡터 검색으로 찾는 과정이다. 출처: Coscientist 논문<a class="cite" href="#src-or-coscientist"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+  </section>
+
+  <section class="topic" id="oa-chemcrow" data-added="2026-11-26">
+    <h3>ChemCrow: 전문 도구로 LLM을 보완</h3>
+    <p>ChemCrow<a class="cite" href="#src-or-chemcrow"></a>는 LLM이 약한 부분을 전문 화학 도구로 메운다는 생각에서 나왔다. LLM은 분자량을 계산하거나 반응 생성물을 예측하는 데 서툴지만, 그 일을 하는 도구를 골라 부르는 일은 잘한다.</p>
+    <figure>
+      <b class="fig-t">ChemCrow의 구조</b>
+      <div class="dg">
+        <span class="bx wide">사용자의 과제</span><i class="ar"></i>
+        <span class="bx llm wide">에이전트<small>GPT-4, OpenAI. LangChain으로 감싼 생각, 행동, 행동 입력, 관찰의 순환</small></span><i class="ar"></i>
+        <div class="dg-row">
+          <span class="bx aux">일반 도구<small>웹 검색, 문헌 검색,<br>파이썬 실행, 사람에게 묻기</small></span>
+          <span class="bx aux">분자 도구<small>이름과 구조식 변환, 가격,<br>유사도, 특허 확인</small></span>
+          <span class="bx aux">안전 도구<small>통제 물질, 폭발물,<br>안전 요약</small></span>
+          <span class="bx aux">반응 도구<small>반응 이름, 예측,<br>계획, 실행</small></span>
+        </div><i class="ar"></i>
+        <span class="bx wide">사람의 승인<small>합성을 시작하기 전에 허락을 받는다</small></span><i class="ar"></i>
+        <span class="bx act wide">클라우드에 연결된 로봇 합성 장치<small>IBM의 RoboRXN</small></span>
+        <div style="height:8px"></div>
+        <div class="dg-row"><span class="bx db">밖의 공개 자료<small>PubChem, ZINC20, 구매 가능 화합물 목록,<br>통제 물질 목록, 검색 API</small></span><span class="bx db">밖의 예측 서비스<small>IBM의 반응 예측과 계획 서비스</small></span><span class="bx db">안의 색인<small>사용자 문헌의 FAISS 색인.<br>OpenAI 임베딩</small></span></div>
+      </div>
+    </figure>
+    <div class="tbl"><table>
+      <tr><td class="m">새로운 점</td><td>전문 화학 도구 18종을 LLM이 골라 부른다. 통제 물질과 폭발물을 점검하는 안전 도구가 순환 안에 들어 있다. 클라우드 로봇 합성 장치까지 연결.</td></tr>
+      <tr><td class="m">기존 기술과의 차별점</td><td>기존의 반응 예측 도구들은 따로 떨어진 환경이었다. ChemCrow는 그것들을 하나의 에이전트 아래에 묶었다.</td></tr>
+      <tr><td class="m">평가</td><td>과제 14개를 전문 화학자가 평가. 방충제와 유기 촉매 3종을 로봇으로 합성. 색소 탐색에서는 목표 파장 369나노미터에 측정값 336나노미터.</td></tr>
+      <tr><td class="m">한계</td><td>도구의 출력이 틀리면 그대로 따른다. LLM 평가자는 좋은 답과 나쁜 답을 가리지 못하였다. 닫힌 상용 모델에 기대어 재현성이 약하다고 저자들이 밝힌다.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="topic" id="oa-organa" data-added="2026-11-26">
+    <h3>ORGANA: LLM과 작업 계획기의 결합</h3>
+    <p>ORGANA<a class="cite" href="#src-or-organa"></a>는 LLM에게 판단과 대화를 맡기고, 실제 로봇의 움직임과 일정은 고전적인 계획기에게 맡기는 혼합형이다. 로봇 팔 하나가 여러 장비를 오가며 실험을 병렬로 진행한다.</p>
+    <figure>
+      <b class="fig-t">ORGANA의 구조</b>
+      <div class="dg">
+        <span class="bx wide">화학자<small>글이나 말로 실험을 설명한다. 음성 인식은 Whisper</small></span><i class="ar"></i>
+        <span class="bx llm wide">추론기<small>GPT-4. 되묻고, 실험을 제안하고, 결과를 해석한다. 지난 실험은 프롬프트 안에 기억으로 둔다</small></span><i class="ar"></i>
+        <span class="bx llm wide">절차 생성<small>GPT-3.5가 실험을 χDL로 옮기고, 문법 검사를 통과할 때까지 되풀이한다</small></span><i class="ar"></i>
+        <span class="bx core wide">작업과 동작 계획기<small>무엇을 어느 순서로 할지와 로봇 팔의 경로와 일정을 한꺼번에 푼다</small></span><i class="ar"></i>
+        <div class="dg-row"><span class="bx aux">인지<small>투명한 용기의 위치를 찾는다</small></span><span class="bx aux">로봇 실행<small>병렬로 진행</small></span><span class="bx aux">분석기<small>측정값을 맞추어 추론기에 돌려준다</small></span></div><i class="ar"></i>
+        <span class="bx act wide">로봇 팔, 주사기 펌프, 가열 교반기, 전기화학 측정기, 산도 측정기</span>
+      </div>
+      <figcaption>데이터베이스나 벡터 색인은 쓰지 않는다. 사람은 처음에 용기의 역할을 알려 줄 때와 결과가 예상과 다를 때에만 불린다.</figcaption>
+    </figure>
+    <div class="key"><p>LLM은 무엇을 할지를 정하고, 확실해야 하는 로봇의 움직임과 시간 배분은 계획기가 맡는다. 1장에서 본 두 번째 배치 방식의 본보기이다.</p></div>
+    <div class="tbl"><table>
+      <tr><td class="m">새로운 점</td><td>작업 계획과 동작 계획과 일정을 함께 풀어 여러 실험을 병렬로 실행한다. 표식 없이 투명한 용기를 인지한다. 보고서를 자동으로 쓴다. 필요할 때에만 사람을 부른다.</td></tr>
+      <tr><td class="m">기존 기술과의 차별점</td><td>앞선 CLAIRify는 실험 하나를 절차 언어로 옮기는 데 그쳤다. ORGANA는 더 높은 수준의 화학 과제를 추론하고 여러 실험을 이어 간다.</td></tr>
+      <tr><td class="m">평가</td><td>화학자 8명의 사용자 연구. 병렬 실행이 순차 실행보다 21.1퍼센트 빠르다. 올바른 실행 40번 가운데 거짓 경보 3번, 일부러 넣은 오류 8개 가운데 1개를 놓쳤다.</td></tr>
+      <tr><td class="m">한계</td><td>실행 중의 재계획이 없다. 계획 영역을 전문가가 적어야 한다. 투명 물체 인지가 견고하지 않다. 로봇이 스스로 실험 준비를 하지 못한다.</td></tr>
+    </table></div>
+    <p>이 사례의 인지 모듈은 투명한 실험 용기를 다룬다. 투명 물체 깊이 주제에서 본 <a href="#tb-why">실험실 자동화의 필요</a>와 직접 이어진다. 논문은 투명한 접시의 검출 정확도가 기준을 조이면 크게 떨어진다고 요약에서 전한다.</p>
+  </section>
+
+  <section class="topic" id="oa-alab" data-added="2026-11-26">
+    <h3>A-Lab: LLM 없는 자율실험실</h3>
+    <p>A-Lab<a class="cite" href="#src-or-alab"></a>은 LLM을 쓰지 않는다. 정해진 소프트웨어 흐름 안에 여러 기계학습 모델과 규칙이 박혀 있다. 에이전트형 사례와 견줄 기준으로 여기에 둔다.</p>
+    <figure>
+      <b class="fig-t">A-Lab의 구조</b>
+      <div class="dg">
+        <div class="dg-row"><span class="bx db">Materials Project<small>계산으로 예측한 안정한 물질</small></span><span class="bx db">구글 딥마인드의 안정상 자료<small>교차 확인</small></span></div><i class="ar"></i>
+        <span class="bx wide">목표 물질의 선별<small>공기 중 안정성, 새로움, 원료의 입수 가능성으로 거른다. 마지막은 사람이 고른다</small></span><i class="ar"></i>
+        <div class="dg-row"><span class="bx db">문헌에서 뽑은 합성 절차 33,343건</span><span class="bx plan">조리법 제안<small>문헌 유사도 모델, 온도 예측 모델</small></span></div><i class="ar"></i>
+        <span class="bx core wide">실험실 제어 소프트웨어<small>작업 제출 접점. 가열로별로 묶어 일정을 잡는다</small></span><i class="ar"></i>
+        <span class="bx act wide">분말 계량과 혼합, 가열로 네 대, X선 회절 장비, 로봇 팔 세 대</span><i class="ar"></i>
+        <div class="dg-row"><span class="bx db">ICSD<small>결정 구조. 모델 학습용</small></span><span class="bx plan">상 분석<small>합성곱 신경망과 자동 정밀화</small></span></div><i class="ar"></i>
+        <span class="bx plan wide">능동 학습 ARROWS3<small>수율이 50퍼센트를 넘지 않으면 실패에서 배워 다음 조리법을 고른다</small></span>
+        <div style="height:8px"></div>
+        <span class="bx db wide">반응 쌍 데이터베이스<small>실험에서 관찰한 중간 반응 88가지. 실험실이 스스로 쌓는다</small></span>
+      </div>
+      <figcaption>맨 아래의 능동 학습 결과가 다시 조리법 제안으로 돌아가며 순환이 닫힌다.</figcaption>
+    </figure>
+    <div class="tbl"><table>
+      <tr><td class="m">새로운 점</td><td>계산으로 예측한 물질을 문헌 기반 조리법으로 합성하고, 측정 결과를 기계학습으로 해석하고, 실패에서 배워 다음 조리법을 고르는 닫힌 순환을 고체 분말에 적용.</td></tr>
+      <tr><td class="m">기존 기술과의 차별점</td><td>앞선 자율실험실은 액체를 다루는 유기 화학이나 한 가지 물성의 최적화에 치우쳐 있었다. A-Lab은 처음 만드는 무기 물질의 합성을 목표로 한다.</td></tr>
+      <tr><td class="m">평가</td><td>17일 연속 운영. 목표 57개 가운데 36개 합성. 시도한 조리법 353개. 1.5년 평균 예외 발생률 약 3.9퍼센트.</td></tr>
+      <tr><td class="m">한계</td><td>공기 중에서 안정한 물질만 다룬다. 여러 상이 섞인 측정 결과의 해석이 어렵다. 목표와 원료의 선별에 사람이 끼어든다.</td></tr>
+    </table></div>
+    <figure class="shot">
+      <b class="fig-t">원본 그림: 자율 합성의 흐름과 실제 장비</b>
+      <div class="shots"><a href="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/4421/10700133/61814c35ae3d/41586_2023_6734_Fig1_HTML.jpg" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/4421/10700133/61814c35ae3d/41586_2023_6734_Fig1_HTML.jpg" alt="A-Lab의 자율 합성 흐름"></a><a href="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/4421/10700133/8313c097732f/41586_2023_6734_Fig5_ESM.jpg" target="_blank" rel="noopener"><img loading="lazy" referrerpolicy="no-referrer" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/4421/10700133/8313c097732f/41586_2023_6734_Fig5_ESM.jpg" alt="A-Lab의 장비 구성"></a></div>
+      <figcaption>첫째 그림은 목표 선별부터 조리법 제안, 로봇 합성, 상 분석, 능동 학습까지의 흐름이다. 둘째 그림은 실험실의 모든 물리 장비를 한 장에 보인 것이다. 출처: A-Lab 논문<a class="cite" href="#src-or-alab"></a>, CC BY 4.0. 원본 주소로 연결한 그림이어서 인터넷에 연결되어 있어야 보인다.</figcaption>
+    </figure>
+    <div class="note"><p>논문 본문은 목표 57개 가운데 36개를 얻었다고 적고, 논문 머리의 요약 문장은 58개 목표에서 41개의 새 화합물이라고 적어 서로 다르다. 이 책은 본문의 수치를 따랐다. 이 논문에는 2026년에 정정문이 붙었으며 그 내용은 읽지 못하였다.</p></div>
+  </section>
+
+  <section class="topic" id="oa-bridge" data-added="2026-11-26">
+    <h3>운영체제와 에이전트가 만나는 방식</h3>
+    <p>여섯 가지 운영체제형과 세 가지 에이전트형을 나란히 놓으면, 둘이 만나는 접점이 세 가지로 보인다.</p>
+    <figure>
+      <b class="fig-t">에이전트가 실험실에 닿는 세 가지 접점</b>
+      <div class="dg-grid">
+        <div class="dg-panel"><b>장비의 접점을 직접 부른다</b><div class="dg"><span class="bx llm">LLM이 코드를 쓴다</span><i class="ar"></i><span class="bx aux">장비 회사의 프로그램 접점</span><i class="ar"></i><span class="bx act">장비</span></div><p>Coscientist. 붙이기 쉽지만 걸러 주는 층이 없다.</p></div>
+        <div class="dg-panel"><b>절차 기술 언어를 거친다</b><div class="dg"><span class="bx llm">LLM이 절차를 쓴다</span><i class="ar"></i><span class="bx core">문법 검사와 계획기</span><i class="ar"></i><span class="bx act">장비</span></div><p>ORGANA. 절차가 형식에 맞는지를 검사한 뒤 계획기가 실행한다.</p></div>
+        <div class="dg-panel"><b>운영체제의 도구 규약을 거친다</b><div class="dg"><span class="bx llm">LLM이 도구를 부른다</span><span class="dg-note">MCP</span><span class="bx core">운영체제<small>잠금, 형 검사, 모의 실행</small></span><i class="ar"></i><span class="bx act">장비</span></div><p>UniLabOS. 에이전트는 운영체제가 내놓은 도구만 부를 수 있다.</p></div>
+      </div>
+    </figure>
+    <p>이 세 가지는 VLA 주제에서 본 <a href="#plan-kinds">모듈형 작업 계획기</a>와 같은 틀이다. LLM이 코드를 쓰는 방식은 <a href="#plan-code">코드 기반 작업 계획기</a>와 같고, 절차 언어를 거치는 방식은 <a href="#plan-lang">언어 기반 작업 계획기</a>에 가깝다. 도구 규약을 거치는 방식은 산업 자동화 주제의 <a href="#ai-mcp">MCP와 AI 에이전트</a>에서 본 것과 같다.</p>
+    <div class="key"><p>에이전트는 두뇌를, 운영체제는 신경과 반사를 맡는 쪽으로 역할이 나뉘고 있다. 두뇌가 틀린 명령을 내려도 반사가 막아 주는 구조이다.</p></div>
+  </section>
+</section>
+
+<!-- ═══════════ 오케스트레이터 7장 ═══════════ -->
+<section class="chapter" id="ch-or-flow" data-added="2026-11-26">
+  <h2>흐름과 남은 과제</h2>
+  <p class="lead">오케스트레이터가 어떤 순서로 발전해 왔고, 무엇이 아직 풀리지 않았는지를 정리한 장이다.</p>
+
+  <section class="topic" id="of-gen" data-added="2026-11-26">
+    <h3>세대의 변화</h3>
+    <figure>
+      <b class="fig-t">오케스트레이터의 흐름</b>
+      <div class="tl">
+        <div class="tl-row"><b style="background:var(--d-io)">2018년 무렵</b><div class="tl-chips">
+          <span class="chip"><b>ChemOS</b>계획기와 장비를 잇는 중간 계층</span></div></div>
+        <div class="tl-row"><b style="background:var(--accent-soft)">2022년에서 2024년</b><div class="tl-chips">
+          <span class="chip"><b>HELAO</b>층 구조와 통합 데이터</span><span class="chip"><b>HELAO-async</b>비동기와 여러 실험실</span><span class="chip"><b>ChemOS 2.0</b>통신 표준과 운영체제</span><span class="chip"><b>AlabOS</b>자원 예약과 그래프</span></div></div>
+        <div class="tl-row"><b style="background:var(--d-llm)">2023년에서 2024년</b><div class="tl-chips">
+          <span class="chip"><b>Coscientist</b>LLM이 설계부터 실행까지</span><span class="chip"><b>ChemCrow</b>LLM과 전문 도구</span><span class="chip"><b>ORGANA</b>LLM과 계획기의 혼합</span></div></div>
+        <div class="tl-row"><b style="background:var(--d-plan)">2025년 이후</b><div class="tl-chips">
+          <span class="chip"><b>IvoryOS</b>기존 코드를 그대로 붙임</span><span class="chip"><b>UniLabOS</b>에이전트를 전제로 한 운영체제</span></div></div>
+      </div>
+      <figcaption>연도는 논문이나 저장소에 적힌 것을 따랐다. 단계의 구분은 이 책의 정리이다.</figcaption>
+    </figure>
+    <ol class="steps">
+      <li><b>잇는 계층의 등장.</b> 계획 알고리즘과 장비 사이에 공통 소프트웨어 계층을 두자는 발상이 나왔다.</li>
+      <li><b>운영체제로의 성장.</b> 자원 예약, 비동기 실행, 통신 표준, 장기 운영을 갖춘 본격적인 조율 소프트웨어가 되었다.</li>
+      <li><b>LLM 에이전트의 진입.</b> 사람이 하던 문헌 조사와 절차 작성을 LLM이 맡기 시작하였다. 처음에는 운영체제 없이 장비를 직접 불렀다.</li>
+      <li><b>둘의 결합.</b> 운영체제가 에이전트를 위한 접점과 안전 장치를 갖추고, 기존 코드를 쉽게 붙이는 쪽으로 가고 있다.</li>
+    </ol>
+    <p>받은 자료의 리뷰 논문은 이 흐름을 자율실험실 2.0이라고 부르며, AI가 가설과 실험 설계를, 자동화 장비가 실행을, 오케스트레이션 소프트웨어가 전체 조율과 데이터 축적을 맡는 구조로 설명한다고 한다. 그 논문의 본문은 읽지 못하였다.<a class="cite" href="#src-or-sdl2"></a></p>
+  </section>
+
+  <section class="topic" id="of-novel" data-added="2026-11-26">
+    <h3>새로운 점을 한 줄로 모아 보기</h3>
+    <div class="tbl"><table>
+      <tr><th>사례</th><th>앞선 것에 없던 것</th><th>그것이 푼 문제</th></tr>
+      <tr><td class="m">ChemOS</td><td>장비와 무관한 공통 계층</td><td>소프트웨어가 특정 장비와 절차에 묶여 있었다.</td></tr>
+      <tr><td class="m">HELAO</td><td>오케스트레이터, 행동, 드라이버의 층과 통합 데이터 관리</td><td>여러 장비를 묶은 닫힌 순환에서 데이터가 흩어졌다.</td></tr>
+      <tr><td class="m">ChemOS 2.0</td><td>장비마다 표준 통신 서버</td><td>장비마다 통신 방식을 따로 만들어야 했다.</td></tr>
+      <tr><td class="m">AlabOS</td><td>자원 예약, 묶음을 담는 작업 그래프</td><td>고정된 흐름으로는 병렬과 갈래를 다루지 못하고 교착이 생겼다.</td></tr>
+      <tr><td class="m">IvoryOS</td><td>기존 코드에서 화면을 자동으로 생성</td><td>틀에 맞추어 실험실 코드를 다시 짜는 수고가 컸다.</td></tr>
+      <tr><td class="m">UniLabOS</td><td>형 체계, 이중 위상, 이송 연산, 에이전트용 접점</td><td>계획과 실행이 끊겨 있었고, 에이전트의 출력을 걸러 줄 층이 없었다.</td></tr>
+      <tr><td class="m">Coscientist</td><td>여러 LLM과 도구를 묶은 에이전트</td><td>LLM이 글만 내고 실험실에 닿지 못하였다.</td></tr>
+      <tr><td class="m">ChemCrow</td><td>전문 화학 도구의 폭넓은 묶음과 안전 점검</td><td>LLM이 화학의 정확한 계산과 사실에 약하였다.</td></tr>
+      <tr><td class="m">ORGANA</td><td>작업 계획과 일정의 동시 풀이, 필요할 때만 사람을 부르기</td><td>앞선 방식은 실험 하나만 차례로 다루었다.</td></tr>
+      <tr><td class="m">A-Lab</td><td>고체 합성의 닫힌 순환과 실패에서 배우는 능동 학습</td><td>자율실험실이 액체를 다루는 화학에 치우쳐 있었다.</td></tr>
+    </table></div>
+  </section>
+
+  <section class="topic" id="of-open" data-added="2026-11-26">
+    <h3>남은 과제</h3>
+    <div class="tbl"><table>
+      <tr><th>과제</th><th>내용</th></tr>
+      <tr><td class="m">표준의 부재</td><td>오케스트레이션의 공통 표준이 없고, 대부분의 시스템이 한 실험실에 맞추어져 있다. 리뷰 논문이 가장 먼저 꼽는 문제이다.</td></tr>
+      <tr><td class="m">공통 평가의 부재</td><td>여러 오케스트레이터를 같은 과제에서 견준 평가가 없다. 시연으로만 입증된다.</td></tr>
+      <tr><td class="m">장비 회사의 닫힌 소프트웨어</td><td>표준화된 프로그램 접점이 없는 장비가 많아 연구자가 우회 방법을 만들어야 한다.</td></tr>
+      <tr><td class="m">에이전트의 신뢰성</td><td>LLM은 그럴듯하지만 틀린 답을 낸다. UniLabOS 논문도 에이전트의 신뢰성을 수치로 재지 못하였다고 밝힌다.</td></tr>
+      <tr><td class="m">물리적 예외의 자동 복구</td><td>시료가 쏟아지거나 용기가 어긋난 것을 스스로 알아채고 복구하는 일은 아직 대부분 사람의 몫이다.</td></tr>
+      <tr><td class="m">안의 기록과 밖의 지식의 결합</td><td>운영체제형은 실험 기록을 잘 쌓지만 밖의 지식을 쓰지 않고, 에이전트형은 그 반대이다.</td></tr>
+      <tr><td class="m">재현성</td><td>닫힌 상용 LLM을 호출하는 방식은 모델이 바뀌면 결과가 달라진다. ChemCrow의 저자들이 직접 지적한다.</td></tr>
+      <tr><td class="m">안전과 오용</td><td>위험한 물질의 합성을 막는 장치와 원격 운영에 따른 책임의 문제가 남아 있다.</td></tr>
+      <tr><td class="m">여러 실험실의 연결</td><td>기관 사이의 신원 확인, 여러 사용자의 동시 사용, 시료가 기관을 넘나들 때의 추적이 과제이다.</td></tr>
+    </table></div>
+    <h4>다른 주제와의 연결</h4>
+    <ul>
+      <li><b>산업 자동화.</b> 오케스트레이터는 실험실의 제조 운영 관리 계층에 해당한다. 통신 표준과 <a href="#ai-stack">산업 AI 스택</a>의 논의가 거의 그대로 옮겨 온다.</li>
+      <li><b>VLA.</b> 지금의 오케스트레이터는 로봇의 동작을 미리 짠 코드로 부린다. VLA가 그 자리에 들어오면 장비마다 동작을 짜는 수고가 줄어든다. 그때 오케스트레이터는 VLA에게 하위 작업을 내려 주는 <a href="#vla-hier">고수준 계획기</a>의 자리에 놓인다.</li>
+      <li><b>Isaac Sim.</b> 모의 실행과 디지털 트윈은 <a href="#ib-sil">SIL</a>과 같은 원리이다. 에이전트가 낸 절차를 가상 실험실에서 먼저 돌려 보는 데 쓸 수 있다.</li>
+      <li><b>투명 물체 깊이.</b> 실험 용기의 대부분이 투명하다. 로봇이 용기를 집어 옮기는 실험실에서는 <a href="#ch-tr-bg">투명 물체의 깊이</a>가 조율의 전제 조건이 된다.</li>
+    </ul>
+    <h4>전체 흐름의 요약</h4>
+    <ol class="steps">
+      <li><b>오케스트레이터는 실험실의 관제탑이다.</b> 장비를 하나의 실험으로 엮고, 자원을 충돌 없이 나누고, 모든 것을 기록한다.</li>
+      <li><b>에이전트는 판단과 번역을 맡는다.</b> 무엇을 할지를 정하고 기계가 알아듣는 형태로 옮긴다.</li>
+      <li><b>좋은 오케스트레이터의 기준은 세 묶음이다.</b> 실험실을 제대로 부리는가, 오래 믿고 쓸 수 있는가, 다른 사람이 쓸 수 있는가이다.</li>
+      <li><b>평가는 아직 시연 중심이다.</b> 정량 지표는 제안되었지만 공통 평가는 없다.</li>
+      <li><b>흐름은 결합으로 간다.</b> 확률적인 에이전트의 제안을 결정론적인 운영체제가 걸러서 실행한다.</li>
+    </ol>
+  </section>
+</section>
+
+<!-- ═══════════ 오케스트레이터 8장 ═══════════ -->
+<section class="chapter" id="ch-or-quiz" data-added="2026-11-26">
+  <h2>이해 확인 질문</h2>
+  <p class="lead">자율실험실 오케스트레이터의 개념, 기준, 사례를 제대로 이해했는지 스스로 점검하는 질문이다.</p>
+  <section class="topic quiz" id="quiz-orch" data-added="2026-11-26">
+    <h3>자율실험실 오케스트레이터 핵심 개념 문항</h3>
+    <p>먼저 스스로 답해 본 뒤, 질문을 눌러 모범 답안과 비교한다. 답이 막히면 답안 끝의 링크로 해당 설명에 돌아간다.</p>
+
+    <h4>개념</h4>
+    <details><summary>1. 자동화 실험실과 자율실험실은 무엇이 다른가?</summary><p>다음 실험을 누가 정하는가가 다르다. 장비가 사람이 정한 실험을 대신 해 주면 자동화이고, 무엇을 할지까지 시스템이 정하면 자율이다. <a href="#oc-sdl">자율실험실의 정의</a></p></details>
+    <details><summary>2. 자율실험실의 세 가지 구성 요소는 무엇인가?</summary><p>화학 조작을 하는 자동화 장비, 장비 운영과 데이터를 다루는 소프트웨어, 얻은 데이터로 다음 절차를 정하는 실험 계획기이다. <a href="#oc-sdl">자율실험실의 정의</a></p></details>
+    <details><summary>3. 오케스트레이터가 묶어 실행하는 세 가지 기능은 무엇인가?</summary><p>장비의 제어와 통신, 데이터의 추출과 관리와 분석, 다음 실험을 정하는 실험 계획기이다. <a href="#oc-orch">오케스트레이터의 목적과 개념</a></p></details>
+    <details><summary>4. 오케스트레이터가 필요한 까닭 네 가지를 들어 보라.</summary><p>장비가 회사마다 제각각이고, 시료가 장비 사이를 옮겨 다니며, 여러 일이 동시에 돌아 자원을 나누어야 하고, 모든 과정이 기록으로 남아야 하기 때문이다. <a href="#oc-orch">오케스트레이터의 목적과 개념</a></p></details>
+    <details><summary>5. 오케스트레이터의 목적을 세 가지로 줄이면 무엇인가?</summary><p>장비를 하나의 실험으로 엮는 것, 자원을 충돌 없이 나누어 쓰게 하는 것, 모든 것을 기록으로 남기는 것이다. <a href="#oc-orch">오케스트레이터의 목적과 개념</a></p></details>
+    <details><summary>6. LLM 에이전트는 어떤 순환으로 일하는가?</summary><p>생각으로 무엇을 할지 정하고, 행동으로 도구를 고르고, 도구가 실행되면 관찰로 결과를 읽고 다시 생각으로 돌아간다. 이것을 ReAct라고 부른다. <a href="#oc-agent">에이전트의 목적과 개념</a></p></details>
+    <details><summary>7. 자율실험실에서 에이전트가 맡는 일 다섯 가지는 무엇인가?</summary><p>사람과의 창구, 문헌과 설명서와 데이터베이스에서의 지식 수집, 실험 절차의 작성, 다음 실험의 선택, 오류의 진단이다. <a href="#oc-agent">에이전트의 목적과 개념</a></p></details>
+    <details><summary>8. 오케스트레이터와 에이전트는 답하는 물음이 어떻게 다른가?</summary><p>에이전트는 무엇을 왜 할 것인가에 답하고, 오케스트레이터는 누가 언제 어느 장비로 실행하는가에 답한다. 앞의 것은 확률적으로 판단하고 뒤의 것은 정해진 규칙대로 움직인다. <a href="#oc-relation">오케스트레이터와 에이전트의 관계</a></p></details>
+    <details><summary>9. 오케스트레이터와 에이전트를 배치하는 세 가지 방식은 무엇인가?</summary><p>규칙 기반 오케스트레이터에 최적화 알고리즘을 붙이는 방식, 오케스트레이터 위에 에이전트를 얹는 방식, 에이전트가 오케스트레이터를 겸하는 방식이다. <a href="#oc-relation">오케스트레이터와 에이전트의 관계</a></p></details>
+    <details><summary>10. 에이전트가 오케스트레이터를 겸하는 방식의 한계는 무엇인가?</summary><p>장비가 늘고 시료가 동시에 여럿 돌면 자원 예약, 시료 추적, 오류 복구가 필요한데, 이것은 확률적으로 판단하는 모델에 맡기기 어렵다. <a href="#oc-relation">오케스트레이터와 에이전트의 관계</a></p></details>
+    <details><summary>11. 자율 수준을 매기는 두 축은 무엇인가?</summary><p>실험을 고르는 소프트웨어의 자율과 실험을 실행하는 하드웨어의 자율이다. 각각 세 범주로 나누고 둘을 합쳐 단계를 정한다. <a href="#oc-level">자율의 수준</a></p></details>
+    <details><summary>12. 조각별, 반폐루프, 폐루프, 자기 동기는 어떻게 다른가?</summary><p>조각별은 사람이 데이터와 조건을 나른다. 반폐루프는 일부 단계에만 사람이 끼어든다. 폐루프는 실행과 분석과 선택에 사람이 끼어들지 않는다. 자기 동기는 연구 목표까지 스스로 정하며 아직 도달한 사례가 없다. <a href="#oc-level">자율의 수준</a></p></details>
+
+    <h4>구성 요소</h4>
+    <details><summary>13. 오케스트레이터에 공통으로 들어 있는 부품을 위에서부터 들어 보라.</summary><p>사람과 에이전트의 창구, 실험 관리자와 계획기 연결부, 작업 관리자와 자원 관리자, 장비 관리자와 드라이버, 그리고 모든 층이 읽고 쓰는 데이터 계층이다. <a href="#op-layers">공통 계층 구조</a></p></details>
+    <details><summary>14. 사례를 견줄 때 물어야 할 다섯 가지는 무엇인가?</summary><p>실험을 어떤 형태로 적는가, 자원 충돌을 어떻게 막는가, 장비와 어떻게 말하는가, 데이터를 어디에 두는가, 다음 실험을 누가 정하는가이다. <a href="#op-layers">공통 계층 구조</a></p></details>
+    <details><summary>15. 실험을 방향 그래프로 적으면 무엇이 좋은가?</summary><p>작업의 앞뒤 관계와 갈래가 나뉘고 모이는 흐름을 적을 수 있다. 점 하나에 여러 시료를 묶으면 가열로처럼 한 번에 여러 시료를 받는 장비도 다룰 수 있다. <a href="#op-workflow">실험을 적는 방식</a></p></details>
+    <details><summary>16. 절차 기술 언어는 무엇이며 어디에 쓰이는가?</summary><p>화학 절차를 장비와 무관하게 적는 전용 언어이다. χDL이 대표적이며, LLM이 실험을 이 언어로 옮기면 문법 검사를 거쳐 계획기가 실행할 수 있다. <a href="#op-workflow">실험을 적는 방식</a></p></details>
+    <details><summary>17. 교착이란 무엇이며 어떻게 막는가?</summary><p>두 작업이 서로 상대가 쥔 자원을 기다리며 멈추는 것이다. 자원 예약, 점유 확인과 잠금, 우선순위 대기열 같은 자원 관리로 막는다. <a href="#op-sched">스케줄링과 자원 관리</a></p></details>
+    <details><summary>18. 장비 추상화란 무엇인가?</summary><p>회사와 모델이 다른 장비를 같은 형태의 호출로 부릴 수 있게 감싸는 일이다. <a href="#op-comm">장비 추상화와 통신</a></p></details>
+    <details><summary>19. SiLA 2, ROS 2, MCP는 각각 무엇을 잇는 통신 방식인가?</summary><p>SiLA 2는 실험실 장비를 위한 통신 표준이고, ROS 2는 로봇 분야의 노드 사이 통신 기반이며, MCP는 LLM 에이전트가 도구를 부르는 규약이다. <a href="#op-comm">장비 추상화와 통신</a></p></details>
+    <details><summary>20. 오케스트레이터의 데이터를 안의 저장소와 밖의 지식 출처로 나누어 설명해 보라.</summary><p>안의 저장소는 시료 위치, 장비 상태, 작업 진행, 측정 결과 같은 실험실 자신의 기록이다. 밖의 지식 출처는 재료 데이터베이스, 화합물 데이터베이스, 문헌, 설명서처럼 이미 세상에 있는 지식이다. <a href="#op-data">데이터 계층</a></p></details>
+    <details><summary>21. 좋은 오케스트레이터가 계획기를 가리지 않아야 한다는 것은 무슨 뜻인가?</summary><p>최적화 알고리즘이나 에이전트를 바꾸어 끼워도 장비 쪽과 데이터 쪽을 고칠 필요가 없어야 한다는 뜻이다. <a href="#op-planner">실험 계획기</a></p></details>
+    <details><summary>22. 오류 처리와 안전을 위한 장치를 네 가지 들어 보라.</summary><p>복구 가능한 오류와 불가능한 오류의 구분, 한 장비가 멈추어도 나머지가 도는 부분 고립, 위험한 동작에 대한 실행 전 승인, 실제 장비 없이 흐름을 시험하는 모의 실행 방식이다. <a href="#op-fault">오류 처리, 사람의 개입, 안전</a></p></details>
+
+    <h4>기준과 평가</h4>
+    <details><summary>23. 좋은 오케스트레이터의 기준 열두 가지는 어떤 세 묶음으로 나뉘는가?</summary><p>실험실을 제대로 부리는가, 오래 믿고 쓸 수 있는가, 다른 사람과 다른 실험실이 쓸 수 있는가의 세 묶음이다. <a href="#ok-criteria">잘 만들어진 오케스트레이터의 기준 열두 가지</a></p></details>
+    <details><summary>24. 실험실을 제대로 부리는가에 해당하는 기준을 들어 보라.</summary><p>장비의 직접 제어, 모듈 분리, 표현력 있는 워크플로, 자원 관리와 병렬 실행, 시료 이송의 관리이다. <a href="#ok-criteria">잘 만들어진 오케스트레이터의 기준 열두 가지</a></p></details>
+    <details><summary>25. 자율실험실의 정량 지표 일곱 가지는 무엇인가?</summary><p>자율 정도, 운영 수명, 처리량, 실험 정밀도, 재료 사용량, 접근 가능한 매개변수 공간, 최적화 효율이다. <a href="#ok-metrics">정량 지표 일곱 가지</a></p></details>
+    <details><summary>26. 운영 수명과 처리량을 실제로 보인 값과 이론값으로 나누어 보고하는 까닭은 무엇인가?</summary><p>장비의 한계와 실험의 한계를 구분하고 무엇이 병목인지를 드러내기 위해서이다. 사람의 도움이 있는 경우와 없는 경우도 나누어 적는다. <a href="#ok-metrics">정량 지표 일곱 가지</a></p></details>
+    <details><summary>27. 실험 정밀도를 잴 때 조심할 점은 무엇인가?</summary><p>같은 조건을 연달아 되풀이하면 치우침이 생긴다. 반복하려는 조건을 무작위 조건 사이에 끼워 넣어야 한다. <a href="#ok-metrics">정량 지표 일곱 가지</a></p></details>
+    <details><summary>28. 오케스트레이터는 지금 주로 무엇으로 평가되는가?</summary><p>숫자의 비교가 아니라 시연으로 평가된다. 장기 운영의 기록, 붙여 본 플랫폼의 수와 든 시간, 사용자 연구, 과학적 성과가 쓰인다. 여러 오케스트레이터를 같은 과제에서 견준 공통 평가는 없다. <a href="#ok-practice">논문들은 실제로 무엇으로 평가했는가</a></p></details>
+    <details><summary>29. 과학적 성과로 오케스트레이터를 평가할 때의 함정은 무엇인가?</summary><p>새 물질을 몇 개 만들었는가 같은 성과는 오케스트레이터가 아니라 장비와 계획기를 포함한 실험실 전체의 성과이다. <a href="#ok-practice">논문들은 실제로 무엇으로 평가했는가</a></p></details>
+    <details><summary>30. 오류 내성과 안전을 숫자로 재려면 무엇을 볼 수 있는가?</summary><p>예외 발생률, 사람 없이 복구된 비율, 일부러 넣은 오류에서 안전 상태까지 걸린 시간, 거짓 경보와 놓친 오류의 수를 볼 수 있다. <a href="#ok-how">기준을 평가하는 방법</a></p></details>
+
+    <h4>사례</h4>
+    <details><summary>31. ChemOS가 처음 내놓은 발상은 무엇인가?</summary><p>자율실험실의 소프트웨어를 특정 장비에 묶지 않고 장비와 무관한 공통 계층으로 만들자는 발상이다. <a href="#os-chemos">ChemOS: 공통 계층이라는 발상</a></p></details>
+    <details><summary>32. ChemOS 2.0은 장비와 어떻게 통신하며 데이터를 어디에 두는가?</summary><p>장비마다 SiLA 2 서버를 두고 중앙 프로세스가 그것을 부른다. 데이터는 PostgreSQL에 둔다. <a href="#os-chemos2">ChemOS 2.0: 통신 표준을 쓰는 운영체제</a></p></details>
+    <details><summary>33. HELAO의 세 층은 무엇이며 통신은 어떤 규칙을 따르는가?</summary><p>오케스트레이터, 행동, 드라이버이다. 통신은 위에서 아래로 내려가고, 행동끼리는 서로 말할 수 있으며, 드라이버는 자기를 부른 행동하고만 말한다. <a href="#os-helao">HELAO: 층을 이룬 오케스트레이션</a></p></details>
+    <details><summary>34. AlabOS의 새로운 점과 앞선 틀과의 차별점은 무엇인가?</summary><p>실험을 묶음을 담는 방향 그래프로 적고, 자원을 요청하면 자동으로 풀어 주는 예약 방식을 쓰며, 관리자와 작업 행위자를 분리한다. 앞선 틀이 고정된 흐름에 치우쳐 병렬과 갈래에 약하였다는 점이 차별점이다. <a href="#os-alabos">AlabOS: 자원 예약과 그래프 기반 워크플로</a></p></details>
+    <details><summary>35. AlabOS에서 네 관리자는 어떻게 상태를 맞추는가?</summary><p>모두 하나의 MongoDB를 읽고 쓴다. 시료, 장비, 작업, 실험의 네 묶음이 들어 있다. <a href="#os-alabos">AlabOS: 자원 예약과 그래프 기반 워크플로</a></p></details>
+    <details><summary>36. IvoryOS는 다른 오케스트레이터와 접근 방향이 어떻게 다른가?</summary><p>틀에 실험실을 맞추게 하지 않는다. 실험실이 이미 가진 파이썬 장비 코드를 읽어 조작 화면과 워크플로 편집기를 자동으로 만든다. <a href="#os-ivoryos">IvoryOS: 기존 코드를 그대로 화면으로</a></p></details>
+    <details><summary>37. IvoryOS에서 LLM과 최적화 알고리즘은 각각 어디에 쓰이는가?</summary><p>LLM은 글을 워크플로로 옮기는 선택적인 설계 보조이며 실행 순환 안에 있지 않다. 닫힌 순환을 이끄는 것은 Ax의 베이지안 최적화이다. <a href="#os-ivoryos">IvoryOS: 기존 코드를 그대로 화면으로</a></p></details>
+    <details><summary>38. UniLabOS의 세 가지 핵심 개념은 무엇인가?</summary><p>행동과 자원의 형 체계, 자원 나무와 물리 그래프의 이중 위상, 옮기기를 기본 연산으로 넣은 것이다. <a href="#os-unilabos">UniLabOS: 에이전트를 전제로 한 운영체제</a></p></details>
+    <details><summary>39. UniLabOS는 에이전트의 출력을 어떻게 다루는가?</summary><p>에이전트는 MCP로 운영체제의 도구를 부르고, 그 출력은 잠금, 형 검사, 모의 실행을 통과해야 장비에 닿는다. 논문은 운영체제를 AI를 위한 안전 핵심이라고 부른다. <a href="#os-unilabos">UniLabOS: 에이전트를 전제로 한 운영체제</a></p></details>
+    <details><summary>40. Coscientist에서 LLM을 쓰는 모듈과 쓰지 않는 모듈을 구분해 보라.</summary><p>계획자, 웹 검색기, 문서 검색기는 LLM을 쓴다. 코드 실행과 자동화는 LLM을 쓰지 않는다. 계획자는 OpenAI의 GPT-4이다. <a href="#oa-coscientist">Coscientist: 여러 LLM과 도구를 묶은 에이전트</a></p></details>
+    <details><summary>41. Coscientist는 처음 보는 장비의 코드를 어떻게 쓰는가?</summary><p>설명서의 절마다 임베딩으로 벡터를 만들어 두었다가, 물음과 뜻이 가까운 절을 찾아 계획자에게 건넨다. 검색 증강 생성 방식이다. <a href="#oa-coscientist">Coscientist: 여러 LLM과 도구를 묶은 에이전트</a></p></details>
+    <details><summary>42. ChemCrow가 쓰는 지식 출처를 안과 밖으로 나누어 보라.</summary><p>밖의 것은 PubChem, ZINC20, 구매 가능 화합물 목록, 통제 물질 목록, 검색 API, IBM의 반응 예측 서비스이다. 안의 것은 사용자 문헌으로 만든 FAISS 색인이다. <a href="#oa-chemcrow">ChemCrow: 전문 도구로 LLM을 보완</a></p></details>
+    <details><summary>43. ChemCrow의 안전 장치는 무엇인가?</summary><p>통제 대상 화학 물질과 폭발물을 점검하는 도구가 순환 안에 있고, 로봇 합성을 시작하기 전에 사용자의 허락을 받는다. <a href="#oa-chemcrow">ChemCrow: 전문 도구로 LLM을 보완</a></p></details>
+    <details><summary>44. ORGANA에서 LLM과 계획기는 일을 어떻게 나누는가?</summary><p>LLM은 사용자와 대화하고 실험을 제안하고 절차 언어를 쓴다. 로봇의 움직임과 일정은 작업과 동작 계획기가 푼다. <a href="#oa-organa">ORGANA: LLM과 작업 계획기의 결합</a></p></details>
+    <details><summary>45. A-Lab을 에이전트형 사례 옆에 둔 까닭은 무엇인가?</summary><p>LLM을 쓰지 않고도 자율을 이룬 사례이기 때문이다. 정해진 소프트웨어 흐름 안에 기계학습 모델과 능동 학습 규칙이 들어 있다. <a href="#oa-alab">A-Lab: LLM 없는 자율실험실</a></p></details>
+    <details><summary>46. A-Lab이 쓰는 데이터베이스를 안과 밖으로 나누어 보라.</summary><p>밖의 것은 Materials Project, 구글 딥마인드의 안정상 자료, ICSD, 문헌에서 뽑은 합성 절차이다. 안의 것은 실험에서 관찰한 반응 쌍 데이터베이스와 실험 기록이다. <a href="#oa-alab">A-Lab: LLM 없는 자율실험실</a></p></details>
+    <details><summary>47. 에이전트가 실험실에 닿는 세 가지 접점은 무엇인가?</summary><p>장비의 프로그램 접점을 직접 부르는 방식, 절차 기술 언어를 거치는 방식, 운영체제의 도구 규약을 거치는 방식이다. <a href="#oa-bridge">운영체제와 에이전트가 만나는 방식</a></p></details>
+
+    <h4>비교와 흐름</h4>
+    <details><summary>48. LLM을 쓰는 사례와 쓰지 않는 사례를 나누어 보라.</summary><p>Coscientist, ChemCrow, ORGANA, UniLabOS는 LLM이 중심이거나 순환 안에 있다. IvoryOS는 선택적인 보조로만 쓴다. ChemOS 2.0, HELAO, AlabOS, A-Lab은 쓰지 않는다. <a href="#og-llmdb">LLM과 데이터베이스 사용 지도</a></p></details>
+    <details><summary>49. 운영체제형과 에이전트형은 데이터 사용에서 어떤 대비를 보이는가?</summary><p>운영체제형은 안의 저장소가 튼튼하고 밖의 지식을 거의 쓰지 않는다. 에이전트형은 밖의 지식을 폭넓게 쓰지만 실험 기록을 쌓는 안의 저장소가 약하다. <a href="#og-llmdb">LLM과 데이터베이스 사용 지도</a></p></details>
+    <details><summary>50. 오케스트레이터의 발전을 네 단계로 말해 보라.</summary><p>계획기와 장비를 잇는 계층의 등장, 자원 예약과 통신 표준을 갖춘 운영체제로의 성장, LLM 에이전트의 진입, 그리고 운영체제와 에이전트의 결합이다. <a href="#of-gen">세대의 변화</a></p></details>
+    <details><summary>51. 오케스트레이션 분야에서 가장 먼저 꼽히는 문제는 무엇인가?</summary><p>공통 표준이 없고 대부분의 시스템이 한 실험실에 맞추어져 있어 일반성이 부족하다는 점이다. <a href="#of-open">남은 과제</a></p></details>
+    <details><summary>52. 닫힌 상용 LLM을 호출하는 방식의 문제는 무엇인가?</summary><p>모델이 바뀌면 결과가 달라져 재현성이 약하다. 제어할 수 있는 범위도 좁다. <a href="#of-open">남은 과제</a></p></details>
+    <details><summary>53. VLA가 실험실에 들어오면 오케스트레이터의 자리는 어떻게 되는가?</summary><p>지금은 로봇의 동작을 미리 짠 코드로 부린다. VLA가 동작을 맡으면 오케스트레이터는 VLA에게 하위 작업을 내려 주는 고수준 계획기의 자리에 놓인다. <a href="#of-open">남은 과제</a></p></details>
+
+  </section>
+</section>
+
+<!-- ▲▲▲ 오케스트레이터 장 끝 ▲▲▲ -->
+</div><!-- /part-orch -->
+
 
 <section class="chapter appendix" id="guide">
   <h2>이 책 읽는 법</h2>
@@ -3780,6 +4795,20 @@
     <dt id="g-nerf" data-added="2026-11-25">NeRF <small>Neural Radiance Field</small></dt>
     <dd>여러 방향에서 찍은 영상으로부터 공간의 각 위치의 밀도와 색을 신경망에 담아 장면을 3차원으로 표현하는 기법이다.</dd>
   </dl>
+  <h4>자율실험실 오케스트레이터 용어</h4>
+  <dl class="glossary">
+    <!-- 한글 가나다 순, 그 뒤에 영문 ABC 순으로 유지 -->
+    <dt id="g-bo" data-added="2026-11-26">베이지안 최적화 <small>BO, Bayesian Optimization</small></dt>
+    <dd>지금까지의 결과로 통계 모형을 만들고 가장 유망하거나 가장 불확실한 지점을 다음 실험으로 고르는 최적화 방법이다.</dd>
+    <dt id="g-orchestrator" data-added="2026-11-26">오케스트레이터 <small>Orchestrator</small></dt>
+    <dd>실험실의 여러 장비와 소프트웨어가 하나의 실험 흐름으로 함께 움직이도록 조율하는 소프트웨어이다. 실험실 운영체제라고도 한다.</dd>
+    <dt id="g-sdl" data-added="2026-11-26">자율실험실 <small>SDL, Self-Driving Laboratory</small></dt>
+    <dd>실험의 설계, 실행, 분석, 다음 실험의 선택을 사람의 손을 거치지 않고 되풀이하는 실험실이다.</dd>
+    <dt id="g-dag" data-added="2026-11-26">DAG <small>Directed Acyclic Graph</small></dt>
+    <dd>화살표를 따라가도 제자리로 돌아오지 않는 방향 그래프이다. 작업의 앞뒤 의존 관계를 적는 데 쓴다.</dd>
+    <dt id="g-fair" data-added="2026-11-26">FAIR 원칙 <small>Findable, Accessible, Interoperable, Reusable</small></dt>
+    <dd>데이터가 찾을 수 있고, 접근할 수 있고, 서로 호환되고, 다시 쓸 수 있어야 한다는 원칙이다.</dd>
+  </dl>
 </section>
 
 <section class="chapter appendix" id="sources">
@@ -3835,6 +4864,20 @@
     <li id="src-tr-dp3" data-added="2026-11-25"><b>3D Diffusion Policy: Generalizable Visuomotor Policy Learning via Simple 3D Representations</b><span class="src-meta">RSS 2024, arXiv 2403.03954, CC BY 4.0</span>깊이에서 얻은 점군을 확산 정책의 조건으로 쓰는 정책이다. <a href="https://arxiv.org/abs/2403.03954" target="_blank" rel="noopener">arXiv 2403.03954</a></li>
     <li id="src-tr-peract" data-added="2026-11-25"><b>Perceiver-Actor: A Multi-Task Transformer for Robotic Manipulation</b><span class="src-meta">CoRL 2022, arXiv 2209.05451, CC BY 4.0</span>여러 카메라의 색과 깊이를 복셀로 합쳐 트랜스포머에 넣고 복셀 위의 행동을 내는 정책이다. <a href="https://arxiv.org/abs/2209.05451" target="_blank" rel="noopener">arXiv 2209.05451</a></li>
     <li id="src-tr-others" data-added="2026-11-25"><b>3D-VLA, VoxPoser, ReKep</b><span class="src-meta">arXiv 2403.09631, 2307.05973, 2409.01652</span>깊이를 생성 목표로 쓰거나 계획기의 중간 표현을 만드는 데 쓰는 사례로 참고하였다. 세 논문 모두 뒤쪽은 요약으로만 확인하였다. <a href="https://arxiv.org/abs/2403.09631" target="_blank" rel="noopener">arXiv 2403.09631</a></li>
+    <li id="src-or-sdl2" data-added="2026-11-26"><b>Toward self-driving laboratory 2.0</b><span class="src-meta">Materials Horizons, 2026, 한국과학기술연구원 한상수 박사 연구진</span>받은 자료의 중심 리뷰이다. 출판사 사이트가 자동 접근을 막아 본문을 읽지 못하였다. 이 책에는 받은 소개 글의 내용만 한 문장으로 반영되어 있다. <a href="https://pubs.rsc.org/en/content/articlehtml/2026/mh/d5mh01984b" target="_blank" rel="noopener">pubs.rsc.org</a></li>
+    <li id="src-or-tom" data-added="2026-11-26"><b>Self-Driving Laboratories for Chemistry and Materials Science</b><span class="src-meta">Gary Tom 외, Chemical Reviews, 2024, CC BY-NC-ND 4.0</span>자율실험실 분야의 종합 리뷰이다. 자율 수준, 소프트웨어 구성, 오케스트레이션의 어려움을 참고하였다. 본문이 매우 길어 서론과 2장의 소프트웨어 부분까지만 원문으로 읽었다. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11363023/" target="_blank" rel="noopener">PMC11363023</a></li>
+    <li id="src-or-metrics" data-added="2026-11-26"><b>Performance metrics to unleash the power of self-driving labs in chemistry and materials science</b><span class="src-meta">Amanda Volk, Milad Abolhasani, Nature Communications, 2024, CC BY 4.0</span>자율실험실의 성능을 일곱 가지 지표로 보고하자고 제안한다. 받은 자료에는 없었고 평가 기준을 정리하려고 더한 자료이다. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10866889/" target="_blank" rel="noopener">PMC10866889</a></li>
+    <li id="src-or-unilabos" data-added="2026-11-26"><b>UniLabOS: An AI-Native Operating System for Autonomous Laboratories</b><span class="src-meta">Jing Gao 외, arXiv 2512.21766, 2025년 12월, CC BY 4.0</span>에이전트를 전제로 한 실험실 운영체제이다. 서론에서 ChemOS, ChemOS 2.0, AlabOS, OCTOPUS를 견준다. <a href="https://arxiv.org/abs/2512.21766" target="_blank" rel="noopener">arXiv 2512.21766</a></li>
+    <li id="src-or-alabos" data-added="2026-11-26"><b>AlabOS: A Python-based Reconfigurable Workflow Management Framework for Autonomous Laboratories</b><span class="src-meta">Yuxing Fei 외, Digital Discovery, 2024, arXiv 2405.13930, CC BY 4.0</span>자원 예약과 그래프 기반 워크플로를 쓰는 오케스트레이터이다. arXiv 초판을 읽었다. 운영 수치가 초판과 개정판 초록에서 다르다. <a href="https://arxiv.org/abs/2405.13930" target="_blank" rel="noopener">arXiv 2405.13930</a></li>
+    <li id="src-or-helao" data-added="2026-11-26"><b>HELAO와 HELAO-async</b><span class="src-meta">Rahmanian 외, Advanced Materials Interfaces, 2022. Guevarra 외, Digital Discovery, 2023</span>두 논문 모두 출판사 사이트가 막혀 읽지 못하였다. 공개 저장소 두 곳의 설명만 읽었다. <a href="https://github.com/High-Throughput-Experimentation/helao-async" target="_blank" rel="noopener">github.com/High-Throughput-Experimentation</a></li>
+    <li id="src-or-ivoryos" data-added="2026-11-26"><b>IvoryOS: an interoperable web interface for orchestrating Python-based self-driving laboratories</b><span class="src-meta">Wenyu Zhang 외, Nature Communications, 2025, CC BY 4.0, 코드는 MIT</span>기존 파이썬 코드에서 조작 화면을 자동으로 만드는 오케스트레이터이다. 방법 부분의 일부는 요약으로만 확인하였다. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12137583/" target="_blank" rel="noopener">PMC12137583</a></li>
+    <li id="src-or-chemos" data-added="2026-11-26"><b>ChemOS: An orchestration software to democratize autonomous discovery</b><span class="src-meta">Loïc Roch 외, PLOS ONE, 2020, CC BY 4.0</span>중앙 워크플로 관리자와 여섯 모듈의 구조를 설명한다. 뒤쪽 절반은 요약으로만 확인하였다. 2018년의 첫 논문은 읽지 못하였다. <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0229862" target="_blank" rel="noopener">journals.plos.org</a></li>
+    <li id="src-or-chemos2" data-added="2026-11-26"><b>ChemOS 2.0: an orchestration architecture for chemical self-driving laboratories</b><span class="src-meta">Malcolm Sim 외, Matter, 2024, 코드는 MIT</span>논문 본문은 읽지 못하였다. 공개 저장소의 설명과 다른 논문의 소개만을 바탕으로 정리하였다. <a href="https://github.com/malcolmsimgithub/ChemOS2.0" target="_blank" rel="noopener">github.com/malcolmsimgithub/ChemOS2.0</a></li>
+    <li id="src-or-coscientist" data-added="2026-11-26"><b>Autonomous chemical research with large language models</b><span class="src-meta">Daniil Boiko, Robert MacKnight, Ben Kline, Gabe Gomes, Nature, 2023, CC BY 4.0</span>GPT-4를 중심으로 실험을 설계하고 실행하는 에이전트 Coscientist의 논문이다. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10733136/" target="_blank" rel="noopener">PMC10733136</a></li>
+    <li id="src-or-chemcrow" data-added="2026-11-26"><b>ChemCrow: Augmenting large-language models with chemistry tools</b><span class="src-meta">Andres Bran 외, arXiv 2304.05376</span>전문 화학 도구를 LLM이 골라 부르는 에이전트이다. 초록은 도구를 18종이라고 적고 방법 부분에는 19개가 나열되어 있다. <a href="https://arxiv.org/abs/2304.05376" target="_blank" rel="noopener">arXiv 2304.05376</a></li>
+    <li id="src-or-organa" data-added="2026-11-26"><b>ORGANA: A Robotic Assistant for Automated Chemistry Experimentation and Characterization</b><span class="src-meta">Kourosh Darvish 외, arXiv 2401.06949</span>LLM과 작업 계획기를 결합한 로봇 실험 보조이다. LLM의 종류 일부는 요약으로만 확인하였다. <a href="https://arxiv.org/abs/2401.06949" target="_blank" rel="noopener">arXiv 2401.06949</a></li>
+    <li id="src-or-alab" data-added="2026-11-26"><b>An autonomous laboratory for the accelerated synthesis of novel materials</b><span class="src-meta">Nathan Szymanski 외, Nature, 2023, CC BY 4.0</span>고체 분말 합성 자율실험실 A-Lab의 논문이다. 본문과 머리 요약의 수치가 서로 다르고, 2026년에 정정문이 붙었으나 그 내용은 읽지 못하였다. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10700133/" target="_blank" rel="noopener">PMC10700133</a></li>
+    <li id="src-or-awesome" data-added="2026-11-26"><b>Awesome Self-Driving Labs</b><span class="src-meta">Acceleration Consortium, GitHub 목록</span>받은 주소에서 저장소를 찾을 수 없다는 응답이 나와 읽지 못하였다. 이 책에는 내용이 반영되어 있지 않다. <a href="https://github.com/AccelerationConsortium/awesome-self-driving-labs" target="_blank" rel="noopener">github.com/AccelerationConsortium</a></li>
   </ol>
 </section>
 
@@ -3844,6 +4887,6 @@
 </div>
 
 <div id="tip" hidden></div>
-<script src="book.js?v=20261125g"></script>
+<script src="book.js?v=20261126b"></script>
 </body>
 </html>

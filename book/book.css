@@ -267,3 +267,22 @@ td.m { font-weight: 700; white-space: nowrap; } td.m small { display: block; fon
 .shots img { width: 100%; height: auto; display: block; border-radius: 8px; background: #fff; border: 1px solid var(--line); }
 figure.shot figcaption { text-align: left; line-height: 1.6; }
 .shots:not(.one) img { height: 230px; object-fit: contain; }
+
+/* ── 오케스트레이터 비교 도식 ─────────────────────────── */
+:root { --d-llm: #e9d7fb; --d-llm-b: #8a4fd0; --d-db: #fdeeb0; --d-db-b: #b98a00; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --d-llm: #3d2a5c; --d-llm-b: #b98cf0; --d-db: #4a3d10; --d-db-b: #e0b84a; } }
+:root[data-theme="dark"] { --d-llm: #3d2a5c; --d-llm-b: #b98cf0; --d-db: #4a3d10; --d-db-b: #e0b84a; }
+.bx.llm { background: var(--d-llm); box-shadow: inset 0 0 0 2px var(--d-llm-b); }
+.bx.db { background: var(--d-db); box-shadow: inset 0 0 0 2px var(--d-db-b); border-radius: 4px 4px 14px 14px; }
+.bx.core { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); }
+.tag { display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .04em; padding: 1px 7px; border-radius: 999px; margin-right: 6px; vertical-align: 1px; }
+.tag.llm { background: var(--d-llm); color: var(--d-llm-b); box-shadow: inset 0 0 0 1px var(--d-llm-b); }
+.tag.db { background: var(--d-db); color: var(--d-db-b); box-shadow: inset 0 0 0 1px var(--d-db-b); }
+.tag.com { background: var(--d-io); color: var(--muted); box-shadow: inset 0 0 0 1px var(--muted); }
+.sys-meta { text-align: left; font-size: 12.5px; line-height: 1.55; margin: 10px 4px 0; display: grid; gap: 4px; }
+.sys-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); gap: 10px; text-align: center; }
+.dg-panel > b i { font-style: normal; color: var(--muted); font-weight: 600; margin-left: 4px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 12px; font-size: 12.5px; }
+.sys-grid { grid-template-columns: repeat(auto-fit, minmax(205px, 1fr)); }
+.sys-grid .bx { padding: 6px 8px; min-width: 60px; font-size: 12.5px; } .sys-grid .bx small { font-size: 10.5px; }
+.sys-grid .dg-row { gap: 5px; } .sys-grid .sys-meta { font-size: 11.5px; }
