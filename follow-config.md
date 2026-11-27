@@ -104,7 +104,8 @@ Physical AI
 - 매일 최신본을 `brief-<날짜>.html`(예: brief-2026-07-21.html)로 스냅샷 저장 (루트에 두어 images/ 경로 유지)
 - `brief-*.html`은 **최신 30회차만 유지**, 그보다 오래된 날짜 파일은 삭제
 - 어떤 `brief-*.html`에서도 참조되지 않는 `images/*.png`는 함께 삭제(정리)
-- `paper-brief.html`(=최신)/`index.html`은 항상 오늘치를 표시, 하단 "지난 브리핑" 목록에 최근 30회 링크
+- `paper-brief.html`(=최신)은 항상 오늘치를 표시, 하단 "지난 브리핑" 목록에 최근 30회 링크
+- `index.html`은 **홈(허브)** — 모든 브리핑·보관함·지식 책 링크를 모은 페이지 (2026-11-27 변경, 이전에는 paper-brief로 넘기는 리다이렉트). 회차 목록은 `themes.json`을 실시간으로 읽고, 예비 목록은 `python scripts/build_hub.py`로 갱신. 새 팔로우업을 만들면 `index.html`의 `KINDS`와 `scripts/build_hub.py`의 `PREFIX`에 한 줄씩 추가
 - 지난 날짜 전체 기록은 GitHub 커밋 히스토리에 남음
 
 ## 11. 보관함 (Keep) — 영구 보관, 30회 정리와 무관

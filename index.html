@@ -3,17 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Physical AI 논문 팔로우업</title>
-<meta http-equiv="refresh" content="0; url=paper-brief.html">
-<link rel="canonical" href="paper-brief.html">
+<title>논문 팔로우업 홈</title>
 <style>
-  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
-    background:#0f1115;color:#e7eaf0;
-    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif}
-  a{color:#6ea8fe}
+  :root{
+    --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e7eaf0;
+    --muted:#9aa3b2; --accent:#6ea8fe; --tag:#1f2937; --tagtext:#a9c7ff;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f7f9; --card:#ffffff; --line:#e6e8ec; --text:#1a1d23;
+      --muted:#5b6472; --accent:#2563eb; --tag:#eef2ff; --tagtext:#2846a8; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI","Malgun Gothic",Roboto,sans-serif;line-height:1.65}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 16px 64px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:26px}
+  h1{font-size:1.6rem;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:.92rem}
+  h2{font-size:1.02rem;margin:30px 0 12px;color:var(--muted);font-weight:650}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
+    display:flex;flex-direction:column}
+  .card h3{margin:0 0 4px;font-size:1.12rem}
+  .card h3 a{color:var(--text);text-decoration:none}
+  .card h3 a:hover{color:var(--accent)}
+  .desc{color:var(--muted);font-size:.86rem;margin:0 0 12px}
+  .go{display:inline-block;align-self:flex-start;padding:6px 14px;border-radius:999px;
+    background:var(--accent);color:#fff;text-decoration:none;font-size:.86rem;font-weight:650}
+  .go:hover{filter:brightness(1.1)}
+  .meta{font-size:.78rem;color:var(--muted);margin-top:12px}
+  ul.issues{list-style:none;margin:8px 0 0;padding:0;border-top:1px solid var(--line)}
+  ul.issues li{padding:6px 0;border-bottom:1px solid var(--line);font-size:.84rem}
+  ul.issues a{color:var(--text);text-decoration:none;display:flex;gap:8px;align-items:baseline}
+  ul.issues a:hover .lab{color:var(--accent)}
+  ul.issues .d{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:.76rem}
+  details{margin-top:6px}
+  summary{cursor:pointer;color:var(--accent);font-size:.8rem;padding:4px 0}
+  .small .card{padding:14px 18px}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:40px}
 </style>
 </head>
 <body>
-  <p>브리핑으로 이동 중… 자동으로 넘어가지 않으면 <a href="paper-brief.html">여기를 누르세요</a>.</p>
+<div class="wrap">
+  <header>
+    <h1>📚 논문 팔로우업 홈</h1>
+    <div class="sub">지금까지 만든 브리핑·보관함·지식 책을 한곳에 모았습니다. 카드를 누르면 해당 페이지로 이동합니다.</div>
+  </header>
+
+  <h2>브리핑 (주제별 팔로우업)</h2>
+  <div class="grid" id="briefs"></div>
+
+  <h2>모아 두는 곳</h2>
+  <div class="grid small">
+    <div class="card">
+      <h3><a href="keep.html">⭐ 보관함</a></h3>
+      <p class="desc">오래 남기고 싶은 arXiv 논문을 모아 둔 영구 보관함입니다. 30회 정리와 무관하게 유지됩니다.</p>
+      <a class="go" href="keep.html">열기</a>
+    </div>
+    <div class="card">
+      <h3><a href="book/index.html">📖 Physical AI 지식 책</a></h3>
+      <p class="desc">받은 자료를 개념 단위로 누적해 정리한 책입니다. 용어집과 자료 목록이 연결돼 있습니다.</p>
+      <a class="go" href="book/index.html">열기</a>
+    </div>
+  </div>
+
+  <footer>회차 목록은 themes.json에서 자동으로 읽어 옵니다 · 새 회차를 올리면 이 페이지에도 바로 나타납니다</footer>
+</div>
+
+<script>
+/* 브리핑 종류: 새 팔로우업을 만들면 여기에 한 줄만 추가하면 됩니다. */
+const KINDS = [
+  {key:"arxiv",  icon:"🤖", name:"Physical AI · arXiv 브리핑", page:"paper-brief.html",  prefix:"brief-",
+   desc:"diffusion VLA·diffusion policy·UMI·투명 물체/액체 조작·모방학습. 매일 갱신 + 주제 특집."},
+  {key:"rss",    icon:"🏛", name:"RSS 학회 브리핑",            page:"rss-brief.html",    prefix:"rss-brief-",
+   desc:"Robotics: Science and Systems 학회 논문을 주제별로 골라 읽는 브리핑."},
+  {key:"skin",   icon:"🧫", name:"FT 피부 모델",               page:"skin-brief.html",   prefix:"skin-brief-",
+   desc:"전층 피부 모델의 수축·탈착 → 분화·장벽 → OECD TG 적합성. 장치·코팅·AI·스케일업 특집."},
+  {key:"cocult", icon:"🧪", name:"구획 배지·시간차 공배양 제어", page:"cocult-brief.html", prefix:"cocult-brief-",
+   desc:"구획별 독립 배지 라인, ALI↔관류 계면, 배지 상충, 스케줄링·폐루프 제어."},
+  {key:"liquid", icon:"💧", name:"액체 핸들링·신개념 파이펫",   page:"liquid-brief.html", prefix:"liquid-brief-",
+   desc:"점도 대응, 기포 대응, AI·폐루프 제어, 로봇 파이펫팅."},
+];
+
+/* themes.json을 못 읽을 때(로컬 파일로 열었을 때 등) 쓰는 예비 목록 — scripts/build_hub.py가 갱신 */
+const FALLBACK = {"arxiv": {"2026-11-16e": {"label": "조사표 ⑤ 실험실 조작·피펫팅"}, "2026-11-16d": {"label": "조사표 ④ 투명 물체 인식·파지"}, "2026-11-16c": {"label": "조사표 ③ 양팔 역할 분담"}, "2026-11-16b": {"label": "조사표 ② 혼합형 VLA"}, "2026-11-16": {"label": "조사표 ① UMI→VLA 계보"}, "2026-10-18b": {"label": "자동화·CV 한계 극복 학습 조작"}, "2026-10-18": {"label": "CLIP/ViT + Diffusion Policy + RLinf"}, "2026-10-06": {"label": "학습 없는 비전 제어 vs 행동 학습"}, "2026-10-01": {"label": "VLA + 강화학습 · 정답 감독"}, "2026-09-30c": {"label": "텔레센트릭 카메라 활용"}, "2026-09-30b": {"label": "거울(mirror) 활용"}, "2026-09-30": {"label": "조명(lighting) 활용"}, "2026-09-29": {"label": "다중 신호 동기화 · 지연"}, "2026-09-28": {"label": "파이펫팅 조작 특집"}, "2026-09-21": {"label": "정밀도·정확도·재현성"}, "2026-09-10": {"label": "Diffusion/Flow 정책 · ACT · 접촉 저널"}, "2026-08-12": {"label": "UMI 계보 특집"}, "2026-08-10": {"label": "투명 물체 특집"}, "2026-08-08": {"label": "일일 · follow-config 주제"}, "2026-08-06": {"label": "일일 · 주제 5개로 축소"}, "2026-08-04": {"label": "일일 · follow-config 주제"}, "2026-08-03": {"label": "일일 브리핑"}, "2026-07-31": {"label": "일일 브리핑"}, "2026-07-30": {"label": "일일 브리핑"}, "2026-07-29": {"label": "일일 브리핑"}, "2026-07-28": {"label": "일일 브리핑"}, "2026-07-27": {"label": "일일 브리핑"}, "2026-07-24": {"label": "일일 브리핑"}, "2026-07-23": {"label": "일일 브리핑"}, "2026-07-22": {"label": "일일 브리핑"}}, "rss": {"2026-10-06": {"label": "학습 없는 비전 제어 vs 행동 학습"}, "2026-10-02": {"label": "IL·RL 결합 · 보정·실패 피드백"}, "2026-10-01": {"label": "VLA + 강화학습 · 정답 감독"}, "2026-09-30b": {"label": "텔레센트릭 · 카메라 모델 인접"}, "2026-09-30": {"label": "조명·거울 활용"}, "2026-09-29b": {"label": "다중 신호 동기화 · 지연"}, "2026-09-29": {"label": "다중 카메라 · multi-view"}, "2026-09-28": {"label": "비전만으로 접촉 조작"}, "2026-09-23": {"label": "시각 입력 품질"}, "2026-09-21": {"label": "정밀도·정확도·재현성"}, "2026-09-18": {"label": "2-jaw 그리퍼"}, "2026-09-17d": {"label": "UMI 계보"}, "2026-09-17c": {"label": "분할 모델 · 인접 주제"}, "2026-09-17b": {"label": "정교 조작·작은 물체·촉각"}, "2026-09-17": {"label": "양팔·조작·액체·UMI"}, "2026-09-16": {"label": "무작위 5편"}}, "skin": {"2026-11-07": {"label": "특집 ⑪ 곡면 제작"}, "2026-11-05g": {"label": "특집 ⑩ 대면적 스케일업"}, "2026-11-05f": {"label": "특집 ⑨ 혈관 내재형 스페로이드"}, "2026-11-05e": {"label": "특집 ⑧ AI 개발·응용"}, "2026-11-05d": {"label": "특집 ⑦ 표면화학·리간드·패턴"}, "2026-11-05c": {"label": "특집 ⑥ 전기방사 섬유 형상"}, "2026-11-05b": {"label": "특집 ⑤ 수축 억제 합성·가교"}, "2026-11-05": {"label": "특집 ④ 합성 biomaterial 부착성"}, "2026-11-04d": {"label": "특집 ③ throughput·생산 효율"}, "2026-11-04c": {"label": "특집 ② 부착성 재료 코팅"}, "2026-11-04b": {"label": "특집 ① 장치적 접근"}, "2026-11-04": {"label": "① 섬유아세포 콜라겐 수축"}}, "cocult": {"2026-11-10d": {"label": "특집 ③ 시간차·폐루프 제어"}, "2026-11-10c": {"label": "특집 ② 배지 조성·공급 상충"}, "2026-11-10b": {"label": "특집 ① ALI ↔ 관류 계면"}, "2026-11-10": {"label": "① 총론 — 구획 배지·시간차 제어"}}, "liquid": {"2026-11-13": {"label": "① 총론 — 점도·기포·AI·로봇"}}};
+
+const SHOW = 4, MAX = 30;
+
+function render(themes){
+  const box = document.getElementById("briefs");
+  box.innerHTML = KINDS.map(k=>{
+    const reg = themes[k.key] || {};
+    const dates = Object.keys(reg).sort().reverse().slice(0, MAX);
+    const li = d => `<li><a href="${k.prefix}${d}.html"><span class="d">${d}</span><span class="lab">${(reg[d]&&reg[d].label)||""}</span></a></li>`;
+    const head = dates.slice(0, SHOW).map(li).join("");
+    const rest = dates.slice(SHOW).map(li).join("");
+    return `<div class="card">
+      <h3><a href="${k.page}">${k.icon} ${k.name}</a></h3>
+      <p class="desc">${k.desc}</p>
+      <a class="go" href="${k.page}">최신 회차 열기</a>
+      ${dates.length ? `<div class="meta">최근 회차 · 총 ${dates.length}회${dates.length>=MAX?"+":""}</div><ul class="issues">${head}</ul>` : ``}
+      ${rest ? `<details><summary>이전 회차 ${dates.length-SHOW}개 더 보기</summary><ul class="issues">${rest}</ul></details>` : ``}
+    </div>`;
+  }).join("");
+}
+
+render(FALLBACK);
+fetch("themes.json", {cache:"no-store"}).then(r=>r.ok?r.json():Promise.reject()).then(render).catch(()=>{});
+</script>
 </body>
 </html>
